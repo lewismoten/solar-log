@@ -54,14 +54,16 @@ $(document).ready(function() {
       });
       //log.sort(sortLog);
 
-      google.charts.load("current", {packages: ["corechart", "line", "timeline"]});
+      google.charts.load("current", {packages: ["corechart", "line", "timeline", "gauge"]});
       google.charts.setOnLoadCallback(drawBasic);
 
       function drawBasic() {
+        drawGauges();
         drawAmps();
         drawVolts();
         drawWatts();
         drawBattery();
+        drawBatterySoc();
         drawStatus();
       }
     });
@@ -121,18 +123,52 @@ function drawVolts() {
   chart.draw(data, options);
 }
 
+function drawGauges() {
+  var record = log[log.length - 1];
+  var data = google.visualization.arrayToDataTable([
+    ['Label', 'Value'],
+    ['Battery %', Number(record["Battery SOC(%)"])],
+    ['PV Watts', Number(record["Array Power(W)"])]
+  ]);
+    var options = {
+            width: 400, height: 120,
+            //redFrom: 0, redTo: 19,
+            //yellowFrom:20, yellowTo: 49,
+            //greenFrom: 50, greenTo: 100,
+            minorTicks: 5
+          };
+    var chart = new google.visualization.Gauge(document.getElementById('chart_gauges'));
+    chart.draw(data, options);
+  var data = google.visualization.arrayToDataTable([
+    ['Label', 'Value'],
+    ['Battery V', Number(record["Battery Voltage(V)"])]
+  ]);
+
+    var options = {
+            width: 400, height: 120,
+            min:   Number(record["Battery Min. Voltage(V)"]),
+            max: Number(record["Battery Max. Voltage(V)"]),
+            //redFrom: 0, redTo: 19,
+            //yellowFrom:20, yellowTo: 49,
+            //greenFrom: 50, greenTo: 100,
+            minorTicks: 1
+          };
+    var chart = new google.visualization.Gauge(document.getElementById('chart_gauges_battery'));
+    chart.draw(data, options);
+
+    //chart_gauges_battery
+  //chart_gauges
+}
 function drawWatts() {
   var data = new google.visualization.DataTable();
   data.addColumn("number", "id");
   data.addColumn("number", "Solar");
   data.addColumn("number", "Load");
-  data.addColumn("number", "Battery");
   data.addRows(log.map(function(line) {
     return [
       Number(line["Record Num."]),
       Number(line["Array Power(W)"]),
-      Number(line["Load Power(W)"]),
-      Number(line["Battery Power(W)"])
+      Number(line["Load Power(W)"])
     ];
   }));
 
@@ -175,6 +211,29 @@ function drawBattery() {
   chart.draw(data, options);
 }
 
+function drawBatterySoc() {
+  var data = new google.visualization.DataTable();
+  data.addColumn("number", "id");
+  data.addColumn("number", "Charge");
+  data.addRows(log.map(function(line) {
+    return [
+      Number(line["Record Num."]),
+      Number(line["Battery SOC(%)"])
+    ];
+  }));
+
+  var options = {
+    hAxis: {
+      title: 'Record'
+    },
+    vAxis: {
+      title: '%'
+    }
+  };
+  var chart = new google.visualization.LineChart(document.getElementById('chart_battery_soc'));
+  chart.draw(data, options);
+}
+
 function drawStatus() {
   var data = new google.visualization.DataTable();
   data.addColumn({ type: 'string', id: 'Type' });
@@ -186,7 +245,8 @@ function drawStatus() {
        getEvents("Array", "Array Status"),
        getEvents("Charging", "Charging Status"),
        getEvents("Battery", "Battery Status"),
-       getEvents("Device", "Device Status")
+       getEvents("Device", "Device Status"),
+       getEvents("Load", "Load Status")
      )
   );
 
@@ -207,7 +267,6 @@ function drawStatus() {
          }
        }
      });
-     console.log(type, rows);
      return rows;
    }
 
