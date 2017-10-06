@@ -1,4 +1,8 @@
 var log;
+var logFilter;
+
+//2017/2/16  6:27:0 should be 2017/10/4  8:12:0
+
 
 /*
 "Record Num.": "287",
@@ -29,13 +33,23 @@ var log;
     "Total Energy Generated(kWh)": "2.42"
 */
 $(document).ready(function() {
-  $.ajax("solar3.csv")
+  $(".choose-set").change(function() {
+    logFilter = $(this).val();
+    drawBasic();
+  });
+  $.ajax("solar4.csv")
     .done(function(data) {
        var lines = data.split("\r\n");
        var headers = lines.shift().split(",").map(function(header){
          return header.trim();
        });
        headers.push("timestamp");
+
+       // device sometimes adds duplicate header
+       while(lines[0].indexOf("Record Num") === 0) {
+         lines.shift();
+       }
+
        lines.pop(); // last line has nada
 
       // Convert to object
@@ -47,27 +61,32 @@ $(document).ready(function() {
 
           if(header === "timestamp") {
             record[header] = tsAsDate(values[i], values[0]);
+            record.date = parseDate(record[header]);
           }
         });
 
         return record;
       });
+      headers.push("date");
       //log.sort(sortLog);
+
+      setupDates();
 
       google.charts.load("current", {packages: ["corechart", "line", "timeline", "gauge"]});
       google.charts.setOnLoadCallback(drawBasic);
 
-      function drawBasic() {
-        drawGauges();
-        drawAmps();
-        drawVolts();
-        drawWatts();
-        drawBattery();
-        drawBatterySoc();
-        drawStatus();
-      }
     });
 });
+
+function drawBasic() {
+  drawGauges();
+  drawAmps();
+  drawVolts();
+  drawWatts();
+  drawBattery();
+  drawBatterySoc();
+  drawStatus();
+}
 
 function drawAmps() {
   var data = new google.visualization.DataTable();
@@ -75,7 +94,7 @@ function drawAmps() {
   data.addColumn("number", "Solar");
   data.addColumn("number", "Load");
   data.addColumn("number", "Battery");
-  data.addRows(log.map(function(line) {
+  data.addRows(log.filter(isVisible).map(function(line) {
     return [
       Number(line["Record Num."]),
       Number(line["Array Current(A)"]),
@@ -102,7 +121,7 @@ function drawVolts() {
   data.addColumn("number", "Solar");
   data.addColumn("number", "Load");
   data.addColumn("number", "Battery");
-  data.addRows(log.map(function(line) {
+  data.addRows(log.filter(isVisible).map(function(line) {
     return [
       Number(line["Record Num."]),
       Number(line["Array Voltage(V)"]),
@@ -124,7 +143,8 @@ function drawVolts() {
 }
 
 function drawGauges() {
-  var record = log[log.length - 1];
+  var fLog = log.filter(isVisible);
+  var record = fLog[fLog.length - 1];
   var data = google.visualization.arrayToDataTable([
     ['Label', 'Value'],
     ['Battery %', Number(record["Battery SOC(%)"])],
@@ -164,7 +184,7 @@ function drawWatts() {
   data.addColumn("number", "id");
   data.addColumn("number", "Solar");
   data.addColumn("number", "Load");
-  data.addRows(log.map(function(line) {
+  data.addRows(log.filter(isVisible).map(function(line) {
     return [
       Number(line["Record Num."]),
       Number(line["Array Power(W)"]),
@@ -190,7 +210,7 @@ function drawBattery() {
   data.addColumn("number", "Minimum");
   data.addColumn("number", "Battery");
   data.addColumn("number", "Maximum");
-  data.addRows(log.map(function(line) {
+  data.addRows(log.filter(isVisible).map(function(line) {
     return [
       Number(line["Record Num."]),
       Number(line["Battery Min. Voltage(V)"]),
@@ -215,7 +235,7 @@ function drawBatterySoc() {
   var data = new google.visualization.DataTable();
   data.addColumn("number", "id");
   data.addColumn("number", "Charge");
-  data.addRows(log.map(function(line) {
+  data.addRows(log.filter(isVisible).map(function(line) {
     return [
       Number(line["Record Num."]),
       Number(line["Battery SOC(%)"])
@@ -253,7 +273,7 @@ function drawStatus() {
    function getEvents(type, name) {
      var rows = [];
      var state = [];
-     log.map(function(line, i) {
+     log.filter(isVisible).map(function(line, i) {
        var timestamp = line["timestamp"];
 
        if (line[name] !== state[1]) {
@@ -298,10 +318,26 @@ function tsAsDate(ts, id) {
   var min = Number(t[1]);
   var sec = Number(t[2]);
   var date = new Date(year, month - 1, day, hour, min, sec);
+
+  date = fixMyDate(date, id);
+  return date;
+}
+
+function fixMyDate(date, id) {
+  // I've gone in and changed the date a few times to get it setup.
+  // Let's update the older dates to be correct
   if (id < 66) {
     // for some reson day of month did not roll over
     date.setDate(date.getDate()-1);
   }
+
+  if (id < 295) {
+    // set time ahead a few months (2017/2/16  6:27:0 should be 2017/10/4  8:12:0)
+    date.setMilliseconds(date.getMilliseconds() + 19874700000);
+  }
+
+  date.setHours(date.getHours() + 12);
+  
   return date;
 }
 
@@ -319,4 +355,31 @@ function sortLog(a, b) {
 function getValue(line, name) {
   var i = headers.indexOf(name);
   return Number(line.split(",")[i]);
+}
+function parseDate(ts) {
+  return monthName(ts.getMonth()) + " " + ts.getDate() + ", " + ts.getFullYear();
+}
+function monthName(num) {
+  return [
+    "Jan", "Feb", "Mar",
+    "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep",
+    "Oct", "Nov", "Dec"
+  ][num];
+}
+function isVisible(record) {
+  return typeof logFilter === "undefined" || logFilter === "" || record.date === logFilter;
+}
+function setupDates() {
+  $(".choose-set").append(log.reduce(uniqueDates, []).map(mapOption));
+  function mapOption(text) {
+    return $("<option>").val(text).text(text);
+  }
+  function uniqueDates(dates, record) {
+    var date = record.date;
+    if(dates.indexOf(date) === -1) {
+      dates.push(date);
+    }
+    return dates;
+  }
 }
