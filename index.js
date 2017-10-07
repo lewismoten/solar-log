@@ -3,14 +3,26 @@ var logFilter;
 var FIELD_TIMESTAMP = "timestamp";
 import {chart as AmpChart} from "./charts/amps.js";
 import {chart as VoltChart} from "./charts/volts.js";
+import {chart as WattChart} from "./charts/watts.js";
+import {chart as BatteryChargeRangeChart} from "./charts/battery-charge-range.js";
+import {chart as BatteryStateOfChargeChart} from "./charts/battery-soc.js";
+import {chart as BatteryTemperatureChart} from "./charts/battery-temp.js";
 
 var ampChart;
 var voltChart;
+var wattChart;
+var batteryChargeRangeChart;
+var batteryStateOfChargeChart;
+var batteryTemperatureChart;
 
 $(document).ready(function() {
 
   ampChart = new AmpChart($("#chart_amps")[0]);
   voltChart = new VoltChart($("#chart_volts")[0]);
+  wattChart = new WattChart($("#chart_watts")[0]);
+  batteryChargeRangeChart = new BatteryChargeRangeChart($("#chart_battery")[0]);
+  batteryStateOfChargeChart = new BatteryStateOfChargeChart($("#chart_battery_soc")[0]);
+  batteryTemperatureChart = new BatteryTemperatureChart($("#chart_battery_temp")[0]);
 
   $(".choose-set").change(function() {
     logFilter = $(this).val();
@@ -57,13 +69,12 @@ function drawBasic() {
   drawGauges();
   ampChart.draw(filtered);
   voltChart.draw(filtered);
-  drawWatts();
-  drawBattery();
-  drawBatterySoc();
-  drawBatteryTemp();
+  wattChart.draw(filtered);
+  batteryChargeRangeChart.draw(filtered);
+  batteryStateOfChargeChart.draw(filtered);
+  batteryTemperatureChart.draw(filtered);
   drawStatus();
 }
-
 
 function drawGauges() {
   var fLog = log.filter(isVisible);
@@ -102,93 +113,8 @@ function drawGauges() {
     //chart_gauges_battery
   //chart_gauges
 }
-function drawWatts() {
-  var data = new google.visualization.DataTable();
-  data.addColumn("datetime", "Time of Day");
-  data.addColumn("number", "Solar");
-  data.addColumn("number", "Load");
-  data.addRows(log.filter(isVisible).map(function(line) {
-    return [
-      line._date,
-      Number(line["Array Power(W)"]),
-      Number(line["Load Power(W)"])
-    ];
-  }));
 
-  var options = {
-    vAxis: {
-      title: 'Watts'
-    }
-  };
-  var chart = new google.visualization.LineChart(document.getElementById('chart_watts'));
-  chart.draw(data, options);
-}
 
-function drawBattery() {
-  var data = new google.visualization.DataTable();
-  data.addColumn("datetime", "Time of Day");
-  data.addColumn("number", "Minimum");
-  data.addColumn("number", "Battery");
-  data.addColumn("number", "Maximum");
-  data.addRows(log.filter(isVisible).map(function(line) {
-    return [
-      line._date,
-      Number(line["Battery Min. Voltage(V)"]),
-      Number(line["Battery Voltage(V)"]),
-      Number(line["Battery Max. Voltage(V)"])
-    ];
-  }));
-
-  var options = {
-    vAxis: {
-      title: 'Voltage'
-    }
-  };
-  var chart = new google.visualization.LineChart(document.getElementById('chart_battery'));
-  chart.draw(data, options);
-}
-
-function drawBatterySoc() {
-  var data = new google.visualization.DataTable();
-  data.addColumn("datetime", "Time of Day");
-  data.addColumn("number", "Charge");
-  data.addRows(log.filter(isVisible).map(function(line) {
-    return [
-      line._date,
-      Number(line["Battery SOC(%)"])
-    ];
-  }));
-
-  var options = {
-    vAxis: {
-      title: '%'
-    }
-  };
-  var chart = new google.visualization.LineChart(document.getElementById('chart_battery_soc'));
-  chart.draw(data, options);
-}
-
-function drawBatteryTemp() {
-  var data = new google.visualization.DataTable();
-  data.addColumn("datetime", "Time of Day");
-  data.addColumn("number", "F");
-  data.addColumn("number", "℃");
-  data.addRows(log.filter(isVisible).map(function(line) {
-    return [
-      line._date,
-      (line["Battery Temp.(℃)"] * (9/5)) + 32,
-      line["Battery Temp.(℃)"]
-    ];
-  }));
-
-  var options = {
-    vAxis: {
-      title: "Battery Temperature"
-    }
-  };
-  var chart = new google.visualization.LineChart(document.getElementById('chart_battery_temp'));
-  chart.draw(data, options);
-}
 
 function drawStatus() {
   var data = new google.visualization.DataTable();
