@@ -3,7 +3,7 @@ export {chart};
 function chart(element) {
   var chart;
   var options = {
-    title: 'State of Charge',
+    title: 'Battery State of Charge',
     animation:{
       duration: 1000,
       easing: 'out'
@@ -35,16 +35,16 @@ function chart(element) {
   }
 
   function mapRow(record, index, records) {
-    var chargingAnnotation = null;
-    var chargingStatusField = "Charging Status";
-    var chargingStatus = record[chargingStatusField];
-    if(index === 0 || records[index - 1][chargingStatusField] !== chargingStatus) {
-      chargingAnnotation = chargingStatus;
-    }
+
     return [
       record._date,
       record["Battery SOC(%)"] / 100,
-      chargingAnnotation
+      getAnnotation("Charging Status", record, index, records)
     ];
+  }
+
+  function getAnnotation(name, record, index, records) {
+    var value = record[name];
+    return (index === 0 || records[index - 1][name] !== value) ? value : null;
   }
 }

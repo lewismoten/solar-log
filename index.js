@@ -4,7 +4,7 @@ var FIELD_TIMESTAMP = "timestamp";
 import {chart as AmpChart} from "./charts/amps.js";
 import {chart as VoltChart} from "./charts/volts.js";
 import {chart as WattChart} from "./charts/watts.js";
-import {chart as BatteryChargeRangeChart} from "./charts/battery-charge-range.js";
+import {chart as BatteryChargeRangeChart} from "./charts/battery-voltage.js";
 import {chart as BatteryStateOfChargeChart} from "./charts/battery-soc.js";
 import {chart as BatteryTemperatureChart} from "./charts/battery-temp.js";
 
