@@ -24,7 +24,7 @@ function chart(element) {
   function draw(records) {
     var data = new google.visualization.DataTable();
     data.addColumn("datetime", "Time of Day");
-    data.addColumn("number", "F");
+    data.addColumn("number", "℉");
     data.addColumn("number", "℃");
     data.addRows(records.map(mapRow));
     chart.draw(data, options);
