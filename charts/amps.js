@@ -3,9 +3,7 @@ export {chart};
 function chart(element) {
   var chart;
   var options = {
-    vAxis: {
-      title: 'Amps'
-    },
+    title: 'Amps',
     animation:{
         duration: 1000,
         easing: 'out'

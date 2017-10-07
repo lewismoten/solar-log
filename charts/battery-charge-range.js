@@ -3,9 +3,7 @@ export {chart};
 function chart(element) {
   var chart;
   var options = {
-    vAxis: {
-      title: 'Battery Charge Range'
-    },
+    title: 'Battery Charge Range',
     animation:{
         duration: 1000,
         easing: 'out'
