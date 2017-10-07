@@ -5,9 +5,12 @@ function chart(element) {
   var options = {
     title: 'State of Charge',
     animation:{
-        duration: 1000,
-        easing: 'out'
-      }
+      duration: 1000,
+      easing: 'out'
+    },
+    vAxis: {
+      format: "percent"
+    }
   };
 
   google.charts.load("current", {packages: ["corechart", "line"]});
@@ -23,14 +26,25 @@ function chart(element) {
     var data = new google.visualization.DataTable();
     data.addColumn("datetime", "Time of Day");
     data.addColumn("number", "Battery");
+    data.addColumn({
+      type: "string",
+      role: "annotation"
+    });
     data.addRows(records.map(mapRow));
     chart.draw(data, options);
   }
 
-  function mapRow(record) {
+  function mapRow(record, index, records) {
+    var chargingAnnotation = null;
+    var chargingStatusField = "Charging Status";
+    var chargingStatus = record[chargingStatusField];
+    if(index === 0 || records[index - 1][chargingStatusField] !== chargingStatus) {
+      chargingAnnotation = chargingStatus;
+    }
     return [
       record._date,
-      record["Battery SOC(%)"]
+      record["Battery SOC(%)"] / 100,
+      chargingAnnotation
     ];
   }
 }
