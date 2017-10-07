@@ -2,12 +2,15 @@ var log;
 var logFilter;
 var FIELD_TIMESTAMP = "timestamp";
 import {chart as AmpChart} from "./charts/amps.js";
+import {chart as VoltChart} from "./charts/volts.js";
 
 var ampChart;
+var voltChart;
 
 $(document).ready(function() {
 
   ampChart = new AmpChart($("#chart_amps")[0]);
+  voltChart = new VoltChart($("#chart_volts")[0]);
 
   $(".choose-set").change(function() {
     logFilter = $(this).val();
@@ -53,7 +56,7 @@ function drawBasic() {
   var filtered = log.filter(isVisible);
   drawGauges();
   ampChart.draw(filtered);
-  drawVolts();
+  voltChart.draw(filtered);
   drawWatts();
   drawBattery();
   drawBatterySoc();
@@ -61,29 +64,6 @@ function drawBasic() {
   drawStatus();
 }
 
-function drawVolts() {
-  var data = new google.visualization.DataTable();
-  data.addColumn("datetime", "Time of Day");
-  data.addColumn("number", "Solar");
-  data.addColumn("number", "Load");
-  data.addColumn("number", "Battery");
-  data.addRows(log.filter(isVisible).map(function(line) {
-    return [
-      line._date,
-      Number(line["Array Voltage(V)"]),
-      Number(line["Load Voltage(V)"]),
-      Number(line["Battery Voltage(V)"])
-    ];
-  }));
-
-  var options = {
-    vAxis: {
-      title: 'Voltage'
-    }
-  };
-  var chart = new google.visualization.LineChart(document.getElementById('chart_volts'));
-  chart.draw(data, options);
-}
 
 function drawGauges() {
   var fLog = log.filter(isVisible);
