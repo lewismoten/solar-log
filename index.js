@@ -51,6 +51,7 @@ function drawBasic() {
   drawWatts();
   drawBattery();
   drawBatterySoc();
+  drawBatteryTemp();
   drawStatus();
 }
 
@@ -202,6 +203,28 @@ function drawBatterySoc() {
     }
   };
   var chart = new google.visualization.LineChart(document.getElementById('chart_battery_soc'));
+  chart.draw(data, options);
+}
+
+function drawBatteryTemp() {
+  var data = new google.visualization.DataTable();
+  data.addColumn("datetime", "Time of Day");
+  data.addColumn("number", "F");
+  data.addColumn("number", "℃");
+  data.addRows(log.filter(isVisible).map(function(line) {
+    return [
+      line._date,
+      (line["Battery Temp.(℃)"] * (9/5)) + 32,
+      line["Battery Temp.(℃)"]
+    ];
+  }));
+
+  var options = {
+    vAxis: {
+      title: "Battery Temperature"
+    }
+  };
+  var chart = new google.visualization.LineChart(document.getElementById('chart_battery_temp'));
   chart.draw(data, options);
 }
 
