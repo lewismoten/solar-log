@@ -1,80 +1,45 @@
 var log;
 var logFilter;
+var FIELD_TIMESTAMP = "timestamp";
 
-//2017/2/16  6:27:0 should be 2017/10/4  8:12:0
-
-
-/*
-"Record Num.": "287",
-    "Array Current(A) ": "0.00",
-    "Array Voltage(V)": "3.78",
-    "Array Power(W)": "0.00",
-    "Load Current(A)": "0.00",
-    "Load Voltage(V)": "13.27",
-    "Load Power(W)": "0.00",
-    "Battery Current(A)": "0.00",
-    "Battery Voltage(V)": "13.27",
-    "Battery Temp.(℃)": "25.00",
-    "Battery SOC(%)": "80",
-    "Battery Max. Voltage(V)": "14.39",
-    "Battery Min. Voltage(V)": "13.2",
-    "Array Status": "CutOut",
-    "Charging Status": "NotCharging",
-    "Battery Status": "Normal",
-    "Load Status": "On",
-    "Device Status": "Normal",
-    "Daily Energy Consumed(kWh)": "0.00",
-    "Monthly Energy Consumed(kWh)": "0.00",
-    "Annual Energy Consumed(kWh)": "0.01",
-    "Total Energy Consumed(kWh)": "0.01",
-    "Daily Energy Generated(kWh)": "0.11",
-    "Monthly Energy Generated(kWh)": "0.49",
-    "Annual Energy Generated(kWh)": "1.15",
-    "Total Energy Generated(kWh)": "2.42"
-*/
 $(document).ready(function() {
+
   $(".choose-set").change(function() {
     logFilter = $(this).val();
     drawBasic();
   });
-  $.ajax("solar4.csv")
-    .done(function(data) {
-       var lines = data.split("\r\n");
-       var headers = lines.shift().split(",").map(function(header){
-         return header.trim();
+
+  Papa.parse("solar5.csv", {
+	   download: true,
+	   header: true,
+     skipEmptyLines: true,
+     delimiter: ",",
+     dynamicTyping: true,
+     fastMode: true, // we do not have quotes
+     beforeFirstChunk: function(data) {
+       // fix headers
+       data = data.replace(/ ,/gi, ",");
+       data = data.replace(/(Total Energy Generated\(kWh\))\r\n/gi, "$1,timestamp\r\n");
+       return data;
+     },
+     complete: function(results, file) {
+       var tsHeader = results.meta.fields[results.meta.fields.length - 1];
+       log = results.data.filter(function(record) {
+         var ts = record[tsHeader];
+         record._ts = moment(ts, "YYYY/M/D  H:m:s"); // 2017/2/14  12:11:0
+         // Sometimes header is written twice...
+         return record._ts.isValid();
        });
-       headers.push("timestamp");
 
-       // device sometimes adds duplicate header
-       while(lines[0].indexOf("Record Num") === 0) {
-         lines.shift();
-       }
+       setupDates();
 
-       lines.pop(); // last line has nada
-
-      // Convert to object
-      log = lines.map(function(line) {
-        var record = {};
-        var values = line.split(",");
-        headers.forEach(function(header, i) {
-          record[header] = values[i];
-
-          if(header === "timestamp") {
-            record[header] = tsAsDate(values[i], values[0]);
-            record.date = parseDate(record[header]);
-          }
-        });
-
-        return record;
-      });
-      headers.push("date");
-      //log.sort(sortLog);
-
-      setupDates();
-
-      google.charts.load("current", {packages: ["corechart", "line", "timeline", "gauge"]});
-      google.charts.setOnLoadCallback(drawBasic);
-
+       //line._ts.isValid()
+       google.charts.load("current", {packages: ["corechart", "line", "timeline", "gauge"]});
+       google.charts.setOnLoadCallback(drawBasic);
+     },
+     error: function(error, file) {
+       console.error(error);
+     }
     });
 });
 
@@ -273,24 +238,37 @@ function drawStatus() {
    function getEvents(type, name) {
      var rows = [];
      var state = [];
+     var lastTs;
      log.filter(isVisible).map(function(line, i) {
-       var timestamp = line["timestamp"];
-
+       lastTs = lastTs || line._ts.clone();
+       var startTs = line._ts;
+       var endTs = startTs.clone();
+       endTs.add(11, "minutes");
        if (line[name] !== state[1]) {
-         state = [type, line[name], timestamp, timestamp];
+         state = [type, line[name], startTs.toDate(), endTs.toDate()];
          rows.push(state);
        } else {
-         if (timestamp > state[2]) {
-           state[3] = timestamp;
+         var max = lastTs.clone();
+         max.add(13, "minutes");
+         if (startTs.isAfter(lastTs) && startTs.isBefore(max)) {
+           // continue previous event
+           state[3] = endTs.toDate();
          } else {
-           console.log(type, i, "warning - end date is wrong!");
+           // to far after last record, or jumped to prior date (changed time on device)
+           state = [type, line[name], startTs.toDate(), endTs.toDate()];
+           rows.push(state);
          }
        }
+       lastTs = startTs.clone();
      });
      return rows;
    }
 
   var options = {
+    timeline: {
+      groupByRowLabel: true,
+      avoidOverlappingGridLines: false
+    },
     hAxis: {
       title: 'Record'
     },
@@ -302,73 +280,8 @@ function drawStatus() {
   chart.draw(data, options);
 }
 
-function tsAsDate(ts, id) {
-  if(ts === "" || typeof ts === "undefined") {
-    // older entries didn't have dates - oops
-    return new Date(0, 0, 0, 0, id * 10, 0);
-  }
-  // 2017/2/14  12:11:0
-  var parts = ts.split("  ");
-  var d = parts[0].split("/");
-  var t = parts[1].split(":");
-  var year = Number(d[0]);
-  var month = Number(d[1]);
-  var day = Number(d[2]);
-  var hour = Number(t[0]);
-  var min = Number(t[1]);
-  var sec = Number(t[2]);
-  var date = new Date(year, month - 1, day, hour, min, sec);
-
-  date = fixMyDate(date, id);
-  return date;
-}
-
-function fixMyDate(date, id) {
-  // I've gone in and changed the date a few times to get it setup.
-  // Let's update the older dates to be correct
-  if (id < 66) {
-    // for some reson day of month did not roll over
-    date.setDate(date.getDate()-1);
-  }
-
-  if (id < 295) {
-    // set time ahead a few months (2017/2/16  6:27:0 should be 2017/10/4  8:12:0)
-    date.setMilliseconds(date.getMilliseconds() + 19874700000);
-  }
-
-  date.setHours(date.getHours() + 12);
-  
-  return date;
-}
-
-function sortLog(a, b) {
-  var aa = a.timestamp;
-  var bb = b.timestamp;
-  if (aa < bb) {
-    return - 1;
-  } else if (aa > bb) {
-    return 1;
-  } else {
-    return 0;
-  }
-}
-function getValue(line, name) {
-  var i = headers.indexOf(name);
-  return Number(line.split(",")[i]);
-}
-function parseDate(ts) {
-  return monthName(ts.getMonth()) + " " + ts.getDate() + ", " + ts.getFullYear();
-}
-function monthName(num) {
-  return [
-    "Jan", "Feb", "Mar",
-    "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep",
-    "Oct", "Nov", "Dec"
-  ][num];
-}
 function isVisible(record) {
-  return typeof logFilter === "undefined" || logFilter === "" || record.date === logFilter;
+  return typeof logFilter === "undefined" || logFilter === "" || record._ts.format("LL") === logFilter;
 }
 function setupDates() {
   $(".choose-set").append(log.reduce(uniqueDates, []).map(mapOption));
@@ -376,7 +289,7 @@ function setupDates() {
     return $("<option>").val(text).text(text);
   }
   function uniqueDates(dates, record) {
-    var date = record.date;
+    var date = record._ts.format("LL");
     if(dates.indexOf(date) === -1) {
       dates.push(date);
     }
