@@ -25,8 +25,9 @@ $(document).ready(function() {
      complete: function(results, file) {
        var tsHeader = results.meta.fields[results.meta.fields.length - 1];
        log = results.data.filter(function(record) {
-         var ts = record[tsHeader];
-         record._ts = moment(ts, "YYYY/M/D  H:m:s"); // 2017/2/14  12:11:0
+         var date = record[tsHeader];
+         record._ts = moment(date, "YYYY/M/D  H:m:s"); // 2017/2/14  12:11:0
+         record._date = record._ts.toDate();
          // Sometimes header is written twice...
          return record._ts.isValid();
        });
@@ -55,13 +56,13 @@ function drawBasic() {
 
 function drawAmps() {
   var data = new google.visualization.DataTable();
-  data.addColumn("number", "id");
+  data.addColumn("datetime", "Time of Day");
   data.addColumn("number", "Solar");
   data.addColumn("number", "Load");
   data.addColumn("number", "Battery");
   data.addRows(log.filter(isVisible).map(function(line) {
     return [
-      Number(line["Record Num."]),
+      line._date,
       Number(line["Array Current(A)"]),
       Number(line["Load Current(A)"]),
       Number(line["Battery Current(A)"])
@@ -69,9 +70,6 @@ function drawAmps() {
   }));
 
   var options = {
-    hAxis: {
-      title: 'Record'
-    },
     vAxis: {
       title: 'Amps'
     }
@@ -82,13 +80,13 @@ function drawAmps() {
 
 function drawVolts() {
   var data = new google.visualization.DataTable();
-  data.addColumn("number", "id");
+  data.addColumn("datetime", "Time of Day");
   data.addColumn("number", "Solar");
   data.addColumn("number", "Load");
   data.addColumn("number", "Battery");
   data.addRows(log.filter(isVisible).map(function(line) {
     return [
-      Number(line["Record Num."]),
+      line._date,
       Number(line["Array Voltage(V)"]),
       Number(line["Load Voltage(V)"]),
       Number(line["Battery Voltage(V)"])
@@ -96,9 +94,6 @@ function drawVolts() {
   }));
 
   var options = {
-    hAxis: {
-      title: 'Record'
-    },
     vAxis: {
       title: 'Voltage'
     }
@@ -146,21 +141,18 @@ function drawGauges() {
 }
 function drawWatts() {
   var data = new google.visualization.DataTable();
-  data.addColumn("number", "id");
+  data.addColumn("datetime", "Time of Day");
   data.addColumn("number", "Solar");
   data.addColumn("number", "Load");
   data.addRows(log.filter(isVisible).map(function(line) {
     return [
-      Number(line["Record Num."]),
+      line._date,
       Number(line["Array Power(W)"]),
       Number(line["Load Power(W)"])
     ];
   }));
 
   var options = {
-    hAxis: {
-      title: 'Record'
-    },
     vAxis: {
       title: 'Watts'
     }
@@ -171,13 +163,13 @@ function drawWatts() {
 
 function drawBattery() {
   var data = new google.visualization.DataTable();
-  data.addColumn("number", "id");
+  data.addColumn("datetime", "Time of Day");
   data.addColumn("number", "Minimum");
   data.addColumn("number", "Battery");
   data.addColumn("number", "Maximum");
   data.addRows(log.filter(isVisible).map(function(line) {
     return [
-      Number(line["Record Num."]),
+      line._date,
       Number(line["Battery Min. Voltage(V)"]),
       Number(line["Battery Voltage(V)"]),
       Number(line["Battery Max. Voltage(V)"])
@@ -185,9 +177,6 @@ function drawBattery() {
   }));
 
   var options = {
-    hAxis: {
-      title: 'Record'
-    },
     vAxis: {
       title: 'Voltage'
     }
@@ -198,19 +187,16 @@ function drawBattery() {
 
 function drawBatterySoc() {
   var data = new google.visualization.DataTable();
-  data.addColumn("number", "id");
+  data.addColumn("datetime", "Time of Day");
   data.addColumn("number", "Charge");
   data.addRows(log.filter(isVisible).map(function(line) {
     return [
-      Number(line["Record Num."]),
+      line._date,
       Number(line["Battery SOC(%)"])
     ];
   }));
 
   var options = {
-    hAxis: {
-      title: 'Record'
-    },
     vAxis: {
       title: '%'
     }
@@ -223,8 +209,8 @@ function drawStatus() {
   var data = new google.visualization.DataTable();
   data.addColumn({ type: 'string', id: 'Type' });
   data.addColumn({ type: 'string', id: 'Name' });
-  data.addColumn({ type: 'date', id: 'Start' });
-  data.addColumn({ type: 'date', id: 'End' });
+  data.addColumn({ type: 'datetime', id: 'Start' });
+  data.addColumn({ type: 'datetime', id: 'End' });
   data.addRows(
     [].concat(
        getEvents("Array", "Array Status"),
