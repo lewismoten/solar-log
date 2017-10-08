@@ -17,7 +17,7 @@ var BATTERY_MAX_WATTS = PV_INPUT_POWER === 12 ? 520 : 1040;
 var LOAD_MAX_WATTS = 1000;
 var LOAD_MAX_AMPS = 40;
 var LOAD_MAX_VOLTS = 12;
-var DATA_FILE ="solar5.csv";
+var DATA_FILE = "solar6.csv";
 // ---------------------------------------------------
 
 var log;
