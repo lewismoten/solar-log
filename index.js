@@ -17,8 +17,11 @@ var BATTERY_MAX_WATTS = PV_INPUT_POWER === 12 ? 520 : 1040;
 var LOAD_MAX_WATTS = 1000;
 var LOAD_MAX_AMPS = 40;
 var LOAD_MAX_VOLTS = 12;
+
+var KWH_PRICE = 63.40 / 510; // how much do you pay per Kilowatt hour?
 var DATA_FILE = "solar6.csv";
 // ---------------------------------------------------
+
 
 var log;
 var logFilter;
@@ -29,6 +32,7 @@ import {Chart as WattChart} from "./charts/watts.js";
 import {Chart as BatteryChargeRangeChart} from "./charts/battery-voltage.js";
 import {Chart as BatteryStateOfChargeChart} from "./charts/battery-soc.js";
 import {Chart as BatteryTemperatureChart} from "./charts/battery-temp.js";
+import {Chart as EnergyChart} from "./charts/energy.js";
 
 var ampChart;
 var voltChart;
@@ -36,6 +40,7 @@ var wattChart;
 var batteryChargeRangeChart;
 var batteryStateOfChargeChart;
 var batteryTemperatureChart;
+var energyChart;
 
 $(document).ready(function() {
 
@@ -45,6 +50,7 @@ $(document).ready(function() {
   batteryChargeRangeChart = new BatteryChargeRangeChart($("#chart_battery")[0]);
   batteryStateOfChargeChart = new BatteryStateOfChargeChart($("#chart_battery_soc")[0]);
   batteryTemperatureChart = new BatteryTemperatureChart($("#chart_battery_temp")[0]);
+  energyChart = new EnergyChart($("#chart_energy")[0]);
 
   $(".choose-set").change(function() {
     logFilter = $(this).val();
@@ -95,6 +101,7 @@ function drawBasic() {
   batteryChargeRangeChart.draw(filtered);
   batteryStateOfChargeChart.draw(filtered);
   batteryTemperatureChart.draw(filtered);
+  energyChart.draw(filtered);
   drawStatus();
 }
 
