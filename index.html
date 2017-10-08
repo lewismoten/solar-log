@@ -1,31 +1,35 @@
 <html>
 <head>
   <title>Solar Log</title>
+  <link rel="stylesheet" href="node_modules/jquery-ui-daterangepicker/jquery.comiseo.daterangepicker.css"/>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
 </head>
 <body>
 
+  <input name="range" />
 
-  <select class="choose-set"><option value="">All</option></select>
+<div id="chart_energy"></div>
+
   <table>
     <tr>
-      <td class="pv-watts-gauge"></td>
       <td class="pv-volts-gauge"></td>
       <td class="pv-amps-gauge"></td>
-      <td></td>
+      <td class="pv-watts-gauge"></td>
+      <td class="pv-hours-gauge"></td>
       <td class="pv-stats"></td>
     </tr>
     <tr>
-      <td class="battery-soc-gauge"></td>
       <td class="battery-volts-gauge"></td>
       <td class="battery-amps-gauge"></td>
+      <td class="battery-soc-gauge"></td>
       <td class="battery-temperature-gauge"></td>
       <td class="battery-stats"></td>
     </tr>
     <tr>
-      <td class="load-watts-gauge"></td>
       <td class="load-volts-gauge"></td>
       <td class="load-amps-gauge"></td>
-      <td></td>
+      <td class="load-watts-gauge"></td>
+      <td class="load-hours-gauge"></td>
       <td class="load-stats"></td>
     </tr>
   </table>
@@ -39,9 +43,17 @@
   <div id="chart_status"></div>
   <hr />
   Github Repository: <a href="https://github.com/lewismoten/solar-log">https://github.com/lewismoten/solar-log</a>
+  <!-- jquery@3.2.1 (manipulate dom) -->
   <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <!-- jquery-ui@1.12.1 (manipulate dom) -->
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+  <!-- google charts api (draw charts) -->
   <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <!-- moment@2.18.1 (work with dates) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment-with-locales.min.js"></script>
+  <!-- lewismoten/jquery-ui-daterangepicker#ea595a9 (display date-range picker) -->
+  <script src="node_modules/jquery-ui-daterangepicker/jquery.comiseo.daterangepicker.js"></script>
+  <!-- PapaParse@4.3.6 (parse csv files) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.3.6/papaparse.min.js"></script>
   <script src="index.js" type="module"></script>
 </body>

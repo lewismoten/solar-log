@@ -1,6 +1,6 @@
-export {chart};
+export {Chart};
 
-function chart(element) {
+function Chart(element) {
   var chart;
   var options = {
     title: 'Amps',

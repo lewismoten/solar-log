@@ -1,0 +1,25 @@
+{
+  "name": "solar-log",
+  "version": "1.0.0",
+  "description": "This is just a little project to parse a CSV file downloaded from EPEVER eLOG01 Record Accessory Adapter For EPEVER Tracer Series eTracer Series MPPT Solar Charge Controller.",
+  "main": "index.js",
+  "dependencies": {
+    "jquery-ui-daterangepicker": "git://github.com/lewismoten/jquery-ui-daterangepicker.git#ea595a9"
+  },
+  "devDependencies": {
+    "jquery-ui-daterangepicker": "git://github.com/lewismoten/jquery-ui-daterangepicker.git#ea595a9"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lewismoten/solar-log.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lewismoten/solar-log/issues"
+  },
+  "homepage": "https://github.com/lewismoten/solar-log#readme"
+}
