@@ -1,3 +1,25 @@
+/*
+These are values found in the documentation specifically for HY-MPPT40. It's also
+assuming optimal temperature/wire size with appropriate PV array and Battery.
+They are only for reference!
+https://www.acopower.com/media/attachment/file/h/y/hy-mppt2-20-30-40-4.pdf
+
+*/
+var PV_INPUT_POWER = 12; // Set this to match your panels. Either 12v or 24v
+var RATED_CHARGE_CURRENT = 40;
+var MAX_PV_OPEN_CIRCUIT_VOLTAGE = PV_INPUT_POWER === 12 ? 50 : 100; // although rated for 100v, temperature has an effect - so maxing at 92v/25c
+
+var MAX_PV_INPUT_POWER = PV_INPUT_POWER === 12 ? 1560 : 3120; // this seems odd - as max amps is 40, so why not 480/960? also, 3*rated charge... still less?
+
+var BATTERY_INPUT_VOLTAGE_RANGE_MAX = 32;
+var BATTERY_INPUT_VOLTAGE_RANGE_MIN = 8;
+var BATTERY_MAX_WATTS = PV_INPUT_POWER === 12 ? 520 : 1040;
+var LOAD_MAX_WATTS = 1000;
+var LOAD_MAX_AMPS = 40;
+var LOAD_MAX_VOLTS = 12;
+var DATA_FILE ="solar5.csv";
+// ---------------------------------------------------
+
 var log;
 var logFilter;
 var FIELD_TIMESTAMP = "timestamp";
@@ -29,7 +51,7 @@ $(document).ready(function() {
     drawBasic();
   });
 
-  Papa.parse("solar5.csv", {
+  Papa.parse(DATA_FILE, {
 	   download: true,
 	   header: true,
      skipEmptyLines: true,
@@ -55,7 +77,7 @@ $(document).ready(function() {
        setupDates();
 
        //line._ts.isValid()
-       google.charts.load("current", {packages: ["corechart", "line", "timeline", "gauge"]});
+       google.charts.load("current", {packages: ["corechart", "line", "timeline", "gauge", "table"]});
        google.charts.setOnLoadCallback(drawBasic);
      },
      error: function(error, file) {
@@ -66,7 +88,7 @@ $(document).ready(function() {
 
 function drawBasic() {
   var filtered = log.filter(isVisible);
-  drawGauges();
+  drawGauges(filtered);
   ampChart.draw(filtered);
   voltChart.draw(filtered);
   wattChart.draw(filtered);
@@ -76,45 +98,111 @@ function drawBasic() {
   drawStatus();
 }
 
-function drawGauges() {
-  var fLog = log.filter(isVisible);
+function drawGauges(fLog) {
   var record = fLog[fLog.length - 1];
-  var data = google.visualization.arrayToDataTable([
-    ['Label', 'Value'],
-    ['Battery %', Number(record["Battery SOC(%)"])],
-    ['PV Watts', Number(record["Array Power(W)"])]
-  ]);
-    var options = {
-            width: 400, height: 120,
-            //redFrom: 0, redTo: 19,
-            //yellowFrom:20, yellowTo: 49,
-            //greenFrom: 50, greenTo: 100,
-            minorTicks: 5
-          };
-    var chart = new google.visualization.Gauge(document.getElementById('chart_gauges'));
-    chart.draw(data, options);
-  var data = google.visualization.arrayToDataTable([
-    ['Label', 'Value'],
-    ['Battery V', Number(record["Battery Voltage(V)"])]
-  ]);
 
-    var options = {
-            width: 400, height: 120,
-            min:   Number(record["Battery Min. Voltage(V)"]),
-            max: Number(record["Battery Max. Voltage(V)"]),
-            //redFrom: 0, redTo: 19,
-            //yellowFrom:20, yellowTo: 49,
-            //greenFrom: 50, greenTo: 100,
-            minorTicks: 1
-          };
-    var chart = new google.visualization.Gauge(document.getElementById('chart_gauges_battery'));
-    chart.draw(data, options);
+// ---------------------- pv
+    var watts = getValues(fLog, record, "Array Power(W)", MAX_PV_INPUT_POWER);
+    var amps = getValues(fLog, record, "Array Current(A)", RATED_CHARGE_CURRENT);
+    var volts = getValues(fLog, record, "Array Voltage(V)", MAX_PV_OPEN_CIRCUIT_VOLTAGE);
+    drawGauge(watts, "Watts", ".pv-watts-");
+    drawGauge(amps, "Current", ".pv-amps-");
+    drawGauge(volts, "Voltage", ".pv-volts-");
 
-    //chart_gauges_battery
-  //chart_gauges
+    var data = new google.visualization.DataTable();
+    data.addColumn("string", "PV");
+    data.addColumn("number", "Value");
+    data.addColumn("number", "Low");
+    data.addColumn("number", "High");
+    data.addColumn("number", "Max");
+    data.addRows([
+      ["Watts", watts.value, watts.min, watts.max, watts.limit],
+      ["Current", amps.value, amps.min, amps.max, amps.limit],
+      ["Volts", volts.value, volts.min, volts.max, volts.limit]
+    ]);
+    var table = new google.visualization.Table($(".pv-stats")[0]);
+    table.draw(data);
+
+    // ---------------------- battery
+        var soc = getValues(fLog, record, "Battery SOC(%)", 100);
+        var amps = getValues(fLog, record, "Battery Current(A)", RATED_CHARGE_CURRENT);
+        var volts = getValues(fLog, record, "Battery Voltage(V)", BATTERY_INPUT_VOLTAGE_RANGE_MAX, BATTERY_INPUT_VOLTAGE_RANGE_MIN);
+        var temperature = getValues(fLog, record, "Battery Temp.(℃)", 65, -20);
+        drawGauge(soc, "SOC", ".battery-soc-");
+        drawGauge(amps, "Current", ".battery-amps-");
+        drawGauge(volts, "Voltage", ".battery-volts-");
+        drawGauge(temperature, "℃", ".battery-temperature-");
+
+        var data = new google.visualization.DataTable();
+        data.addColumn("string", "Battery");
+        data.addColumn("number", "Value");
+        data.addColumn("number", "Low");
+        data.addColumn("number", "High");
+        data.addColumn("number", "Max");
+        data.addRows([
+          ["SOC", soc.value, soc.min, soc.max, soc.limit],
+          ["Current", amps.value, amps.min, amps.max, amps.limit],
+          ["Volts", volts.value, volts.min, volts.max, volts.limit],
+          ["℃", temperature.value, temperature.min, temperature.max, temperature.limit]
+        ]);
+        var table = new google.visualization.Table($(".battery-stats")[0]);
+        table.draw(data);
+        // ---------------------- pv
+            var watts = getValues(fLog, record, "Load Power(W)", LOAD_MAX_WATTS);
+            var amps = getValues(fLog, record, "Load Current(A)", LOAD_MAX_AMPS);
+            var volts = getValues(fLog, record, "Load Voltage(V)", LOAD_MAX_VOLTS);
+            drawGauge(watts, "Watts", ".load-watts-");
+            drawGauge(amps, "Current", ".load-amps-");
+            drawGauge(volts, "Voltage", ".load-volts-");
+
+            var data = new google.visualization.DataTable();
+            data.addColumn("string", "Load");
+            data.addColumn("number", "Value");
+            data.addColumn("number", "Low");
+            data.addColumn("number", "High");
+            data.addColumn("number", "Max");
+            data.addRows([
+              ["Watts", watts.value, watts.min, watts.max, watts.limit],
+              ["Current", amps.value, amps.min, amps.max, amps.limit],
+              ["Volts", volts.value, volts.min, volts.max, volts.limit]
+            ]);
+            var table = new google.visualization.Table($(".load-stats")[0]);
+            table.draw(data);
+
 }
-
-
+function getValues(records, currentRecord, field, limit, lowLimit) {
+  var values = records.map(function(record) { return record[field]; });
+  var result = {
+    value: currentRecord[field],
+    min: Math.min.apply(Math, values),
+    max: Math.max.apply(Math, values),
+    limit: limit
+  };
+  if (lowLimit) {
+    result.lowLimit = lowLimit;
+  };
+  return result;
+}
+function drawGauge(data, label, classPrefix) {
+  var element = $(classPrefix + "gauge")[0];
+  var chart = new google.visualization.Gauge(element);
+  var dataTable = google.visualization.arrayToDataTable([
+    ["Label", "Value"],
+    [label, data.value]
+  ]);
+  var options = {
+    min: data.lowLimit || 0,
+    max: data.limit,
+    greenFrom: data.min,
+    greenTo: data.max,
+    greenColor: "#cccccc"
+  };
+  chart.draw(dataTable, options);
+  $(classPrefix + "value").text(data.value);
+  $(classPrefix + "low").text(data.min);
+  $(classPrefix + "high").text(data.max);
+  $(classPrefix + "max").text(data.limit);
+}
 
 function drawStatus() {
   var data = new google.visualization.DataTable();

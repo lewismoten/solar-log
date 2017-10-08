@@ -6,8 +6,30 @@
 
 
   <select class="choose-set"><option value="">All</option></select>
-  <div id="chart_gauges"></div>
-  <div id="chart_gauges_battery"></div>
+  <table>
+    <tr>
+      <td class="pv-watts-gauge"></td>
+      <td class="pv-volts-gauge"></td>
+      <td class="pv-amps-gauge"></td>
+      <td></td>
+      <td class="pv-stats"></td>
+    </tr>
+    <tr>
+      <td class="battery-soc-gauge"></td>
+      <td class="battery-volts-gauge"></td>
+      <td class="battery-amps-gauge"></td>
+      <td class="battery-temperature-gauge"></td>
+      <td class="battery-stats"></td>
+    </tr>
+    <tr>
+      <td class="load-watts-gauge"></td>
+      <td class="load-volts-gauge"></td>
+      <td class="load-amps-gauge"></td>
+      <td></td>
+      <td class="load-stats"></td>
+    </tr>
+  </table>
+
   <div id="chart_amps"></div>
   <div id="chart_volts"></div>
   <div id="chart_watts"></div>
@@ -17,13 +39,10 @@
   <div id="chart_status"></div>
   <hr />
   Github Repository: <a href="https://github.com/lewismoten/solar-log">https://github.com/lewismoten/solar-log</a>
-  <script
-    src="https://code.jquery.com/jquery-3.2.1.min.js"
-    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-    crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment-with-locales.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.3.6/papaparse.min.js"></script>
-  <script type="module" src="index.js"></script>
+  <script src="index.js" type="module"></script>
 </body>
 </html>
