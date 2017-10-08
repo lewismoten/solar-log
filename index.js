@@ -23,12 +23,12 @@ var DATA_FILE = "solar6.csv";
 var log;
 var logFilter;
 var FIELD_TIMESTAMP = "timestamp";
-import {chart as AmpChart} from "./charts/amps.js";
-import {chart as VoltChart} from "./charts/volts.js";
-import {chart as WattChart} from "./charts/watts.js";
-import {chart as BatteryChargeRangeChart} from "./charts/battery-voltage.js";
-import {chart as BatteryStateOfChargeChart} from "./charts/battery-soc.js";
-import {chart as BatteryTemperatureChart} from "./charts/battery-temp.js";
+import {Chart as AmpChart} from "./charts/amps.js";
+import {Chart as VoltChart} from "./charts/volts.js";
+import {Chart as WattChart} from "./charts/watts.js";
+import {Chart as BatteryChargeRangeChart} from "./charts/battery-voltage.js";
+import {Chart as BatteryStateOfChargeChart} from "./charts/battery-soc.js";
+import {Chart as BatteryTemperatureChart} from "./charts/battery-temp.js";
 
 var ampChart;
 var voltChart;
