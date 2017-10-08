@@ -106,8 +106,12 @@ function drawGauges(fLog) {
     var amps = getValues(fLog, record, "Array Current(A)", RATED_CHARGE_CURRENT);
     var volts = getValues(fLog, record, "Array Voltage(V)", MAX_PV_OPEN_CIRCUIT_VOLTAGE);
     drawGauge(watts, "Watts", ".pv-watts-");
-    drawGauge(amps, "Current", ".pv-amps-");
+    drawGauge(amps, "Amps", ".pv-amps-");
     drawGauge(volts, "Voltage", ".pv-volts-");
+    var status = fLog.reduce(getStatus, {field: "Array Status"});
+    drawStatusHoursGauge(status, "Hours", "Input", ".pv-hours-gauge");
+
+    // lets get hours input was on
 
     var data = new google.visualization.DataTable();
     data.addColumn("string", "PV");
@@ -117,8 +121,9 @@ function drawGauges(fLog) {
     data.addColumn("number", "Max");
     data.addRows([
       ["Watts", watts.value, watts.min, watts.max, watts.limit],
-      ["Current", amps.value, amps.min, amps.max, amps.limit],
-      ["Volts", volts.value, volts.min, volts.max, volts.limit]
+      ["Amps", amps.value, amps.min, amps.max, amps.limit],
+      ["Volts", volts.value, volts.min, volts.max, volts.limit],
+      ["Hours", secondsAsHours(status.sum["Input"]), 0, secondsAsHours(status.sum["Input"]), secondsAsHours(status.meta.total)]
     ]);
     var table = new google.visualization.Table($(".pv-stats")[0]);
     table.draw(data);
@@ -129,7 +134,7 @@ function drawGauges(fLog) {
         var volts = getValues(fLog, record, "Battery Voltage(V)", BATTERY_INPUT_VOLTAGE_RANGE_MAX, BATTERY_INPUT_VOLTAGE_RANGE_MIN);
         var temperature = getValues(fLog, record, "Battery Temp.(℃)", 65, -20);
         drawGauge(soc, "SOC", ".battery-soc-");
-        drawGauge(amps, "Current", ".battery-amps-");
+        drawGauge(amps, "Amps", ".battery-amps-");
         drawGauge(volts, "Voltage", ".battery-volts-");
         drawGauge(temperature, "℃", ".battery-temperature-");
 
@@ -141,19 +146,23 @@ function drawGauges(fLog) {
         data.addColumn("number", "Max");
         data.addRows([
           ["SOC", soc.value, soc.min, soc.max, soc.limit],
-          ["Current", amps.value, amps.min, amps.max, amps.limit],
+          ["Amps", amps.value, amps.min, amps.max, amps.limit],
           ["Volts", volts.value, volts.min, volts.max, volts.limit],
-          ["℃", temperature.value, temperature.min, temperature.max, temperature.limit]
+          ["℃", temperature.value, temperature.min, temperature.max, temperature.limit],
+          ["℉", toFahrenheit(temperature.value), toFahrenheit(temperature.min), toFahrenheit(temperature.max), toFahrenheit(temperature.limit)]
         ]);
         var table = new google.visualization.Table($(".battery-stats")[0]);
         table.draw(data);
-        // ---------------------- pv
+        // ---------------------- load
             var watts = getValues(fLog, record, "Load Power(W)", LOAD_MAX_WATTS);
             var amps = getValues(fLog, record, "Load Current(A)", LOAD_MAX_AMPS);
             var volts = getValues(fLog, record, "Load Voltage(V)", LOAD_MAX_VOLTS);
             drawGauge(watts, "Watts", ".load-watts-");
-            drawGauge(amps, "Current", ".load-amps-");
+            drawGauge(amps, "Amps", ".load-amps-");
             drawGauge(volts, "Voltage", ".load-volts-");
+
+            var status = fLog.reduce(getStatus, {field: "Load Status"});
+            drawStatusHoursGauge(status, "Hours", "On", ".load-hours-gauge");
 
             var data = new google.visualization.DataTable();
             data.addColumn("string", "Load");
@@ -163,8 +172,9 @@ function drawGauges(fLog) {
             data.addColumn("number", "Max");
             data.addRows([
               ["Watts", watts.value, watts.min, watts.max, watts.limit],
-              ["Current", amps.value, amps.min, amps.max, amps.limit],
-              ["Volts", volts.value, volts.min, volts.max, volts.limit]
+              ["Amps", amps.value, amps.min, amps.max, amps.limit],
+              ["Volts", volts.value, volts.min, volts.max, volts.limit],
+              ["Hours", secondsAsHours(status.sum["Input"]), 0, secondsAsHours(status.sum["Input"]), secondsAsHours(status.meta.total)]
             ]);
             var table = new google.visualization.Table($(".load-stats")[0]);
             table.draw(data);
@@ -182,6 +192,22 @@ function getValues(records, currentRecord, field, limit, lowLimit) {
     result.lowLimit = lowLimit;
   };
   return result;
+}
+function secondsAsHours(seconds) {
+  return +((seconds || 0) / 3600).toFixed(1);
+}
+function drawStatusHoursGauge(data, label, onName, classPrefix) {
+  var element = $(classPrefix)[0];
+  var chart = new google.visualization.Gauge(element);
+  var dataTable = google.visualization.arrayToDataTable([
+    ["Label", "Value"],
+    [label, secondsAsHours(data.sum[onName])]
+  ]);
+  var options = {
+    min: 0,
+    max: secondsAsHours(data.meta.total)
+  };
+  chart.draw(dataTable, options);
 }
 function drawGauge(data, label, classPrefix) {
   var element = $(classPrefix + "gauge")[0];
@@ -202,6 +228,58 @@ function drawGauge(data, label, classPrefix) {
   $(classPrefix + "low").text(data.min);
   $(classPrefix + "high").text(data.max);
   $(classPrefix + "max").text(data.limit);
+}
+function getStatus(status, record, index, array) {
+  var fieldName = status.field;
+  var meta = status.meta = status.meta || {
+    values: []
+  };
+  var last = meta.last = meta.last || {
+    ts: record._ts.clone()
+  };
+
+  var values = meta.values = meta.values || [];
+  var currentStatus = record[fieldName];
+  if (values.indexOf(currentStatus) === -1) {
+    values.push(currentStatus);
+    status[currentStatus] = [];
+  }
+  var statusRecords = status[currentStatus];
+
+  var startTs = record._ts.clone();
+  var endTs = startTs.clone();
+  endTs.add(11, "minutes");
+
+  if (currentStatus !== last.status) {
+    statusRecords.push({start: startTs, end: endTs});
+  } else {
+    var latestRecord = statusRecords[statusRecords.length - 1];
+    var max = (latestRecord ? latestRecord.end : endTs).clone();
+    max.add(13, "minutes");
+    if (startTs.isAfter(last.ts) && startTs.isBefore(max)) {
+      latestRecord.end = endTs;
+    } else {
+      statusRecords.push({start: startTs, end: endTs});
+    }
+  }
+
+  // we are done grabbing all status data. let's rollup everything
+  if (index === array.length - 1) {
+    status.sum = {};
+    var total = 0;
+    meta.values.forEach(function(key) {
+      var duration = status[key].reduce(function(total, record) {
+        return total + moment.duration(record.end.diff(record.start)).asSeconds();
+      }, 0);
+      status.sum[key] = duration;
+      total += duration;
+    });
+    meta.total = total;
+  }
+
+  last.status = currentStatus;
+  last.ts = startTs.clone();
+  return status;
 }
 
 function drawStatus() {
@@ -280,4 +358,8 @@ function setupDates() {
     }
     return dates;
   }
+}
+
+function toFahrenheit(celsius) {
+  return (celsius * (9/5)) + 32;
 }
