@@ -3,44 +3,72 @@
   <title>Solar Log</title>
   <link rel="stylesheet" href="node_modules/jquery-ui-daterangepicker/jquery.comiseo.daterangepicker.css"/>
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
+  <style type="text/css">
+    #tabs {
+      width: 100%;
+    }
+    #chart_energy {
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
 
   <input name="range" />
 
-<div id="chart_energy"></div>
+  <div id="tabs">
+    <ul>
+      <li><a href="#tabs-1">Gauges</a></li>
+      <li><a href="#tabs-2">Energy</a></li>
+      <li><a href="#tabs-3">Battery</a></li>
+      <li><a href="#tabs-4">Status</a></li>
+      <li><a href="#tabs-5">Data</a></li>
+    </ul>
+    <div id="tabs-1">
+      <table>
+        <tr>
+          <td class="pv-volts-gauge"></td>
+          <td class="pv-amps-gauge"></td>
+          <td class="pv-watts-gauge"></td>
+          <td class="pv-hours-gauge"></td>
+          <td class="pv-stats"></td>
+        </tr>
+        <tr>
+          <td class="battery-volts-gauge"></td>
+          <td class="battery-amps-gauge"></td>
+          <td class="battery-soc-gauge"></td>
+          <td class="battery-temperature-gauge"></td>
+          <td class="battery-stats"></td>
+        </tr>
+        <tr>
+          <td class="load-volts-gauge"></td>
+          <td class="load-amps-gauge"></td>
+          <td class="load-watts-gauge"></td>
+          <td class="load-hours-gauge"></td>
+          <td class="load-stats"></td>
+        </tr>
+      </table>
+    </div>
+    <div id="tabs-2">
+      <div id="chart_energy"></div>
+      <div id="chart_watts"></div>
+      <div id="chart_amps"></div>
+      <div id="chart_volts"></div>
+    </div>
+    <div id="tabs-3">
+      <div id="chart_battery"></div>
+      <div id="chart_battery_soc"></div>
+      <div id="chart_battery_temp"></div>
+    </div>
+    <div id="tabs-4">
+      <div id="chart_status" style="height:100%;width:100%"></div>
+    </div>
+    <div id="tabs-5">
+      <div class="raw-data"></div>
+    </div>
+  </div>
 
-  <table>
-    <tr>
-      <td class="pv-volts-gauge"></td>
-      <td class="pv-amps-gauge"></td>
-      <td class="pv-watts-gauge"></td>
-      <td class="pv-hours-gauge"></td>
-      <td class="pv-stats"></td>
-    </tr>
-    <tr>
-      <td class="battery-volts-gauge"></td>
-      <td class="battery-amps-gauge"></td>
-      <td class="battery-soc-gauge"></td>
-      <td class="battery-temperature-gauge"></td>
-      <td class="battery-stats"></td>
-    </tr>
-    <tr>
-      <td class="load-volts-gauge"></td>
-      <td class="load-amps-gauge"></td>
-      <td class="load-watts-gauge"></td>
-      <td class="load-hours-gauge"></td>
-      <td class="load-stats"></td>
-    </tr>
-  </table>
 
-  <div id="chart_amps"></div>
-  <div id="chart_volts"></div>
-  <div id="chart_watts"></div>
-  <div id="chart_battery"></div>
-  <div id="chart_battery_soc"></div>
-  <div id="chart_battery_temp"></div>
-  <div id="chart_status"></div>
   <hr />
   Github Repository: <a href="https://github.com/lewismoten/solar-log">https://github.com/lewismoten/solar-log</a>
   <!-- jquery@3.2.1 (manipulate dom) -->
