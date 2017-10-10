@@ -7,7 +7,8 @@ function Chart(element) {
     animation:{
         duration: 1000,
         easing: 'out'
-      }
+      },
+    width: "100%"
   };
 
   google.charts.load("current", {packages: ["corechart", "bar"]});

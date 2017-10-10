@@ -19,9 +19,10 @@ var LOAD_MAX_AMPS = 40;
 var LOAD_MAX_VOLTS = 12;
 
 var KWH_PRICE = 63.40 / 510; // how much do you pay per Kilowatt hour?
-var DATA_FILE = "solar6.csv";
+var DATA_FILE = "solar8.csv";
 // ---------------------------------------------------
-
+var GAUGE_WIDTH = 200;
+var GAUGE_HEIGHT = 200;
 
 var log;
 var logFilter;
@@ -46,7 +47,7 @@ google.charts.load("current", {packages: ["corechart", "line", "timeline", "gaug
 google.charts.setOnLoadCallback(prepare);
 function prepare() {
 $(document).ready(function() {
-
+  $("#tabs").tabs();
   ampChart = new AmpChart($("#chart_amps")[0]);
   voltChart = new VoltChart($("#chart_volts")[0]);
   wattChart = new WattChart($("#chart_watts")[0]);
@@ -77,6 +78,7 @@ $(document).ready(function() {
          // Sometimes header is written twice...
          return record._ts.isValid();
        });
+       log.fields = results.meta.fields;
 
        setupDates();
      },
@@ -97,6 +99,34 @@ function drawBasic() {
   batteryTemperatureChart.draw(filtered);
   energyChart.draw(filtered);
   drawStatus();
+  drawData(filtered);
+}
+function drawData(fLog) {
+  var data = new google.visualization.DataTable();
+  log.fields.forEach(function(name) {
+    var type;
+    switch(name) {
+      case "Array Status":
+      case "Battery Status":
+      case "Device Status":
+      case "Charging Status":
+      case "Load Status":
+      case "timestamp":
+        type = "string";
+        break;
+      default:
+        type = "number";
+        break;
+    }
+    data.addColumn(type, name);
+  });
+  data.addRows(fLog.map(function(record) {
+    return log.fields.map(function(name) {
+      return record[name];
+    });
+  }));
+  var table = new google.visualization.Table($(".raw-data")[0]);
+  table.draw(data);
 }
 
 function drawGauges(fLog) {
@@ -215,7 +245,9 @@ function drawStatusHoursGauge(data, label, onName, classPrefix) {
   ]);
   var options = {
     min: 0,
-    max: secondsAsHours(data.meta ? data.meta.total || 100 : 100)
+    max: secondsAsHours(data.meta ? data.meta.total || 100 : 100),
+    width: GAUGE_WIDTH,
+    height: GAUGE_HEIGHT
   };
   fixGaugeOptions(options);
   chart.draw(dataTable, options);
@@ -237,7 +269,9 @@ function drawGauge(data, label, classPrefix) {
     max: data.limit,
     greenFrom: data.min,
     greenTo: data.max,
-    greenColor: "#cccccc"
+    greenColor: "#cccccc",
+    width: GAUGE_WIDTH,
+    height: GAUGE_HEIGHT
   };
   chart.draw(dataTable, options);
   $(classPrefix + "value").text(data.value);
