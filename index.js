@@ -47,7 +47,9 @@ google.charts.load("current", {packages: ["corechart", "line", "timeline", "gaug
 google.charts.setOnLoadCallback(prepare);
 function prepare() {
 $(document).ready(function() {
-  $("#tabs").tabs();
+  $("#tabs").tabs().on("tabsactivate", function(event, ui) {
+    drawTab();
+  });
   ampChart = new AmpChart($("#chart_amps")[0]);
   voltChart = new VoltChart($("#chart_volts")[0]);
   wattChart = new WattChart($("#chart_watts")[0]);
@@ -88,18 +90,30 @@ $(document).ready(function() {
     });
 });
 
-function drawBasic() {
-  var filtered = logFilter;
-  drawGauges(filtered);
-  ampChart.draw(filtered);
-  voltChart.draw(filtered);
-  wattChart.draw(filtered);
-  batteryChargeRangeChart.draw(filtered);
-  batteryStateOfChargeChart.draw(filtered);
-  batteryTemperatureChart.draw(filtered);
-  energyChart.draw(filtered);
-  drawStatus();
-  drawData(filtered);
+function drawTab() {
+  var index = $("#tabs").tabs("option", "active");
+  switch(index) {
+    case 0:
+      drawGauges(logFilter);
+      break;
+    case 1:
+      ampChart.draw(logFilter);
+      voltChart.draw(logFilter);
+      wattChart.draw(logFilter);
+      energyChart.draw(logFilter);
+      break;
+    case 2:
+      batteryChargeRangeChart.draw(logFilter);
+      batteryStateOfChargeChart.draw(logFilter);
+      batteryTemperatureChart.draw(logFilter);
+      break;
+    case 3:
+      drawStatus();
+      break;
+    case 4:
+      drawData(logFilter);
+      break;
+  }
 }
 function drawData(fLog) {
   var data = new google.visualization.DataTable();
@@ -430,7 +444,7 @@ function setupDates() {
       return record._ts.isBetween(start, end);
     });
 
-    drawBasic();
+    drawTab();
   }
 }
 
