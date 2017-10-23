@@ -19,7 +19,7 @@ var LOAD_MAX_AMPS = 40;
 var LOAD_MAX_VOLTS = 12;
 
 var KWH_PRICE = 63.40 / 510; // how much do you pay per Kilowatt hour?
-var DATA_FILE = "solar11.csv";
+var DATA_FILE = "logs/solar11.csv";
 // ---------------------------------------------------
 var GAUGE_WIDTH = 200;
 var GAUGE_HEIGHT = 200;
