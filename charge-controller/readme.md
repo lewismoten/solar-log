@@ -3,7 +3,7 @@
 These python scripts read information from the solar charge controller using the modbus protocol. Run the following: `pyython charge-controller/all.py`
 
 An example of the results:
-```
+```YAML
 Company: EPsolar Tech co., Ltd
 Product: Tracer4210A
 Version: V01.13+V02.11
