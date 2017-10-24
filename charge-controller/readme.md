@@ -1,5 +1,9 @@
-pi@solarpi:/var/www/html $ pyython charge-controller/all.py
+# Read data from EPsolar Charge Controller
 
+These python scripts read information from the solar charge controller using the modbus protocol. Run the following: `pyython charge-controller/all.py`
+
+An example of the results:
+```
 Company: EPsolar Tech co., Ltd
 Product: Tracer4210A
 Version: V01.13+V02.11
@@ -123,5 +127,4 @@ Enable load test mode: disabled
 Force the load: Turn off (used for temporary test of the load)
 Over temperature inside device: Normal
 Day/Night: Day
-
-pi@solarpi:/var/www/html $
+```
