@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from common import *
+print("#coils")
 client = getClient()
 if client.connect():
 

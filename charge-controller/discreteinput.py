@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from common import *
+print("#discrete input")
 client = getClient()
 if client.connect():
 

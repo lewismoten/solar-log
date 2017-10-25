@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from common import *
+print("#settings")
 client = getClient()
 if client.connect():
     result = client.read_holding_registers(0x9000, 15, unit=CHARGE_CONTROLLER_UNIT)

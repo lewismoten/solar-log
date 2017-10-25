@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from common import *
+print("#ratings")
 client = getClient()
 if client.connect():
     result = client.read_input_registers(0x3000, 9, unit=CHARGE_CONTROLLER_UNIT)

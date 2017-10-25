@@ -1,6 +1,6 @@
 #!/usr/bin/python
 from common import *
-
+print("#device")
 client = getClient()
 if client.connect():
 

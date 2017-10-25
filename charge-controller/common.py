@@ -17,6 +17,10 @@ def getClient():
         timeout = 1
     )
 
+def pair(array):
+    array = iter(array)
+    while True:
+        yield next(array), next(array)
 def value32(low, high):
     return ctypes.c_int(low + (high << 16)).value / 100
 def value16(value):

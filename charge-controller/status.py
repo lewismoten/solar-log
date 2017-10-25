@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from common import *
+print("#status")
 client = getClient()
 if client.connect():
     result = client.read_input_registers(0x3200, 3, unit=CHARGE_CONTROLLER_UNIT)

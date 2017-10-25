@@ -1,6 +1,28 @@
 # Read data from EPsolar Charge Controller
 
-These python scripts read information from the solar charge controller using the modbus protocol. Run the following: `pyython charge-controller/all.py`
+These python scripts read information from the solar charge controller using the modbus protocol.
+
+## Read data and log into database
+1. db-config.json - configuration
+1. db-log-all.py - log everything into the database - device info, statistics, ratings, etc.
+1. db-log-real-time-data.py - log the real time data / status's
+1. db-setup.py - create db tables
+
+Verify the following can run: `python charge-controller/all.py`
+
+
+## Setup Crontab
+
+1. Run `crontab -e`
+1. Add the following, but fix the full path to the python scripts
+```
+  # See https://crontab.guru for more help
+  # Get real-time data once a minute
+  * * * * * cd /var/www/html/charge-controller && /usr/bin/python /var/www/html/charge-controller/db-log-real-time-data.py
+  # Get all data at 12:00 am
+  0 0 * * * cd /var/www/html/charge-controller && /usr/bin/python  /var/www/html/charge-controller/db-log-all.py
+```
+1. Verify the script is running `sudo service cron status`
 
 An example of the results:
 ```YAML
