@@ -61,8 +61,13 @@ dataFormatters = {
     0x310E: watts,
     0x3110: temperature,
     0x3111: temperature,
-    0x3112: temperature
+    0x3112: temperature,
+    0x311A: percent,
+    0x311B: temperature,
+    0x311D: volts
 }
+
+
 
 client = getClient()
 
