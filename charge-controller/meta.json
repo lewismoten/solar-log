@@ -1,0 +1,689 @@
+{
+  "types": {
+    "default": {
+      "multipler": 0.01,
+      "size": 1
+    },
+    "multistatus": {
+      "multipler": 1,
+    },
+    "volts": {
+      "suffix": "Volts",
+      "unit": "V"
+    },
+    "percent": {
+      "suffix": "%",
+      "unit": "%"
+    },
+    "amps": {
+      "suffix": "Amps",
+      "unit": "A"
+    },
+    "watts": {
+      "size": 2,
+      "suffix": "Watts",
+      "unit": "W"
+    },
+    "temperature": {
+      "suffix": "°C",
+      "unit": "C"
+    },
+    "kilowatthours": {
+      "size": 2,
+      "suffix": "Killowatt Hours",
+      "unit": "KWH"
+    },
+    "enum": {
+      "multipler": 1
+    },
+    "tons": {
+      "size": 2,
+      "suffix": "Tons",
+      "unit": "Tons"
+    },
+    "minutes": {
+      "suffix": "Minutes",
+      "unit": "Minutes",
+      "multiplier": 1
+    },
+    "multipart": {
+      "multiplier": 1
+    },
+    "duration": {
+      "type": "multipart",
+      "parts": [
+        {"mask": 255, "shift": 0, "name": "minutes"},
+        {"mask": 255, "shift": 8, "name": "hours"}
+      ]
+    },
+    "time": {
+      "type": "multipart",
+      "size": 3,
+      "parts": [
+        {"part": 0, "name": "second"},
+        {"part": 1, "name": "minute"},
+        {"part": 2, "name": "hour"},
+      ]
+    },
+    "datetime": {
+      "type": "multipart",
+      "size": 3,
+      "parts": [
+          {"part": 0, "mask": 255, "shift": 0, "name": "second"},
+          {"part": 0, "mask": 255, "shift": 8, "name": "minute"},
+          {"part": 1, "mask": 255, "shift": 0, "name": "hour"},
+          {"part": 1, "mask": 255, "shift": 8, "name": "day"},
+          {"part": 2, "mask": 255, "shift": 0, "name": "month"},
+          {"part": 2, "mask": 255, "shift": 8, "name": "year"}
+      ]
+    }
+  },
+  "data": {
+    "Rated data": [
+      {
+        "address": "3000",
+        "name": "Charging equipment rated input voltage",
+        "description": "PV array rated voltage",
+        "type": "volts"
+      },
+      {
+        "address": "3001",
+        "name": "Charging equipment rated input current",
+        "description": "PV array rated current",
+        "type": "amps"
+      },
+      {
+        "address": "3002",
+        "name": "Charging equipment rated input power",
+        "description": "PV array rated power",
+        "type": "watts"
+      },
+
+      {
+        "address": "3004",
+        "name": "Charging equipment rated output voltage",
+        "description": "Battery's voltage",
+        "type": "volts"
+      },
+      {
+        "address": "3005",
+        "name": "Charging equipment rated output current",
+        "description": "Rated charging current to battery",
+        "type": "amps"
+      },
+      {
+        "address": "3006",
+        "name": "Charging equipment rated output power",
+        "description": "Rated charging power to battery",
+        "type": "watts"
+      },
+      {
+        "address": "3008",
+        "name": "Charging Mode",
+        "type": "enum",
+        "enum": [
+          "Connect/Disconnect",
+          "PWM",
+          "MPPT"
+        ]
+      },
+      {
+        "address": "300E",
+        "name": "Rated output current of load",
+        "type": "amps"
+      }
+    ],
+    "Settings": [
+      {
+        "address": "9000",
+        "name": "Battery Type",
+        "type": "enum",
+        "enum": [
+          "User Defined",
+          "Sealed",
+          "GEL",
+          "Flooded"
+        ]
+      },
+      {
+        "address": "9001",
+        "name": "Battery Capacity",
+        "description": "Rated capacity of the battery",
+        "type": "default",
+        "multipler": 1,
+        "suffix": "Amp Hours",
+        "unit": "AH"
+      },
+      {
+        "address": "9002",
+        "name": "Temperature compensation coefficient",
+        "description": "Range 0-9",
+        "unit": "mV/°C/2V",
+        "suffix": "mV/°C/2V"
+      },
+      {
+        "address": "9003",
+        "name": "High Volt. Disconnect",
+        "type": "volts"
+      },
+      {
+        "address": "9004",
+        "name": "Charging limit voltage",
+        "type": "volts"
+      },
+      {
+        "address": "9005",
+        "name": "Over voltage reconnect",
+        "type": "volts"
+      },
+      {
+        "address": "9006",
+        "name": "Equalization voltage",
+        "type": "volts"
+      },
+      {
+        "address": "9007",
+        "name": "Boost voltage",
+        "type": "volts"
+      },
+      {
+        "address": "9008",
+        "name": "Float voltage",
+        "type": "volts"
+      },
+      {
+        "address": "9009",
+        "name": "Boost reconnect voltage",
+        "type": "volts"
+      },
+      {
+        "address": "900A",
+        "name": "Low voltage reconnect",
+        "type": "volts"
+      },
+      {
+        "address": "900B",
+        "name": "Under voltage recover",
+        "type": "volts"
+      },
+      {
+        "address": "900C",
+        "name": "Under voltage warning",
+        "type": "volts"
+      },
+      {
+        "address": "900D",
+        "name": "Low voltage disconnect",
+        "type": "volts"
+      },
+      {
+        "address": "900E",
+        "name": "Discharging limit voltage",
+        "type": "volts"
+      },
+      {
+        "address": "9013",
+        "name": "Real time clock",
+        "type": "datetime"
+      },
+      {
+        "address": "9016",
+        "name": "Equalization charging cycle",
+        "description": "Interval days of auto equalization charging in cycle",
+        "type": "default",
+        "suffix": "Day",
+        "multiplier": 1
+      },
+      {
+        "address": "9017",
+        "name": "Battery temperature warning upper limit",
+        "type": "temperature"
+      },
+      {
+        "address": "9018",
+        "name": "Battery temperature warning lower limit",
+        "type": "temperature"
+      },
+      {
+        "address": "9019",
+        "name": "Controller inner temperature upper limit",
+        "type": "temperature"
+      },
+      {
+        "address": "901A",
+        "name": "Controller inner temperature upper limit recover",
+        "description": "After Over Temperature, system recover once it drop to lower than this value",
+        "type": "temperature"
+      },
+      {
+        "address": "901B",
+        "name": "Power component temperature upper limit",
+        "description": "Warning when surface temperature of power components higher than this value, and charging and discharging stop",
+        "type": "temperature"
+      },
+      {
+        "address": "901C",
+        "name": "Power component temperature upper limit recover",
+        "description": "Recover once power components temperature lower than this value",
+        "type": "temperature"
+      },
+      {
+        "address": "901D",
+        "name": "Line Impedance",
+        "description": "The resistance of the connectted wires.",
+        "type": "default",
+        "suffix": "milliohm",
+        "unit": "milliohm"
+      },
+      {
+        "address": "901E",
+        "name": "Night TimeThreshold Volt. (NTTV)",
+        "description": "PV lower lower than this value, controller would detect it as sundown",
+        "type": "volts"
+      },
+      {
+        "address": "901F",
+        "name": "Light signal startup (night) delay time",
+        "description": "PV voltage lower than NTTV, and duration exceeds the Light signal startup (night) delay time, controller would detect it as night time",
+        "type": "minutes",
+      },
+      {
+        "address": "9020",
+        "name": "Day Time Threshold Volt.(DTTV)",
+        "description": "PV voltage higher than this value, controller would detect it as sunrise",
+        "type": "volts"
+      },
+      {
+        "address": "9021",
+        "name": "Light signal turn off(day) delay time",
+        "description": "PV voltage higher than DTTV, and duration exceeds Light signal turn off(day) delay time delay time, controller would detect it as daytime.",
+        "type": "minutes",
+      },
+      {
+        "address": "903D",
+        "name": "Day Time Threshold Volt.(DTTV)",
+        "description": "PV voltage higher than this value, controller would detect it as sunrise",
+        "type": "enum",
+        "enum": [
+          "Manual Control",
+          "Light ON/OFF",
+          "Light ON+ Timer/",
+          "Time Control"
+        ]
+      },
+      {
+        "address": "903E",
+        "name": "Working time length 1",
+        "description": "The length of load output timer1",
+        "type": "duration"
+      },
+      {
+        "address": "903F",
+        "name": "Working time length 2",
+        "description": "The length of load output timer2",
+        "type": "duration"
+      },
+      {
+        "address": "9042",
+        "name": "Turn on timing 1",
+        "type": "time"
+      },
+      {
+        "address": "9045",
+        "name": "Turn off timing 1",
+        "type": "time"
+      },
+      {
+        "address": "9048",
+        "name": "Turn on timing 2",
+        "type": "time"
+      },
+      {
+        "address": "904B",
+        "name": "Turn off timing 2",
+        "type": "time"
+      },
+      {
+        "address": "9065",
+        "name": "Length of night",
+        "description": "Set default values of the whole night length of time",
+        "type": "duration"
+      },
+      {
+        "address": "9067",
+        "name": "Battery rated voltage code",
+        "type": "enum",
+        "enum": [
+          "Auto recognize",
+          "12V",
+          "24V"
+        ]
+      },
+      {
+        "address": "9069",
+        "name": "Load timing control selection",
+        "description": "Selected timing period of the load",
+        "type": "enum",
+        "enum": [
+          "Using 1 Timer",
+          "Using 2 Timer"
+        ]
+      },
+      {
+        "address": "906A",
+        "name": "Default Load ON/Off in manual mode",
+        "type": "enum",
+        "enum": [
+          "Off",
+          "On"
+        ]
+      },
+      {
+        "address": "906B",
+        "name": "Equalize duration",
+        "description": "Usually 60-120 minutes",
+        "type": "minutes"
+      },
+      {
+        "address": "906C",
+        "name": "Equalize duration",
+        "description": "Usually 60-120 minutes",
+        "type": "minutes"
+      },
+      {
+        "address": "906D",
+        "name": "Discharging percentage",
+        "description": "Usually 20%-80%. The percentage of battery's remaining capacity when stop charging",
+        "type": "percent"
+      },
+      {
+        "address": "906E",
+        "name": "Charging percentage",
+        "description": "Depth of charge, 20%-100%.",
+        "type": "percent"
+      },
+      {
+        "address": "9070",
+        "name": "Management modes of battery charging and discharging",
+        "description": "Management modes of battery charge and discharge",
+        "type": "enum",
+        "enum": [
+          "Voltage Compensation",
+          "SOC"
+        ]
+      }
+    ],
+    "Coils": [
+      {
+        "address": "2",
+        "name": "Manual control the load",
+        "description": "When the load is in manual mode",
+        "type": "enum",
+        "enum": [
+          "Manual Off",
+          "Manual On"
+        ]
+      },
+      {
+        "address": "5",
+        "name": "Enable load test mode",
+        "type": "enum",
+        "enum": [
+          "Disable (normal)",
+          "Enable"
+        ]
+      },
+      {
+        "address": "6",
+        "name": "Force the load on/off",
+        "type": "enum",
+        "enum": [
+          "Turn off (used for temporary test of the load)",
+          "Turn on"
+        ]
+      }
+    ],
+    "Discrete input": [
+      {
+        "address": "2000",
+        "name": "Over temperature inside the device",
+        "type": "enum",
+        "enum": [
+          "Normal",
+          "The temperature inside the controller is higher than the over-temperature protection point."
+        ]
+      },
+      {
+        "address": "200C",
+        "name": "Day/Night",
+        "type": "enum",
+        "enum": [
+          "Day",
+          "Night"
+        ]
+      }
+    ],
+    "Real-time data": [
+      {
+        "address": "3100",
+        "name": "Charging equipment input voltage",
+        "description": "Soalr charge controller--PV array voltage",
+        "type": "volts"
+      },
+      {
+        "address": "3101",
+        "name": "Charging equipment input current",
+        "description": "Solar charge controller--PV array current",
+        "type": "amps"
+      },
+      {
+        "address": "3102",
+        "name": "Charging equipment input power",
+        "description": "Solar charge controller--PV array power",
+        "type": "watts"
+      },
+      {
+        "address": "3104",
+        "name": "Charging equipment output voltage",
+        "description": "Battery voltage",
+        "type": "volts"
+      },
+      {
+        "address": "3105",
+        "name": "Battery charging current",
+        "description": "Charging equipment output current",
+        "type": "amps"
+      },
+      {
+        "address": "3106",
+        "name": "Charging equipment output power",
+        "description": "Battery charging power",
+        "type": "watts"
+      },
+      {
+        "address": "310C",
+        "name": "Disharging equipment output voltage",
+        "description": "Load voltage",
+        "type": "volts"
+      },
+      {
+        "address": "310D",
+        "name": "Disharging equipment output current",
+        "description": "Load current",
+        "type": "amps"
+      },
+      {
+        "address": "310E",
+        "name": "Disharging equipment output power",
+        "description": "Load power",
+        "type": "watts"
+      },
+      {
+        "address": "3110",
+        "name": "Battery Temperature",
+        "description": "Battery Temperature",
+        "type": "temperature"
+      },
+      {
+        "address": "3111",
+        "name": "Temperature inside equipment",
+        "description": "Temperature inside case",
+        "type": "temperature"
+      },
+      {
+        "address": "3112",
+        "name": "Power components temperature",
+        "description": "Heat sink surface temperature of equipments' power components",
+        "type": "temperature"
+      },
+      {
+        "address": "311A",
+        "name": "Battery SOC",
+        "description": "The percentage of battery's remaining capacity",
+        "type": "percent"
+      },
+      {
+        "address": "311B",
+        "name": "Remote battery temperature",
+        "description": "The battery tempeture measured by remote temperature sensor",
+        "type": "temperature"
+      },
+      {
+        "address": "311D",
+        "name": "Battery's real rated power",
+        "description": "Current system rated votlage. 1200, 2400 represent 12V, 24V",
+        "type": "volts"
+      }
+    ],
+    "Statistics": [
+      {
+        "address": "3300",
+        "name": "Maximum input volt (PV) today",
+        "description": "00:00 Refresh every day",
+        "type": "volts"
+      },
+      {
+        "address": "3301",
+        "name": "Minimum input volt (PV) today",
+        "description": "00:00 Refresh every day",
+        "type": "volts"
+      },
+      {
+        "address": "3302",
+        "name": "Maximum battery volt today",
+        "description": "00:00 Refresh every day",
+        "type": "volts"
+      },
+      {
+        "address": "3303",
+        "name": "Minimum battery volt today",
+        "description": "00:00 Refresh every day",
+        "type": "volts"
+      },
+      {
+        "address": "3304",
+        "name": "Consumed energy today",
+        "description": "00:00 Clear every day",
+        "type": "kilowatthours"
+      },
+      {
+        "address": "3306",
+        "name": "Consumed energy this month",
+        "description": "00:00 Clear on the first day of month",
+        "type": "kilowatthours"
+      },
+      {
+        "address": "3308",
+        "name": "Consumed energy this year",
+        "description": "00:00 Clear on 1, Jan.",
+        "type": "kilowatthours"
+      },
+      {
+        "address": "330A",
+        "name": "Total consumed energy",
+        "type": "kilowatthours"
+      },
+
+      {
+        "address": "330C",
+        "name": "Generated energy today",
+        "description": "00:00 Clear every day",
+        "type": "kilowatthours"
+      },
+      {
+        "address": "330E",
+        "name": "Generated energy this month",
+        "description": "00:00 Clear on the first day of month",
+        "type": "kilowatthours"
+      },
+      {
+        "address": "3310",
+        "name": "Generated energy this year",
+        "description": "00:00 Clear on 1, Jan.",
+        "type": "kilowatthours"
+      },
+      {
+        "address": "3312",
+        "name": "Total generated energy",
+        "type": "kilowatthours"
+      },
+      {
+        "address": "3314",
+        "name": "Carbon dioxide reduction",
+        "description": "Saving 1 Kilowatt=Reduction 0.997KG\"Carbon dioxide\"=Reduction 0.272KG\"Carton\"",
+        "type": "tons"
+      },
+      {
+        "address": "331B",
+        "name": "Battery Current",
+        "description": "The net battery current,charging current minus the discharging one. The positive value represents charging and negative, discharging.",
+        "type": "amps",
+        "size": 2
+      },
+      {
+        "address": "331D",
+        "name": "Battery Temp.",
+        "description": "Battery Temp.",
+        "type": "temperature"
+      },
+      {
+        "address": "331E",
+        "name": "Ambient Temp.",
+        "description": "Ambient Temp.",
+        "type": "temperature"
+      }
+    ],
+    "Real-time status": [
+      {
+        "address": "3200",
+        "name": "Battery status",
+        "type": "multipart",
+        "parts": [
+          {"mask": 15, "shift": 0, "enum": ["Normal", "Overvolt", "Under Volt", "Low Volt Disconnect", "Fault"]},
+          {"mask": 15, "shift": 4, "enum": ["Normal", "Over Temp. (Higher than the warning settings)", "Low Temp. (Lower than the warning settings)"]},
+          {"mask": 1, "shift": 8, "name": "Battery internal resistance abnormal"},
+          {"mask": 1, "shift": 15, "name": "Wrong identification for rated voltage"}
+        ]
+      },
+      {
+        "address": "3201",
+        "name": "Charging equipment status",
+        "type": "multipart",
+        "parts": [
+          {"mask": 3, "shift": 14, "enum": ["Normal", "No power connected", "Higher volt input", "Input volt error."]},
+          {"mask": 1, "shift": 13, "name": "Charging MOSFET is short."},
+          {"mask": 1, "shift": 12, "name": "Charging or Anti-reverse MOSFET is short."},
+          {"mask": 1, "shift": 11, "name": "Anti-reverse MOSFET is short."},
+          {"mask": 1, "shift": 10, "name": "Input is over current."},
+          {"mask": 1, "shift": 9, "name": "The load is Over current."},
+          {"mask": 1, "shift": 8, "name": "The load is short."},
+          {"mask": 1, "shift": 7, "name": "Load MOSFET is short."},
+          {"mask": 1, "shift": 4, "name": "PV Input is short."},
+          {"mask": 3, "shift": 2, "enum": ["No charging", "Float", "Boost", "Equalization"]},
+          {"mask": 1, "shift": 1, "enum": ["Normal", "Fault"]},
+          {"mask": 1, "shift": 0, "enum": ["Standby", "Running"]},
+        ]
+      }
+    ]
+  }
+}
