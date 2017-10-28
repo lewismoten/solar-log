@@ -43,8 +43,6 @@ var batteryStateOfChargeChart;
 var batteryTemperatureChart;
 var energyChart;
 
-var deviceInfo;
-
 google.charts.load("current", {packages: ["corechart", "line", "timeline", "gauge", "table"]});
 
 google.charts.setOnLoadCallback(prepare);
@@ -60,9 +58,6 @@ $(document).ready(function() {
   batteryStateOfChargeChart = new BatteryStateOfChargeChart($("#chart_battery_soc")[0]);
   batteryTemperatureChart = new BatteryTemperatureChart($("#chart_battery_temp")[0]);
   energyChart = new EnergyChart($("#chart_energy")[0]);
-
-  $.getJSON("./charge-controller/db-get-info.py").then(function(info){
-    deviceInfo = info;
 
   Papa.parse(DATA_FILE, {
 	   download: true,
@@ -94,7 +89,6 @@ $(document).ready(function() {
        console.error(error);
      }
    }); // got data
-  }); // got info
 });
 
 function drawTab() {
@@ -120,32 +114,7 @@ function drawTab() {
     case 4:
       drawData(logFilter);
       break;
-    case 5:
-      drawDeviceInfo();
-      break;
   }
-}
-
-function getDeviceInfoDescription(key) {
-  return {
-    0: "Vendor Name",
-    1: "Product Code",
-    2: "Major/Minor Revision",
-    3: "Vendor URL",
-    4: "Prouct Name"
-  }[key] || key;
-}
-function drawDeviceInfo() {
-
-  var data = new google.visualization.DataTable();
-  data.addColumn("string", "Setting");
-  data.addColumn("string", "Value");
-  data.addRows(Object.keys(deviceInfo.info).map(function(key){
-    return [getDeviceInfoDescription(key), deviceInfo.info[key]];
-  }))
-  var table = new google.visualization.Table($(".device-info")[0]);
-  table.draw(data);
-
 }
 
 function drawData(fLog) {
