@@ -3,13 +3,14 @@
 These python scripts read information from the solar charge controller using the modbus protocol.
 
 ## Read data and log into database
+1. charge-controller.json - data available from the charge controller and where/how to store in database
 1. db-config.json - configuration
+1. db-get-latest.py - get the most recent data
 1. db-log-all.py - log everything into the database - device info, statistics, ratings, etc.
 1. db-log-real-time-data.py - log the real time data / status's
 1. db-setup.py - create db tables
 
 Verify the following can run: `python charge-controller/all.py`
-
 
 ## Setup Crontab
 

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import json
 from common import *
+from time import sleep
 
 with open("charge-controller.json", "r") as data:
     chargeController = json.load(data)
@@ -81,7 +82,7 @@ def readDescrete(address, count=1):
     return client.read_discrete_inputs(address, count, unit=CHARGE_CONTROLLER_UNIT)
 def readCoils(address, count=1):
     return client.read_coils(address, count, unit=CHARGE_CONTROLLER_UNIT)
-def readControllerData(address, count=1):
+def readControllerDataNow(address, count=1):
     if address < 0x2000:
         result = readCoils(address, count)
     elif address < 0x3000:
@@ -90,6 +91,13 @@ def readControllerData(address, count=1):
         result = readInput(address, count)
     else:
         result = readHolding(address, count)
+    return result
+def readControllerData(address, count=1):
+    result = readControllerDataNow(address, count)
+    if not isinstance(result, Exception) and result.function_code < 0x80:
+        return result.bits if address < 0x3000 else result.registers
+    # try once more
+    result = readControllerDataNow(address, count)
     if not isinstance(result, Exception) and result.function_code < 0x80:
         return result.bits if address < 0x3000 else result.registers
     else:
@@ -129,29 +137,32 @@ for address in addresses:
           "size": size
         }
 
-# request data from charge controller
 client = getClient()
-if client.connect():
-    for key in sorted(bulkAddresses.keys()):
-        bulkAddresses[key]["data"] = readControllerData(key, bulkAddresses[key]["size"])
-    client.close()
+def log():
+    # request data from charge controller
+    if client.connect():
+        for key in sorted(bulkAddresses.keys()):
+            bulkAddresses[key]["data"] = readControllerData(key, bulkAddresses[key]["size"])
+        client.close()
 
-import pymysql
+    import pymysql
 
-with open("db-config.json", "r") as f:
-    db = json.load(f)
-conn = pymysql.connect(db=db["db"],user=db["user"],password=db["password"],host=db["host"])
-c = conn.cursor()
+    with open("db-config.json", "r") as f:
+        db = json.load(f)
+    conn = pymysql.connect(db=db["db"],user=db["user"],password=db["password"],host=db["host"])
+    c = conn.cursor()
 
-for data in chargeController["data"]:
-    sqlFields = []
-    sqlTags = []
-    sqlValues = []
-    for record in chargeController["data"][data]:
-        sqlFields.append(record["field"])
-        sqlTags.append("%s")
-        sqlValues.append(getValue(record))
-    sql = "INSERT INTO " + data + " (" + ", ".join(sqlFields) + ") VALUES (" + ", ".join(sqlTags) + ")"
-    c.execute(sql, sqlValues)
-    conn.commit()
-c.close()
+    for data in chargeController["data"]:
+        sqlFields = []
+        sqlTags = []
+        sqlValues = []
+        for record in chargeController["data"][data]:
+            sqlFields.append(record["field"])
+            sqlTags.append("%s")
+            sqlValues.append(getValue(record))
+        sql = "INSERT INTO " + data + " (" + ", ".join(sqlFields) + ") VALUES (" + ", ".join(sqlTags) + ")"
+        c.execute(sql, sqlValues)
+        conn.commit()
+    c.close()
+
+log()

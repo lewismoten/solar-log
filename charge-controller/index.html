@@ -1,0 +1,89 @@
+<html>
+<head>
+  <title>Solar Log</title>
+  <!-- <link rel="stylesheet" href="node_modules/jquery-ui-daterangepicker/jquery.comiseo.daterangepicker.css"/> -->
+  <link rel="stylesheet" href="https://rawgit.com/lewismoten/jquery-ui-daterangepicker/devel/jquery.comiseo.daterangepicker.css"/>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
+  <style type="text/css">
+    #tabs {
+      width: 100%;
+    }
+    #chart_energy {
+      width: 100%;
+    }
+    .loading {
+      position: absolute;
+      top: 0;
+      right: 0
+    }
+  </style>
+</head>
+<body>
+  <div class="loading">&#x231b;</div>
+  <div class="dialog"></div>
+  <input name="range" />
+
+  <div class="tabs">
+    <ul>
+      <li><a href="#tabs-1">Battery</a></li>
+      <li><a href="#tabs-2">tab2</a></li>
+      <li><a href="#tabs-3">tab3</a></li>
+      <li><a href="#tabs-3">tab4</a></li>
+    </ul>
+    <div id="tabs-1">
+      <table>
+        <tr>
+          <td class="battery-volts-gauge"></td>
+          <td class="battery-amps-gauge"></td>
+          <td class="battery-soc-gauge"></td>
+          <td class="battery-temp-gauge"></td>
+        </tr>
+        <tr>
+          <td class="battery-realtime-table"></td>
+          <td class="battery-amps-table"></td>
+          <td class="battery-soc-table"></td>
+          <td class="battery-temp-table"></td>
+        </tr>
+        <tr>
+          <td class="battery-settings-table"></td>
+        </tr>
+      </table>
+    </div>
+    <div id="tabs-2">
+      <div id="chart_energy"></div>
+      <div id="chart_watts"></div>
+      <div id="chart_amps"></div>
+      <div id="chart_volts"></div>
+    </div>
+    <div id="tabs-3">
+      <div id="chart_battery"></div>
+      <div id="chart_battery_soc"></div>
+      <div id="chart_battery_temp"></div>
+    </div>
+    <div id="tabs-4">
+      <div id="chart_status" style="height:100%;width:100%"></div>
+    </div>
+    <div id="tabs-5">
+      <div class="raw-data"></div>
+    </div>
+  </div>
+
+
+  <hr />
+  Github Repository: <a href="https://github.com/lewismoten/solar-log">https://github.com/lewismoten/solar-log</a>
+  <!-- jquery@3.2.1 (manipulate dom) -->
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <!-- jquery-ui@1.12.1 (manipulate dom) -->
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+  <!-- google charts api (draw charts) -->
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <!-- moment@2.18.1 (work with dates) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment-with-locales.min.js"></script>
+  <!-- lewismoten/jquery-ui-daterangepicker#ea595a9 (display date-range picker) -->
+  <!-- <script src="node_modules/jquery-ui-daterangepicker/jquery.comiseo.daterangepicker.js"></script> -->
+  <script type="text/javascript" src="https://rawgit.com/lewismoten/jquery-ui-daterangepicker/devel/jquery.comiseo.daterangepicker.js"></script>
+  <!-- PapaParse@4.3.6 (parse csv files) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.3.6/papaparse.min.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>

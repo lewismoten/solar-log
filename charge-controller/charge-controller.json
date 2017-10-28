@@ -312,7 +312,7 @@
       {
         "address": "0x901D",
         "name": "Line Impedance",
-        "description": "The resistance of the connectted wires.",
+        "description": "The resistance of the connected wires.",
         "type": "default",
         "suffix": "milliohm",
         "unit": "milliohm",
