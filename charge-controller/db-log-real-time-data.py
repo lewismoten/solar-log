@@ -1,93 +1,159 @@
 #!/usr/bin/python
-from common import *
 import json
-import pymysql
-#from time import sleep
+from common import *
 
-addresses = [
-    ## Real-Time Data
-    0x3100, 0x3113,
-    0x311A, 0x311B,
-    0x311D, 0x311D,
-    0x31A0, 0x31AB,
-    0x31AD, 0x31B6,
-    ## Real-Time Status
-    0x3200, 0x3202,
-    0x3204, 0x3204,
-]
+with open("charge-controller.json", "r") as data:
+    chargeController = json.load(data)
+def getType(name):
+    d = {}
+    d.update(chargeController["types"][name])
+    if not "type" in d and not name is "default":
+        d["type"] = "default"
+    if "type" in d:
+        s = getType(d["type"])
+        s.update(d)
+        return s
+    return d
 
-client = getClient()
-def pair(array):
-    array = iter(array)
-    while True:
-        yield next(array), next(array)
+def getRecord(record):
+    if not "type" in record:
+        record["type"] = "default"
+    t = getType(record["type"])
+    t.update(record);
+    return t;
+
+def getValue(record):
+    address = int(record["address"], 0x10)
+    size = record["size"]
+    values = [];
+    vv = ""
+    for startAddress in bulkAddresses:
+        for currentAddress in range(startAddress, startAddress + bulkAddresses[startAddress]["size"]):
+            if currentAddress == address:
+                for i in range(size):
+                  values.append(bulkAddresses[startAddress]["data"][currentAddress - startAddress + i])
+    if "parts" in record:
+        partedValues = {}
+        for part in record["parts"]:
+            partedValues[part["name"]] = (values[part["part"]] >> part["shift"]) & part["mask"]
+        if record["type"] == "datetime":
+            return datetime.datetime(
+                2000 + partedValues["year"],
+                partedValues["month"],
+                partedValues["day"],
+                partedValues["hour"],
+                partedValues["minute"],
+                partedValues["second"]
+            )
+        if record["type"] == "time":
+            return datetime.time(
+                partedValues["hour"],
+                partedValues["minute"],
+                partedValues["second"]
+            )
+        if record["type"] == "timedelta":
+            return datetime.timedelta(
+                0, #days
+                0, #seconds
+                0, #microseconds
+                0, #milliseconds
+                partedValues["minutes"],
+                partedValues["hours"],
+                0 #weeks
+            )
+        return values[0] #store raw value
+        #return partedValues
+    elif "enum" in record:
+        return values[0]#record["enum"][values[0]]
+    else:
+        if record["size"] == 2:
+            value = ctypes.c_int(values[0] + (values[1] << 16)).value
+        else:
+            value = ctypes.c_short(values[0]).value
+        value = value * record["multiplier"]
+        return value
+
 def readHolding(address, count=1):
-    #0x3xxx
     return client.read_holding_registers(address, count, unit=CHARGE_CONTROLLER_UNIT)
 def readInput(address, count=1):
-    #0x9xxx
     return client.read_input_registers(address, count, unit=CHARGE_CONTROLLER_UNIT)
 def readDescrete(address, count=1):
-    #0x2xxx
     return client.read_discrete_inputs(address, count, unit=CHARGE_CONTROLLER_UNIT)
 def readCoils(address, count=1):
-    #0x0xxx
     return client.read_coils(address, count, unit=CHARGE_CONTROLLER_UNIT)
-def readRegisters(address, count=1):
+def readControllerData(address, count=1):
     if address < 0x2000:
-        return readCoils(address, count)
+        result = readCoils(address, count)
     elif address < 0x3000:
-        return readDescrete(address, count)
+        result = readDescrete(address, count)
     elif address < 0x9000:
-        return readInput(address, count)
+        result = readInput(address, count)
     else:
-        return readHolding(address, count)
-
-def getValue(address, count=1):
-    result = readRegisters(address, count)
-    if isinstance(result, Exception):
-        # try again...
-        result = readRegisters(address, count)
-        if isinstance(result, Exception):
-            return [str(result)] * count
-    if result.function_code >= 0x80:
-        return [str(result)] * count
-    if address < 0x3000:
-        return result.bits
+        result = readHolding(address, count)
+    if not isinstance(result, Exception) and result.function_code < 0x80:
+        return result.bits if address < 0x3000 else result.registers
     else:
-        return result.registers
-def getValues(addressStart, addressEnd):
-    return getValue(addressStart, (addressEnd - addressStart) + 1)
+        return [0xFFFF] * count;
 
-#r = 0
+addresses = [];
 
-#while True:
-#    r += 1
-#    print("Round {}".format(r))
-data = {}
+# Load up all meta data and determine what addresses we need
+for data in chargeController["data"]:
+    if data == "controller_real_time_data" or data == "controller_real_time_status":
+        for record in chargeController["data"][data]:
+            r = getRecord(record);
+            record.update(r)
+            #record["size"] = r["size"]
+            addresses.append(int(r["address"], 0x10))
+            n = r["size"]
+            for i in range(1, n):
+                addresses.append(int(r["address"], 0x10) + i)
+
+# lets get ready to build our queries
+addresses.sort()
+bulkAddresses = {}
+
+size = 1
+lastAddress = 0xFFFF
+startAddress = 0xFFFF
+
+for address in addresses:
+    if address == lastAddress + 1:
+        lastAddress = address
+        size = size + 1
+        bulkAddresses[startAddress]["size"] = size
+    else:
+        size = 1
+        lastAddress = address
+        startAddress = address
+        bulkAddresses[startAddress] = {
+          "size": size
+        }
+
+# request data from charge controller
+client = getClient()
 if client.connect():
-    for start, end in pair(addresses):
-        values = getValues(start, end)
-        for address in range(start, end + 1):
-            data[address] = values[address - start]
+    for key in sorted(bulkAddresses.keys()):
+        bulkAddresses[key]["data"] = readControllerData(key, bulkAddresses[key]["size"])
     client.close()
+
+import pymysql
 
 with open("db-config.json", "r") as f:
     db = json.load(f)
-
-conn = pymysql.connect(
-	db=db["db"],
-	user=db["user"],
-	password=db["password"],
-	host=db["host"]
-)
-
+conn = pymysql.connect(db=db["db"],user=db["user"],password=db["password"],host=db["host"])
 c = conn.cursor()
-c.execute("INSERT INTO log (id) VALUES(NULL)")
-c.execute("SELECT LAST_INSERT_ID()")
-logId = c.fetchone()[0]
-for id in data:
-    c.execute("INSERT INTO data (log_id, id, value) VALUES(%s, %s, %s)", (logId, id, data[id]))
-conn.commit()
+
+for data in chargeController["data"]:
+    if data == "controller_real_time_data" or data == "controller_real_time_status":
+        sqlFields = []
+        sqlTags = []
+        sqlValues = []
+        for record in chargeController["data"][data]:
+            sqlFields.append(record["field"])
+            sqlTags.append("%s")
+            sqlValues.append(getValue(record))
+        sql = "INSERT INTO " + data + " (" + ", ".join(sqlFields) + ") VALUES (" + ", ".join(sqlTags) + ")"
+        c.execute(sql, sqlValues)
+        conn.commit()
 c.close()
-#sleep(10)

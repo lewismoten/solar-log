@@ -1,11 +1,11 @@
 {
   "types": {
     "default": {
-      "multipler": 0.01,
+      "multiplier": 0.01,
       "size": 1
     },
     "multistatus": {
-      "multipler": 1,
+      "multiplier": 1
     },
     "volts": {
       "suffix": "Volts",
@@ -34,7 +34,8 @@
       "unit": "KWH"
     },
     "enum": {
-      "multipler": 1
+      "dbtype": "INT",
+      "multiplier": 1
     },
     "tons": {
       "size": 2,
@@ -47,26 +48,30 @@
       "multiplier": 1
     },
     "multipart": {
+      "dbtype": "INT",
       "multiplier": 1
     },
-    "duration": {
+    "timedelta": {
       "type": "multipart",
+      "dbtype": "TIME",
       "parts": [
-        {"mask": 255, "shift": 0, "name": "minutes"},
-        {"mask": 255, "shift": 8, "name": "hours"}
+        {"part": 0, "mask": 255, "shift": 0, "name": "minutes"},
+        {"part": 0, "mask": 255, "shift": 8, "name": "hours"}
       ]
     },
     "time": {
       "type": "multipart",
+      "dbtype": "TIME",
       "size": 3,
       "parts": [
-        {"part": 0, "name": "second"},
-        {"part": 1, "name": "minute"},
-        {"part": 2, "name": "hour"},
+        {"part": 0, "mask": 65535, "shift": 0, "name": "second"},
+        {"part": 1, "mask": 65535, "shift": 0, "name": "minute"},
+        {"part": 2, "mask": 65535, "shift": 0, "name": "hour"}
       ]
     },
     "datetime": {
       "type": "multipart",
+      "dbtype": "DATETIME",
       "size": 3,
       "parts": [
           {"part": 0, "mask": 255, "shift": 0, "name": "second"},
@@ -78,64 +83,78 @@
       ]
     }
   },
+  "info": {
+    "0": "Company",
+    "1": "Model",
+    "2": "Version",
+    "3": "Serial Number"
+  },
   "data": {
-    "Rated data": [
+    "controller_rated_data": [
       {
-        "address": "3000",
+        "address": "0x3000",
         "name": "Charging equipment rated input voltage",
         "description": "PV array rated voltage",
-        "type": "volts"
+        "type": "volts",
+        "field": "rated_input_v"
       },
       {
-        "address": "3001",
+        "address": "0x3001",
         "name": "Charging equipment rated input current",
         "description": "PV array rated current",
-        "type": "amps"
+        "type": "amps",
+        "field": "rated_input_a"
       },
       {
-        "address": "3002",
+        "address": "0x3002",
         "name": "Charging equipment rated input power",
         "description": "PV array rated power",
-        "type": "watts"
+        "type": "watts",
+        "field": "rated_input_w"
       },
 
       {
-        "address": "3004",
+        "address": "0x3004",
         "name": "Charging equipment rated output voltage",
         "description": "Battery's voltage",
-        "type": "volts"
+        "type": "volts",
+        "field": "rated_output_v"
       },
       {
-        "address": "3005",
+        "address": "0x3005",
         "name": "Charging equipment rated output current",
         "description": "Rated charging current to battery",
-        "type": "amps"
+        "type": "amps",
+        "field": "rated_output_a"
       },
       {
-        "address": "3006",
+        "address": "0x3006",
         "name": "Charging equipment rated output power",
         "description": "Rated charging power to battery",
-        "type": "watts"
+        "type": "watts",
+        "field": "rated_output_w"
       },
       {
-        "address": "3008",
+        "address": "0x3008",
         "name": "Charging Mode",
         "type": "enum",
         "enum": [
           "Connect/Disconnect",
           "PWM",
           "MPPT"
-        ]
+        ],
+        "field": "rated_mode"
       },
       {
-        "address": "300E",
+        "address": "0x300E",
         "name": "Rated output current of load",
-        "type": "amps"
+        "type": "amps",
+        "field": "rated_load_a"
       }
     ],
-    "Settings": [
+    "controller_settings": [
       {
-        "address": "9000",
+        "address": "0x9000",
         "name": "Battery Type",
         "type": "enum",
         "enum": [
@@ -143,546 +162,626 @@
           "Sealed",
           "GEL",
           "Flooded"
-        ]
+        ],
+        "field": "setting_battery_type"
       },
       {
-        "address": "9001",
+        "address": "0x9001",
         "name": "Battery Capacity",
         "description": "Rated capacity of the battery",
         "type": "default",
-        "multipler": 1,
+        "multiplier": 1,
         "suffix": "Amp Hours",
-        "unit": "AH"
+        "unit": "AH",
+        "field": "setting_battery_ah"
       },
       {
-        "address": "9002",
+        "address": "0x9002",
         "name": "Temperature compensation coefficient",
         "description": "Range 0-9",
         "unit": "mV/°C/2V",
-        "suffix": "mV/°C/2V"
+        "suffix": "mV/°C/2V",
+        "field": "setting_temp_coefficient"
       },
       {
-        "address": "9003",
+        "address": "0x9003",
         "name": "High Volt. Disconnect",
-        "type": "volts"
+        "type": "volts",
+        "field": "setting_high_volt_disconnect"
       },
       {
-        "address": "9004",
+        "address": "0x9004",
         "name": "Charging limit voltage",
-        "type": "volts"
+        "type": "volts",
+        "field": "setting_charging_limit_volt"
       },
       {
-        "address": "9005",
+        "address": "0x9005",
         "name": "Over voltage reconnect",
-        "type": "volts"
+        "type": "volts",
+        "field": "setting_over_volt_reconnect"
       },
       {
-        "address": "9006",
+        "address": "0x9006",
         "name": "Equalization voltage",
-        "type": "volts"
+        "type": "volts",
+        "field": "setting_equalization_voltage"
       },
       {
-        "address": "9007",
+        "address": "0x9007",
         "name": "Boost voltage",
-        "type": "volts"
+        "type": "volts",
+        "field": "setting_boost_voltage"
       },
       {
-        "address": "9008",
+        "address": "0x9008",
         "name": "Float voltage",
-        "type": "volts"
+        "type": "volts",
+        "field": "setting_float_voltage"
       },
       {
-        "address": "9009",
+        "address": "0x9009",
         "name": "Boost reconnect voltage",
-        "type": "volts"
+        "type": "volts",
+        "field": "setting_boost_reconnect_voltage"
       },
       {
-        "address": "900A",
+        "address": "0x900A",
         "name": "Low voltage reconnect",
-        "type": "volts"
+        "type": "volts",
+        "field": "setting_low_volt_reconnect"
       },
       {
-        "address": "900B",
+        "address": "0x900B",
         "name": "Under voltage recover",
-        "type": "volts"
+        "type": "volts",
+        "field": "setting_under_volt_recover"
       },
       {
-        "address": "900C",
+        "address": "0x900C",
         "name": "Under voltage warning",
-        "type": "volts"
+        "type": "volts",
+        "field": "setting_under_volt_warning"
       },
       {
-        "address": "900D",
+        "address": "0x900D",
         "name": "Low voltage disconnect",
-        "type": "volts"
+        "type": "volts",
+        "field": "setting_low_volt_disconnect"
       },
       {
-        "address": "900E",
+        "address": "0x900E",
         "name": "Discharging limit voltage",
-        "type": "volts"
+        "type": "volts",
+        "field": "setting_discharge_limit_volt"
       },
       {
-        "address": "9013",
+        "address": "0x9013",
         "name": "Real time clock",
-        "type": "datetime"
+        "type": "datetime",
+        "field": "setting_real_time_clock"
       },
       {
-        "address": "9016",
+        "address": "0x9016",
         "name": "Equalization charging cycle",
         "description": "Interval days of auto equalization charging in cycle",
         "type": "default",
         "suffix": "Day",
-        "multiplier": 1
+        "multiplier": 1,
+        "field": "setting_equalization_charging_cycle"
       },
       {
-        "address": "9017",
+        "address": "0x9017",
         "name": "Battery temperature warning upper limit",
-        "type": "temperature"
+        "type": "temperature",
+        "field": "setting_battery_temp_warning_upper_limit"
       },
       {
-        "address": "9018",
+        "address": "0x9018",
         "name": "Battery temperature warning lower limit",
-        "type": "temperature"
+        "type": "temperature",
+        "field": "setting_battery_temp_warning_lower_limit"
       },
       {
-        "address": "9019",
+        "address": "0x9019",
         "name": "Controller inner temperature upper limit",
-        "type": "temperature"
+        "type": "temperature",
+        "field": "setting_control_inner_temp_upper_limit"
       },
       {
-        "address": "901A",
+        "address": "0x901A",
         "name": "Controller inner temperature upper limit recover",
         "description": "After Over Temperature, system recover once it drop to lower than this value",
-        "type": "temperature"
+        "type": "temperature",
+        "field": "setting_control_inner_temp_upper_limit_recover"
       },
       {
-        "address": "901B",
+        "address": "0x901B",
         "name": "Power component temperature upper limit",
         "description": "Warning when surface temperature of power components higher than this value, and charging and discharging stop",
-        "type": "temperature"
+        "type": "temperature",
+        "field": "setting_power_component_temp_upper_limit"
       },
       {
-        "address": "901C",
+        "address": "0x901C",
         "name": "Power component temperature upper limit recover",
         "description": "Recover once power components temperature lower than this value",
-        "type": "temperature"
+        "type": "temperature",
+        "field": "setting_power_component_temp_upper_limit_recover"
       },
       {
-        "address": "901D",
+        "address": "0x901D",
         "name": "Line Impedance",
         "description": "The resistance of the connectted wires.",
         "type": "default",
         "suffix": "milliohm",
-        "unit": "milliohm"
+        "unit": "milliohm",
+        "field": "setting_line_impedance"
       },
       {
-        "address": "901E",
+        "address": "0x901E",
         "name": "Night TimeThreshold Volt. (NTTV)",
         "description": "PV lower lower than this value, controller would detect it as sundown",
-        "type": "volts"
+        "type": "volts",
+        "field": "setting_nttv"
       },
       {
-        "address": "901F",
+        "address": "0x901F",
         "name": "Light signal startup (night) delay time",
         "description": "PV voltage lower than NTTV, and duration exceeds the Light signal startup (night) delay time, controller would detect it as night time",
         "type": "minutes",
+        "field": "setting_nttv_delay"
       },
       {
-        "address": "9020",
+        "address": "0x9020",
         "name": "Day Time Threshold Volt.(DTTV)",
         "description": "PV voltage higher than this value, controller would detect it as sunrise",
-        "type": "volts"
+        "type": "volts",
+        "field": "setting_dttv"
       },
       {
-        "address": "9021",
+        "address": "0x9021",
         "name": "Light signal turn off(day) delay time",
         "description": "PV voltage higher than DTTV, and duration exceeds Light signal turn off(day) delay time delay time, controller would detect it as daytime.",
         "type": "minutes",
+        "field": "setting_dttv_delay"
       },
       {
-        "address": "903D",
-        "name": "Day Time Threshold Volt.(DTTV)",
-        "description": "PV voltage higher than this value, controller would detect it as sunrise",
+        "address": "0x903D",
+        "name": "Load controlling modes",
         "type": "enum",
         "enum": [
           "Manual Control",
           "Light ON/OFF",
           "Light ON+ Timer/",
           "Time Control"
-        ]
+        ],
+        "field": "setting_load_controlling_modes"
       },
       {
-        "address": "903E",
+        "address": "0x903E",
         "name": "Working time length 1",
         "description": "The length of load output timer1",
-        "type": "duration"
+        "type": "timedelta",
+        "field": "setting_working_time_length_1"
       },
       {
-        "address": "903F",
+        "address": "0x903F",
         "name": "Working time length 2",
         "description": "The length of load output timer2",
-        "type": "duration"
+        "type": "timedelta",
+        "field": "setting_working_time_length_2"
       },
       {
-        "address": "9042",
+        "address": "0x9042",
         "name": "Turn on timing 1",
-        "type": "time"
+        "type": "time",
+        "field": "setting_turn_on_timing_1"
       },
       {
-        "address": "9045",
+        "address": "0x9045",
         "name": "Turn off timing 1",
-        "type": "time"
+        "type": "time",
+        "field": "setting_turn_off_timing_1"
       },
       {
-        "address": "9048",
+        "address": "0x9048",
         "name": "Turn on timing 2",
-        "type": "time"
+        "type": "time",
+        "field": "setting_turn_on_timing_2"
       },
       {
-        "address": "904B",
+        "address": "0x904B",
         "name": "Turn off timing 2",
-        "type": "time"
+        "type": "time",
+        "field": "setting_turn_off_timing_2"
       },
       {
-        "address": "9065",
+        "address": "0x9065",
         "name": "Length of night",
         "description": "Set default values of the whole night length of time",
-        "type": "duration"
+        "type": "timedelta",
+        "field": "setting_length_of_night"
       },
       {
-        "address": "9067",
+        "address": "0x9067",
         "name": "Battery rated voltage code",
         "type": "enum",
         "enum": [
           "Auto recognize",
           "12V",
           "24V"
-        ]
+        ],
+        "field": "setting_battery_rated_voltage"
       },
       {
-        "address": "9069",
+        "address": "0x9069",
         "name": "Load timing control selection",
         "description": "Selected timing period of the load",
         "type": "enum",
         "enum": [
           "Using 1 Timer",
           "Using 2 Timer"
-        ]
+        ],
+        "field": "setting_load_timing_control_selection"
       },
       {
-        "address": "906A",
+        "address": "0x906A",
         "name": "Default Load ON/Off in manual mode",
         "type": "enum",
         "enum": [
           "Off",
           "On"
-        ]
+        ],
+        "field": "setting_default_load_in_manual_mode"
       },
       {
-        "address": "906B",
+        "address": "0x906B",
         "name": "Equalize duration",
         "description": "Usually 60-120 minutes",
-        "type": "minutes"
+        "type": "minutes",
+        "field": "setting_equalize_duration"
       },
       {
-        "address": "906C",
-        "name": "Equalize duration",
+        "address": "0x906C",
+        "name": "Boost duration",
         "description": "Usually 60-120 minutes",
-        "type": "minutes"
+        "type": "minutes",
+        "field": "setting_boost_duration"
       },
       {
-        "address": "906D",
+        "address": "0x906D",
         "name": "Discharging percentage",
         "description": "Usually 20%-80%. The percentage of battery's remaining capacity when stop charging",
-        "type": "percent"
+        "type": "percent",
+        "field": "setting_discharging_percentage"
       },
       {
-        "address": "906E",
+        "address": "0x906E",
         "name": "Charging percentage",
         "description": "Depth of charge, 20%-100%.",
-        "type": "percent"
+        "type": "percent",
+        "field": "setting_charging_percentage"
       },
       {
-        "address": "9070",
+        "address": "0x9070",
         "name": "Management modes of battery charging and discharging",
         "description": "Management modes of battery charge and discharge",
         "type": "enum",
         "enum": [
           "Voltage Compensation",
           "SOC"
-        ]
+        ],
+        "field": "setting_battery_management_mode"
       }
     ],
-    "Coils": [
+    "controller_coils": [
       {
-        "address": "2",
+        "address": "0x0002",
         "name": "Manual control the load",
         "description": "When the load is in manual mode",
         "type": "enum",
         "enum": [
           "Manual Off",
           "Manual On"
-        ]
+        ],
+        "field": "coil_manual_control_load"
       },
       {
-        "address": "5",
+        "address": "0x0005",
         "name": "Enable load test mode",
         "type": "enum",
         "enum": [
           "Disable (normal)",
           "Enable"
-        ]
+        ],
+        "field": "coil_enable_load_test_mode"
       },
       {
-        "address": "6",
+        "address": "0x0006",
         "name": "Force the load on/off",
         "type": "enum",
         "enum": [
           "Turn off (used for temporary test of the load)",
           "Turn on"
-        ]
+        ],
+        "field": "coil_force_load"
       }
     ],
-    "Discrete input": [
+    "controller_discrete_input": [
       {
-        "address": "2000",
+        "address": "0x2000",
         "name": "Over temperature inside the device",
         "type": "enum",
         "enum": [
           "Normal",
           "The temperature inside the controller is higher than the over-temperature protection point."
-        ]
+        ],
+        "field": "discrete_over_temp_inside_device"
       },
       {
-        "address": "200C",
+        "address": "0x200C",
         "name": "Day/Night",
         "type": "enum",
         "enum": [
           "Day",
           "Night"
-        ]
+        ],
+        "field": "discrete_is_night"
       }
     ],
-    "Real-time data": [
+    "controller_real_time_data": [
       {
-        "address": "3100",
+        "address": "0x3100",
         "name": "Charging equipment input voltage",
         "description": "Soalr charge controller--PV array voltage",
-        "type": "volts"
+        "type": "volts",
+        "field": "rt_input_v"
       },
       {
-        "address": "3101",
+        "address": "0x3101",
         "name": "Charging equipment input current",
         "description": "Solar charge controller--PV array current",
-        "type": "amps"
+        "type": "amps",
+        "field": "rt_input_a"
       },
       {
-        "address": "3102",
+        "address": "0x3102",
         "name": "Charging equipment input power",
         "description": "Solar charge controller--PV array power",
-        "type": "watts"
+        "type": "watts",
+        "field": "rt_input_w"
       },
       {
-        "address": "3104",
+        "address": "0x3104",
         "name": "Charging equipment output voltage",
         "description": "Battery voltage",
-        "type": "volts"
+        "type": "volts",
+        "field": "rt_battery_v"
       },
       {
-        "address": "3105",
+        "address": "0x3105",
         "name": "Battery charging current",
         "description": "Charging equipment output current",
-        "type": "amps"
+        "type": "amps",
+        "field": "rt_battery_a"
       },
       {
-        "address": "3106",
+        "address": "0x3106",
         "name": "Charging equipment output power",
         "description": "Battery charging power",
-        "type": "watts"
+        "type": "watts",
+        "field": "rt_battery_w"
       },
       {
-        "address": "310C",
+        "address": "0x310C",
         "name": "Disharging equipment output voltage",
         "description": "Load voltage",
-        "type": "volts"
+        "type": "volts",
+        "field": "rt_load_v"
       },
       {
-        "address": "310D",
+        "address": "0x310D",
         "name": "Disharging equipment output current",
         "description": "Load current",
-        "type": "amps"
+        "type": "amps",
+        "field": "rt_load_a"
       },
       {
-        "address": "310E",
+        "address": "0x310E",
         "name": "Disharging equipment output power",
         "description": "Load power",
-        "type": "watts"
+        "type": "watts",
+        "field": "rt_load_w"
       },
       {
-        "address": "3110",
+        "address": "0x3110",
         "name": "Battery Temperature",
         "description": "Battery Temperature",
-        "type": "temperature"
+        "type": "temperature",
+        "field": "rt_battery_temp"
       },
       {
-        "address": "3111",
+        "address": "0x3111",
         "name": "Temperature inside equipment",
         "description": "Temperature inside case",
-        "type": "temperature"
+        "type": "temperature",
+        "field": "rt_case_temp"
       },
       {
-        "address": "3112",
+        "address": "0x3112",
         "name": "Power components temperature",
         "description": "Heat sink surface temperature of equipments' power components",
-        "type": "temperature"
+        "type": "temperature",
+        "field": "rt_power_component_temp"
       },
       {
-        "address": "311A",
+        "address": "0x311A",
         "name": "Battery SOC",
         "description": "The percentage of battery's remaining capacity",
-        "type": "percent"
+        "type": "percent",
+        "field": "rt_battery_soc"
       },
       {
-        "address": "311B",
+        "address": "0x311B",
         "name": "Remote battery temperature",
         "description": "The battery tempeture measured by remote temperature sensor",
-        "type": "temperature"
+        "type": "temperature",
+        "field": "rt_remote_battery_temp"
       },
       {
-        "address": "311D",
+        "address": "0x311D",
         "name": "Battery's real rated power",
         "description": "Current system rated votlage. 1200, 2400 represent 12V, 24V",
-        "type": "volts"
+        "type": "volts",
+        "field": "rt_battery_rated_v"
       }
     ],
-    "Statistics": [
+    "controller_statistics": [
       {
-        "address": "3300",
+        "address": "0x3300",
         "name": "Maximum input volt (PV) today",
         "description": "00:00 Refresh every day",
-        "type": "volts"
+        "type": "volts",
+        "field": "stat_max_input_v_today"
       },
       {
-        "address": "3301",
+        "address": "0x3301",
         "name": "Minimum input volt (PV) today",
         "description": "00:00 Refresh every day",
-        "type": "volts"
+        "type": "volts",
+        "field": "stat_min_input_v_today"
       },
       {
-        "address": "3302",
+        "address": "0x3302",
         "name": "Maximum battery volt today",
         "description": "00:00 Refresh every day",
-        "type": "volts"
+        "type": "volts",
+        "field": "stat_max_battery_v_today"
       },
       {
-        "address": "3303",
+        "address": "0x3303",
         "name": "Minimum battery volt today",
         "description": "00:00 Refresh every day",
-        "type": "volts"
+        "type": "volts",
+        "field": "stat_min_battery_v_today"
       },
       {
-        "address": "3304",
+        "address": "0x3304",
         "name": "Consumed energy today",
         "description": "00:00 Clear every day",
-        "type": "kilowatthours"
+        "type": "kilowatthours",
+        "field": "stat_consumed_kwh_today"
       },
       {
-        "address": "3306",
+        "address": "0x3306",
         "name": "Consumed energy this month",
         "description": "00:00 Clear on the first day of month",
-        "type": "kilowatthours"
+        "type": "kilowatthours",
+        "field": "stat_consumed_kwh_month"
       },
       {
-        "address": "3308",
+        "address": "0x3308",
         "name": "Consumed energy this year",
         "description": "00:00 Clear on 1, Jan.",
-        "type": "kilowatthours"
+        "type": "kilowatthours",
+        "field": "stat_consumed_kwh_year"
       },
       {
-        "address": "330A",
+        "address": "0x330A",
         "name": "Total consumed energy",
-        "type": "kilowatthours"
+        "type": "kilowatthours",
+        "field": "stat_consumed_kwh_total"
       },
-
       {
-        "address": "330C",
+        "address": "0x330C",
         "name": "Generated energy today",
         "description": "00:00 Clear every day",
-        "type": "kilowatthours"
+        "type": "kilowatthours",
+        "field": "stat_generated_kwh_today"
       },
       {
-        "address": "330E",
+        "address": "0x330E",
         "name": "Generated energy this month",
         "description": "00:00 Clear on the first day of month",
-        "type": "kilowatthours"
+        "type": "kilowatthours",
+        "field": "stat_generated_kwh_month"
       },
       {
-        "address": "3310",
+        "address": "0x3310",
         "name": "Generated energy this year",
         "description": "00:00 Clear on 1, Jan.",
-        "type": "kilowatthours"
+        "type": "kilowatthours",
+        "field": "stat_generated_kwh_year"
       },
       {
-        "address": "3312",
+        "address": "0x3312",
         "name": "Total generated energy",
-        "type": "kilowatthours"
+        "type": "kilowatthours",
+        "field": "stat_generated_kwh_total"
       },
       {
-        "address": "3314",
+        "address": "0x3314",
         "name": "Carbon dioxide reduction",
         "description": "Saving 1 Kilowatt=Reduction 0.997KG\"Carbon dioxide\"=Reduction 0.272KG\"Carton\"",
-        "type": "tons"
+        "type": "tons",
+        "field": "stat_carbon_dioxide_reduction"
       },
       {
-        "address": "331B",
+        "address": "0x331B",
         "name": "Battery Current",
         "description": "The net battery current,charging current minus the discharging one. The positive value represents charging and negative, discharging.",
         "type": "amps",
-        "size": 2
+        "size": 2,
+        "field": "stat_battery_current"
       },
       {
-        "address": "331D",
+        "address": "0x331D",
         "name": "Battery Temp.",
         "description": "Battery Temp.",
-        "type": "temperature"
+        "type": "temperature",
+        "field": "stat_battery_temp"
       },
       {
-        "address": "331E",
+        "address": "0x331E",
         "name": "Ambient Temp.",
         "description": "Ambient Temp.",
-        "type": "temperature"
+        "type": "temperature",
+        "field": "stat_ambient_temp"
       }
     ],
-    "Real-time status": [
+    "controller_real_time_status": [
       {
-        "address": "3200",
+        "address": "0x3200",
         "name": "Battery status",
         "type": "multipart",
         "parts": [
-          {"mask": 15, "shift": 0, "enum": ["Normal", "Overvolt", "Under Volt", "Low Volt Disconnect", "Fault"]},
-          {"mask": 15, "shift": 4, "enum": ["Normal", "Over Temp. (Higher than the warning settings)", "Low Temp. (Lower than the warning settings)"]},
-          {"mask": 1, "shift": 8, "name": "Battery internal resistance abnormal"},
-          {"mask": 1, "shift": 15, "name": "Wrong identification for rated voltage"}
-        ]
+          {"part": 0, "mask": 15, "shift": 0, "name": "Battery Voltage Status", "enum": ["Normal", "Overvolt", "Under Volt", "Low Volt Disconnect", "Fault"]},
+          {"part": 0, "mask": 15, "shift": 4, "name": "Battery Temperature Status", "enum": ["Normal", "Over Temp. (Higher than the warning settings)", "Low Temp. (Lower than the warning settings)"]},
+          {"part": 0, "mask": 1, "shift": 8, "name": "Battery internal resistance abnormal"},
+          {"part": 0, "mask": 1, "shift": 15, "name": "Wrong identification for rated voltage"}
+        ],
+        "field": "rt_battery_status"
       },
       {
-        "address": "3201",
+        "address": "0x3201",
         "name": "Charging equipment status",
         "type": "multipart",
         "parts": [
-          {"mask": 3, "shift": 14, "enum": ["Normal", "No power connected", "Higher volt input", "Input volt error."]},
-          {"mask": 1, "shift": 13, "name": "Charging MOSFET is short."},
-          {"mask": 1, "shift": 12, "name": "Charging or Anti-reverse MOSFET is short."},
-          {"mask": 1, "shift": 11, "name": "Anti-reverse MOSFET is short."},
-          {"mask": 1, "shift": 10, "name": "Input is over current."},
-          {"mask": 1, "shift": 9, "name": "The load is Over current."},
-          {"mask": 1, "shift": 8, "name": "The load is short."},
-          {"mask": 1, "shift": 7, "name": "Load MOSFET is short."},
-          {"mask": 1, "shift": 4, "name": "PV Input is short."},
-          {"mask": 3, "shift": 2, "enum": ["No charging", "Float", "Boost", "Equalization"]},
-          {"mask": 1, "shift": 1, "enum": ["Normal", "Fault"]},
-          {"mask": 1, "shift": 0, "enum": ["Standby", "Running"]},
-        ]
+          {"part": 0, "mask": 3, "shift": 14, "name": "Charging Equipment Voltage Status", "enum": ["Normal", "No power connected", "Higher volt input", "Input volt error."]},
+          {"part": 0, "mask": 1, "shift": 13, "name": "Charging MOSFET is short."},
+          {"part": 0, "mask": 1, "shift": 12, "name": "Charging or Anti-reverse MOSFET is short."},
+          {"part": 0, "mask": 1, "shift": 11, "name": "Anti-reverse MOSFET is short."},
+          {"part": 0, "mask": 1, "shift": 10, "name": "Input is over current."},
+          {"part": 0, "mask": 1, "shift": 9, "name": "The load is Over current."},
+          {"part": 0, "mask": 1, "shift": 8, "name": "The load is short."},
+          {"part": 0, "mask": 1, "shift": 7, "name": "Load MOSFET is short."},
+          {"part": 0, "mask": 1, "shift": 4, "name": "PV Input is short."},
+          {"part": 0, "mask": 3, "shift": 2, "name": "Charging Equipment Status", "enum": ["No charging", "Float", "Boost", "Equalization"]},
+          {"part": 0, "mask": 1, "shift": 1, "name": "Charging Equipment Fault Status", "enum": ["Normal", "Fault"]},
+          {"part": 0, "mask": 1, "shift": 0, "name": "Charging Equipment Running Status", "enum": ["Standby", "Running"]}
+        ],
+        "field": "rt_charging_equipment_status"
       }
     ]
   }
