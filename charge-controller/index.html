@@ -16,6 +16,18 @@
       top: 0;
       right: 0
     }
+    .battery-cell {
+      width: 25%;
+      text-align: center;
+      margin: auto;
+      vertical-align: top;
+    }
+    .gauge {
+      display: inline-block;
+      width: auto;
+      margin: auto !important;
+    }
+
   </style>
 </head>
 <body>
@@ -31,21 +43,30 @@
       <li><a href="#tabs-3">tab4</a></li>
     </ul>
     <div id="tabs-1">
-      <table>
+      <table width="100%" class="battery-table">
         <tr>
-          <td class="battery-volts-gauge"></td>
-          <td class="battery-amps-gauge"></td>
-          <td class="battery-soc-gauge"></td>
-          <td class="battery-temp-gauge"></td>
+          <td class="battery-cell">Volts</td>
+          <td class="battery-cell">Amps</td>
+          <td class="battery-cell">State of Charge</td>
+          <td class="battery-cell">Temperature</td>
         </tr>
         <tr>
-          <td class="battery-realtime-table"></td>
-          <td class="battery-amps-table"></td>
-          <td class="battery-soc-table"></td>
-          <td class="battery-temp-table"></td>
+          <td class="battery-cell"><div class="gauge battery-volts-gauge"></div></td>
+          <td class="battery-cell"><div class="gauge battery-amps-gauge"></div></td>
+          <td class="battery-cell"><div class="gauge battery-soc-gauge"></div></td>
+          <td class="battery-cell"><div class="gauge battery-temp-gauge"></div></td>
         </tr>
         <tr>
-          <td class="battery-settings-table"></td>
+          <td class="battery-cell battery-volts-hour"></td>
+          <td class="battery-cell battery-amps-hour"></td>
+          <td class="battery-cell battery-soc-hour"></td>
+          <td class="battery-cell battery-temp-hour"></td>
+        </tr>
+        <tr>
+          <td class="battery-cell battery-volts-table"></td>
+          <td class="battery-cell battery-amps-table"></td>
+          <td class="battery-cell battery-soc-table"></td>
+          <td class="battery-cell battery-temp-table"></td>
         </tr>
       </table>
     </div>

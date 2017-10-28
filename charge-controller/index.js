@@ -55,6 +55,7 @@ function gotChargeControllerProtocol(data, textStatus, jqXHR) {
 }
 
 function scheduleDataRequests() {
+  getRealTimeData();
   getRealTimeDataRequestInterval = setInterval(getRealTimeData, 10 * 1000);
 }
 
@@ -111,47 +112,39 @@ function tabActivated(event, ui) {
       displaySummary();
       break;
     default:
-      console.log("tab activated: %s", index);
+      //console.log("tab activated: %s", index);
+      break;
   }
 }
 
 function displaySummary() {
+
   updateBatteryVoltageGauge();
   updateBatteryAmpsGauge();
+  updateBatterySocGauge();
+  updateBatteryTempGauge();
+
+  updateBatteryVoltageHour();
+  updateBatteryAmpsHour();
+  updateBatterySocHour();
+  updateBatteryTempHour();
+
+  updateBatteryVoltageTable();
   updateBatteryAmpsTable();
   updateBatterySocTable();
   updateBatteryTempTable();
-  updateBatterySocGauge();
-  updateBatteryTempGauge();
-  updateBatteryRealTimeData();
-  updateBatterySettingsData();
 
 }
-function updateBatteryRealTimeData() {
+function updateBatteryVoltageTable() {
 
-    var element = $(".battery-realtime-table");
-    var chart = new google.visualization.Table(element[0]);
+    var chart = getChart(".battery-volts-table", google.visualization.Table);
     var dataTable = new google.visualization.DataTable();
-    dataTable.addColumn("string", "Real-Time");
+    dataTable.addColumn("string", "Name");
     dataTable.addColumn("number", "Voltage");
-
     dataTable.addRows([
       findRow("rt_battery_v"),
       findRow("rt_battery_rated_v"),
       findRow("rt_load_v"),
-    ]);
-    chart.draw(dataTable);
-}
-
-function updateBatterySettingsData() {
-
-    var element = $(".battery-settings-table");
-    var chart = new google.visualization.Table(element[0]);
-    var dataTable = new google.visualization.DataTable();
-    dataTable.addColumn("string", "Settings");
-    dataTable.addColumn("number", "Voltage");
-
-    dataTable.addRows([
       findRow("setting_high_volt_disconnect"),
       findRow("setting_charging_limit_volt"),
       findRow("setting_over_volt_reconnect"),
@@ -167,6 +160,7 @@ function updateBatterySettingsData() {
     ]);
     chart.draw(dataTable);
 }
+
 function findRow(name) {
   var value = findValue(name);
   var meta = findMeta(name);
@@ -200,7 +194,105 @@ function concatArrays(a, b) {
 }
 var charts = {};
 function getChart(selector, Constructor) {
+  // Lazy-load chart as singleton to enable animation when charts are updated rather than recreated
   return charts[selector] = charts[selector] || new Constructor($(selector)[0]);
+}
+function mapHourField(name) {
+  var index = latestData.hour_fields.indexOf(name);
+  return function mapRow(row) {
+    return [
+      moment.utc(row[0], "YYYY-MM-DD HH:mm:ss").local().toDate(),
+      row[index]
+    ];
+  }
+}
+function updateBatteryVoltageHour() {
+  if (!latestData.hasOwnProperty("hour")) {
+    return;
+  }
+  var chart = getChart(".battery-volts-hour", google.visualization.LineChart);
+  var data = new google.visualization.DataTable();
+  data.addColumn("datetime", "Time of Day");
+  data.addColumn("number", "Volts");
+  data.addRows(
+    latestData.hour.map(mapHourField("rt_battery_v"))
+  );
+  var options = {
+    legend: {
+      position: "none"
+    },
+    animation:{
+        duration: 1000,
+        easing: 'out'
+      }
+  };
+  chart.draw(data, options);
+}
+function updateBatteryAmpsHour() {
+  if (!latestData.hasOwnProperty("hour")) {
+    return;
+  }
+  var chart = getChart(".battery-amps-hour", google.visualization.LineChart);
+  var data = new google.visualization.DataTable();
+  data.addColumn("datetime", "Time of Day");
+  data.addColumn("number", "Amps");
+  data.addRows(
+    latestData.hour.map(mapHourField("rt_battery_a"))
+  );
+  var options = {
+    legend: {
+      position: "none"
+    },
+    animation:{
+        duration: 1000,
+        easing: 'out'
+      }
+  };
+  chart.draw(data, options);
+}
+function updateBatterySocHour() {
+  if (!latestData.hasOwnProperty("hour")) {
+    return;
+  }
+  var chart = getChart(".battery-soc-hour", google.visualization.LineChart);
+  var data = new google.visualization.DataTable();
+  data.addColumn("datetime", "Time of Day");
+  data.addColumn("number", "SoC");
+  data.addRows(
+    latestData.hour.map(mapHourField("rt_battery_soc"))
+  );
+  var options = {
+    legend: {
+      position: "none"
+    },
+    animation:{
+        duration: 1000,
+        easing: 'out'
+      }
+  };
+  chart.draw(data, options);
+}
+function updateBatteryTempHour() {
+  if (!latestData.hasOwnProperty("hour")) {
+    return;
+  }
+  var chart = getChart(".battery-temp-hour", google.visualization.LineChart);
+  var data = new google.visualization.DataTable();
+  data.addColumn("datetime", "Time of Day");
+  data.addColumn("number", "\xB0F");
+  data.addRows(
+    latestData.hour.map(mapHourField("rt_battery_temp"))
+  );
+  var options = {
+    legend: {
+      position: "none"
+    },
+    animation:{
+        duration: 1000,
+        easing: 'out'
+      }
+  };
+  chart.draw(data, options);
 }
 function updateBatteryVoltageGauge() {
   var chart = getChart(".battery-volts-gauge", google.visualization.Gauge);

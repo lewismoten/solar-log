@@ -21,7 +21,7 @@ try:
     )
 
     c = conn.cursor()
-    result = {}
+    result = {"hour": []}
     for tableName in chargeController["data"]:
         if tableName == "controller_real_time_data" or tableName == "controller_real_time_status":
             rowResult = {}
@@ -34,6 +34,35 @@ try:
             for i in range(len(fields)):
                 rowResult[fields[i]] = row[i]
             result[tableName] = rowResult
+            #get data for the past hour, per minute
+            #sql = "SELECT * FROM %s WHERE create_date >= DATE_SUB(NOW(), INTERVAL 1 HOUR) GROUP BY HOUR(date), MINUTE(date) ORDER BY create_date;" % tableName
+
+    sql = """
+    SELECT
+        DATE_FORMAT(create_date, '%Y-%m-%d %H:%i'),
+        AVG(rt_battery_v),
+        AVG(rt_battery_a),
+        AVG(rt_battery_soc) * 100,
+        (AVG(rt_battery_temp) * (9/5)) + 32
+    FROM
+        controller_real_time_data
+    WHERE
+        create_date >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
+    GROUP BY
+        HOUR(create_date), MINUTE(create_date)
+    ORDER BY create_date;
+    """
+    c.execute(sql)
+    result["hour_fields"] = [
+        "create_date",
+        "rt_battery_v",
+        "rt_battery_a",
+        "rt_battery_soc",
+        "rt_battery_temp"
+    ]
+    for row in c:
+        result["hour"].append(row)
+
 
     conn.commit()
     c.close()
