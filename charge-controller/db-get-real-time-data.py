@@ -40,25 +40,39 @@ try:
     sql = """
     SELECT
         DATE_FORMAT(create_date, '%Y-%m-%d %H:%i'),
+        AVG(rt_input_v),
+        AVG(rt_input_a),
+        AVG(rt_input_w),
         AVG(rt_battery_v),
         AVG(rt_battery_a),
+        AVG(rt_battery_w),
         AVG(rt_battery_soc) * 100,
-        (AVG(rt_battery_temp) * (9/5)) + 32
+        (AVG(rt_battery_temp) * (9/5)) + 32,
+        AVG(rt_load_v),
+        AVG(rt_load_a),
+        AVG(rt_load_w)
     FROM
         controller_real_time_data
     WHERE
         create_date >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
     GROUP BY
-        HOUR(create_date), MINUTE(create_date)
+        DATE_FORMAT(create_date, '%Y-%m-%d %H:%i')
     ORDER BY create_date;
     """
     c.execute(sql)
     result["hour_fields"] = [
         "create_date",
+        "rt_input_v",
+        "rt_input_a",
+        "rt_input_w",
         "rt_battery_v",
         "rt_battery_a",
+        "rt_battery_w",
         "rt_battery_soc",
-        "rt_battery_temp"
+        "rt_battery_temp",
+        "rt_load_v",
+        "rt_load_a",
+        "rt_load_w"
     ]
     for row in c:
         result["hour"].append(row)

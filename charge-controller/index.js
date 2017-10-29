@@ -109,7 +109,13 @@ function tabActivated(event, ui) {
   var index = $(".tabs").tabs("option", "active");
   switch(index) {
     case 0:
-      displaySummary();
+      displayBattery();
+      break;
+    case 1:
+      displayLoad();
+      break;
+    case 2:
+      displayInput();
       break;
     default:
       //console.log("tab activated: %s", index);
@@ -117,28 +123,62 @@ function tabActivated(event, ui) {
   }
 }
 
-function displaySummary() {
+function displayBattery() {
 
   updateBatteryVoltageGauge();
   updateBatteryAmpsGauge();
+  updateBatteryWattsGauge();
   updateBatterySocGauge();
   updateBatteryTempGauge();
 
   updateBatteryVoltageHour();
   updateBatteryAmpsHour();
+  updateBatteryWattsHour();
   updateBatterySocHour();
   updateBatteryTempHour();
 
   updateBatteryVoltageTable();
   updateBatteryAmpsTable();
+  updateBatteryWattsTable();
   updateBatterySocTable();
   updateBatteryTempTable();
+
+}
+function displayLoad() {
+
+  updateLoadVoltageGauge();
+  updateLoadAmpsGauge();
+  updateLoadWattsGauge();
+
+  updateLoadVoltageHour();
+  updateLoadAmpsHour();
+  updateLoadWattsHour();
+
+  updateLoadVoltageTable();
+  updateLoadAmpsTable();
+  updateLoadWattsTable();
+
+}
+function displayInput() {
+
+  updateInputVoltageGauge();
+  updateInputAmpsGauge();
+  updateInputWattsGauge();
+
+  updateInputVoltageHour();
+  updateInputAmpsHour();
+  updateInputWattsHour();
+  //
+  // updateInputVoltageTable();
+  // updateInputAmpsTable();
+  // updateInputWattsTable();
 
 }
 function updateBatteryVoltageTable() {
 
     var chart = getChart(".battery-volts-table", google.visualization.Table);
     var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn("string", "");
     dataTable.addColumn("string", "Name");
     dataTable.addColumn("number", "Voltage");
     dataTable.addRows([
@@ -160,11 +200,47 @@ function updateBatteryVoltageTable() {
     ]);
     chart.draw(dataTable);
 }
+function updateLoadVoltageTable() {
 
+    var chart = getChart(".load-volts-table", google.visualization.Table);
+    var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn("string", "");
+    dataTable.addColumn("string", "Name");
+    dataTable.addColumn("number", "Voltage");
+    dataTable.addRows([
+      findRow("rt_load_v"),
+      findRow("setting_high_volt_disconnect"),
+      findRow("setting_over_volt_reconnect"),
+      findRow("setting_low_volt_reconnect"),
+      findRow("setting_under_volt_recover"),
+      findRow("setting_under_volt_warning"),
+      findRow("setting_low_volt_disconnect"),
+      findRow("setting_discharge_limit_volt")
+    ]);
+    chart.draw(dataTable);
+}
+function getIcon(category) {
+  var stopwatch = "\u23F1";
+  var calendar = "\u{1F4C5}";
+  var charts = "\u{1F4CA}";
+  var writing = "\u270D";
+  var star = "\u2B50";
+  var hollowCircle = "\u2B55";
+  return {
+    controller_statistics: calendar,
+    controller_real_time_data: stopwatch,
+    controller_rated_data: star,
+    controller_settings: writing,
+    controller_coils: hollowCircle,
+    controller_discrete_input: hollowCircle,
+    controller_real_time_status: stopwatch
+  }[category] || "";
+}
 function findRow(name) {
   var value = findValue(name);
   var meta = findMeta(name);
-  return [meta.name, value];
+  var icon = getIcon(meta.category);
+  return [icon, meta.name, value];
 }
 function findValue(name) {
   return Object.keys(latestData)
@@ -181,7 +257,11 @@ function isField(meta) {
   return this.field === meta.field;
 }
 function getLatestProtocolDataOf(key) {
-  return chargeControllerProtocol.data[key];
+  return chargeControllerProtocol.data[key].map(categorizie);
+  function categorizie(row) {
+    row.category = key;
+    return row;
+  }
 }
 function getAllDataOf(key) {
   return latestData[key];
@@ -228,6 +308,50 @@ function updateBatteryVoltageHour() {
   };
   chart.draw(data, options);
 }
+function updateLoadVoltageHour() {
+  if (!latestData.hasOwnProperty("hour")) {
+    return;
+  }
+  var chart = getChart(".load-volts-hour", google.visualization.LineChart);
+  var data = new google.visualization.DataTable();
+  data.addColumn("datetime", "Time of Day");
+  data.addColumn("number", "Volts");
+  data.addRows(
+    latestData.hour.map(mapHourField("rt_load_v"))
+  );
+  var options = {
+    legend: {
+      position: "none"
+    },
+    animation:{
+        duration: 1000,
+        easing: 'out'
+      }
+  };
+  chart.draw(data, options);
+}
+function updateInputVoltageHour() {
+  if (!latestData.hasOwnProperty("hour")) {
+    return;
+  }
+  var chart = getChart(".input-volts-hour", google.visualization.LineChart);
+  var data = new google.visualization.DataTable();
+  data.addColumn("datetime", "Time of Day");
+  data.addColumn("number", "Volts");
+  data.addRows(
+    latestData.hour.map(mapHourField("rt_input_v"))
+  );
+  var options = {
+    legend: {
+      position: "none"
+    },
+    animation:{
+        duration: 1000,
+        easing: 'out'
+      }
+  };
+  chart.draw(data, options);
+}
 function updateBatteryAmpsHour() {
   if (!latestData.hasOwnProperty("hour")) {
     return;
@@ -238,6 +362,116 @@ function updateBatteryAmpsHour() {
   data.addColumn("number", "Amps");
   data.addRows(
     latestData.hour.map(mapHourField("rt_battery_a"))
+  );
+  var options = {
+    legend: {
+      position: "none"
+    },
+    animation:{
+        duration: 1000,
+        easing: 'out'
+      }
+  };
+  chart.draw(data, options);
+}
+function updateLoadAmpsHour() {
+  if (!latestData.hasOwnProperty("hour")) {
+    return;
+  }
+  var chart = getChart(".load-amps-hour", google.visualization.LineChart);
+  var data = new google.visualization.DataTable();
+  data.addColumn("datetime", "Time of Day");
+  data.addColumn("number", "Amps");
+  data.addRows(
+    latestData.hour.map(mapHourField("rt_load_a"))
+  );
+  var options = {
+    legend: {
+      position: "none"
+    },
+    animation:{
+        duration: 1000,
+        easing: 'out'
+      }
+  };
+  chart.draw(data, options);
+}
+function updateInputAmpsHour() {
+  if (!latestData.hasOwnProperty("hour")) {
+    return;
+  }
+  var chart = getChart(".input-amps-hour", google.visualization.LineChart);
+  var data = new google.visualization.DataTable();
+  data.addColumn("datetime", "Time of Day");
+  data.addColumn("number", "Amps");
+  data.addRows(
+    latestData.hour.map(mapHourField("rt_input_a"))
+  );
+  var options = {
+    legend: {
+      position: "none"
+    },
+    animation:{
+        duration: 1000,
+        easing: 'out'
+      }
+  };
+  chart.draw(data, options);
+}
+function updateBatteryWattsHour() {
+  if (!latestData.hasOwnProperty("hour")) {
+    return;
+  }
+  var chart = getChart(".battery-watts-hour", google.visualization.LineChart);
+  var data = new google.visualization.DataTable();
+  data.addColumn("datetime", "Time of Day");
+  data.addColumn("number", "Watts");
+  data.addRows(
+    latestData.hour.map(mapHourField("rt_battery_w"))
+  );
+  var options = {
+    legend: {
+      position: "none"
+    },
+    animation:{
+        duration: 1000,
+        easing: 'out'
+      }
+  };
+  chart.draw(data, options);
+}
+function updateLoadWattsHour() {
+  if (!latestData.hasOwnProperty("hour")) {
+    return;
+  }
+  var chart = getChart(".load-watts-hour", google.visualization.LineChart);
+  var data = new google.visualization.DataTable();
+  data.addColumn("datetime", "Time of Day");
+  data.addColumn("number", "Watts");
+  data.addRows(
+    latestData.hour.map(mapHourField("rt_load_w"))
+  );
+  var options = {
+    legend: {
+      position: "none"
+    },
+    animation:{
+        duration: 1000,
+        easing: 'out'
+      }
+  };
+  chart.draw(data, options);
+}
+function updateInputWattsHour() {
+  if (!latestData.hasOwnProperty("hour")) {
+    return;
+  }
+  var chart = getChart(".input-watts-hour", google.visualization.LineChart);
+  var data = new google.visualization.DataTable();
+  data.addColumn("datetime", "Time of Day");
+  data.addColumn("number", "Watts");
+  data.addRows(
+    latestData.hour.map(mapHourField("rt_input_w"))
   );
   var options = {
     legend: {
@@ -324,7 +558,7 @@ function updateBatteryVoltageGauge() {
   var min = 0;//Math.min.apply(Math, voltages);
   var max = Math.max.apply(Math, voltages);
   var diff = max - min;
-  var majorTicks = [min];
+  var majorTicks = ["0"];
   var n = 4;
   var size = diff / n;
   for(var i = 1; i < n; i++) {
@@ -344,7 +578,7 @@ function updateBatteryVoltageGauge() {
     yellowTo: latestData.controller_settings.setting_under_volt_warning,
     width: 200,
     height: 200,
-    minorTicks: 0,
+    minorTicks: 4,
     animation: {
       dration: 400,
       easing: "inAndOut"
@@ -353,43 +587,56 @@ function updateBatteryVoltageGauge() {
   };
   chart.draw(dataTable, options);
 }
-function updateBatteryAmpsTable() {
-    var chart = getChart(".battery-amps-table", google.visualization.Table);
-    var dataTable = new google.visualization.DataTable();
-    dataTable.addColumn("string", "Name");
-    dataTable.addColumn("number", "Amps");
-
-    dataTable.addRows([
-      findRow("rt_battery_a"),
-      findRow("rt_load_a"),
-      findRow("stat_battery_current"),
-      findRow("rated_output_a"),
-      findRow("rated_load_a")
-    ]);
-    chart.draw(dataTable);
-}
-function updateBatteryAmpsGauge() {
-  var chart = getChart(".battery-amps-gauge", google.visualization.Gauge);
-  //var element = $(".battery-volts-gauge");
-  //var chart = new google.visualization.Gauge(element[0]);
+function updateLoadVoltageGauge() {
+  var chart = getChart(".load-volts-gauge", google.visualization.Gauge);
   var dataTable = google.visualization.arrayToDataTable([
     ["Label", "Value"],
-    ["Amps", latestData.controller_real_time_data.rt_battery_a]
+    ["Volts", latestData.controller_real_time_data.rt_load_v]
   ]);
 
-  var amps = [
-    latestData.controller_real_time_data.rt_battery_a,
-    latestData.controller_real_time_data.rt_load_a,
-    latestData.controller_statistics.stat_battery_current,
-    latestData.controller_rated_data.rated_output_a,
-    latestData.controller_rated_data.rated_load_a
-  ];
-
-  // TODO: Confirm min/max
-  var min = -latestData.controller_rated_data.rated_load_a;
-  var max = latestData.controller_rated_data.rated_output_a;
+  var min = 0;
+  var max = latestData.controller_settings.setting_high_volt_disconnect;
   var diff = max - min;
-  var majorTicks = [min];
+  var majorTicks = ["0"];
+  var n = 4;
+  var size = diff / n;
+  for(var i = 1; i < n; i++) {
+    majorTicks.push(Math.round(10 * (min + (size * i))) / 10);
+  }
+  majorTicks.push(max);
+  majorTicks = majorTicks.map(function(v) { return v; })
+
+  var options = {
+    min: min,
+    max: max,
+    redFrom: min,
+    redTo:  latestData.controller_settings.setting_low_volt_disconnect,
+    yellowFrom: latestData.controller_settings.setting_low_volt_disconnect,
+    yellowTo: latestData.controller_settings.setting_under_volt_warning,
+    greenFrom: latestData.controller_settings.setting_low_volt_reconnect,
+    greenTo: max,
+    width: 200,
+    height: 200,
+    minorTicks: 4,
+    animation: {
+      dration: 400,
+      easing: "inAndOut"
+    },
+    majorTicks: majorTicks
+  };
+  chart.draw(dataTable, options);
+}
+function updateInputVoltageGauge() {
+  var chart = getChart(".input-volts-gauge", google.visualization.Gauge);
+  var dataTable = google.visualization.arrayToDataTable([
+    ["Label", "Value"],
+    ["Volts", latestData.controller_real_time_data.rt_input_v]
+  ]);
+
+  var min = 0;
+  var max = latestData.controller_rated_data.rated_input_v;
+  var diff = max - min;
+  var majorTicks = ["0"];
   var n = 4;
   var size = diff / n;
   for(var i = 1; i < n; i++) {
@@ -403,7 +650,272 @@ function updateBatteryAmpsGauge() {
     max: max,
     width: 200,
     height: 200,
-    minorTicks: 0,
+    minorTicks: 4,
+    animation: {
+      dration: 400,
+      easing: "inAndOut"
+    },
+    majorTicks: majorTicks
+  };
+  chart.draw(dataTable, options);
+}
+function updateBatteryAmpsTable() {
+    var chart = getChart(".battery-amps-table", google.visualization.Table);
+    var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn("string", "");
+    dataTable.addColumn("string", "Name");
+    dataTable.addColumn("number", "Amps");
+
+    dataTable.addRows([
+      findRow("rt_battery_a"),
+      findRow("rt_load_a"),
+      findRow("stat_battery_current"),
+      findRow("rated_output_a"),
+      findRow("rated_load_a")
+    ]);
+    chart.draw(dataTable);
+}
+function updateLoadAmpsTable() {
+    var chart = getChart(".load-amps-table", google.visualization.Table);
+    var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn("string", "");
+    dataTable.addColumn("string", "Name");
+    dataTable.addColumn("number", "Amps");
+
+    dataTable.addRows([
+      findRow("rt_load_a"),
+      findRow("rated_load_a")
+    ]);
+    chart.draw(dataTable);
+}
+function updateBatteryWattsTable() {
+    var chart = getChart(".battery-watts-table", google.visualization.Table);
+    var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn("string", "");
+    dataTable.addColumn("string", "Name");
+    dataTable.addColumn("number", "Watts");
+
+    dataTable.addRows([
+      findRow("rt_battery_w"),
+      findRow("rated_output_w")
+    ]);
+    chart.draw(dataTable);
+}
+function updateLoadWattsTable() {
+    var chart = getChart(".load-watts-table", google.visualization.Table);
+    var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn("string", "");
+    dataTable.addColumn("string", "Name");
+    dataTable.addColumn("number", "Watts");
+
+    dataTable.addRows([
+      findRow("rt_load_w"),
+      findRow("rated_output_w")
+    ]);
+    chart.draw(dataTable);
+}
+function updateBatteryAmpsGauge() {
+  var chart = getChart(".battery-amps-gauge", google.visualization.Gauge);
+  var dataTable = google.visualization.arrayToDataTable([
+    ["Label", "Value"],
+    ["Amps", latestData.controller_real_time_data.rt_battery_a]
+  ]);
+
+  var amps = [
+    latestData.controller_real_time_data.rt_battery_a,
+    latestData.controller_real_time_data.rt_load_a,
+    latestData.controller_statistics.stat_battery_current,
+    latestData.controller_rated_data.rated_output_a,
+    latestData.controller_rated_data.rated_load_a
+  ];
+
+  var min = 0;
+  var max = latestData.controller_rated_data.rated_output_a;
+  var diff = max - min;
+  var majorTicks = ["0"];
+  var n = 4;
+  var size = diff / n;
+  for(var i = 1; i < n; i++) {
+    majorTicks.push(Math.round(10 * (min + (size * i))) / 10);
+  }
+  majorTicks.push(max);
+  majorTicks = majorTicks.map(function(v) { return v; })
+
+  var options = {
+    min: min,
+    max: max,
+    width: 200,
+    height: 200,
+    minorTicks: 10,
+    animation: {
+      dration: 400,
+      easing: "inAndOut"
+    },
+    majorTicks: majorTicks
+  };
+  chart.draw(dataTable, options);
+}
+function updateLoadAmpsGauge() {
+  var chart = getChart(".load-amps-gauge", google.visualization.Gauge);
+  var dataTable = google.visualization.arrayToDataTable([
+    ["Label", "Value"],
+    ["Amps", latestData.controller_real_time_data.rt_load_a]
+  ]);
+
+  var min = 0;
+  var max = latestData.controller_rated_data.rated_load_a;
+  var diff = max - min;
+  var majorTicks = ["0"];
+  var n = 4;
+  var size = diff / n;
+  for(var i = 1; i < n; i++) {
+    majorTicks.push(Math.round(10 * (min + (size * i))) / 10);
+  }
+  majorTicks.push(max);
+  majorTicks = majorTicks.map(function(v) { return v; })
+
+  var options = {
+    min: min,
+    max: max,
+    width: 200,
+    height: 200,
+    minorTicks: 10,
+    animation: {
+      dration: 400,
+      easing: "inAndOut"
+    },
+    majorTicks: majorTicks
+  };
+  chart.draw(dataTable, options);
+}
+function updateInputAmpsGauge() {
+  var chart = getChart(".input-amps-gauge", google.visualization.Gauge);
+  var dataTable = google.visualization.arrayToDataTable([
+    ["Label", "Value"],
+    ["Amps", latestData.controller_real_time_data.rt_input_a]
+  ]);
+
+  var min = 0;
+  var max = latestData.controller_rated_data.rated_input_a;
+  var diff = max - min;
+  var majorTicks = ["0"];
+  var n = 4;
+  var size = diff / n;
+  for(var i = 1; i < n; i++) {
+    majorTicks.push(Math.round(10 * (min + (size * i))) / 10);
+  }
+  majorTicks.push(max);
+  majorTicks = majorTicks.map(function(v) { return v; })
+
+  var options = {
+    min: min,
+    max: max,
+    width: 200,
+    height: 200,
+    minorTicks: 10,
+    animation: {
+      dration: 400,
+      easing: "inAndOut"
+    },
+    majorTicks: majorTicks
+  };
+  chart.draw(dataTable, options);
+}
+function updateBatteryWattsGauge() {
+  var chart = getChart(".battery-watts-gauge", google.visualization.Gauge);
+  var dataTable = google.visualization.arrayToDataTable([
+    ["Label", "Value"],
+    ["Watts", latestData.controller_real_time_data.rt_battery_w]
+  ]);
+
+  var min = 0;
+  var max = latestData.controller_rated_data.rated_output_w;
+  var diff = max - min;
+  var majorTicks = ["0"];
+  var n = 10.4;
+  var size = diff / n;
+  for(var i = 1; i < n; i++) {
+
+    majorTicks.push(i <= 2 ? Math.round(10 * (min + (size * i))) / 10 : "");
+  }
+  majorTicks.push(max);
+  majorTicks = majorTicks.map(function(v) { return v; })
+
+  var options = {
+    min: min,
+    max: max,
+    width: 200,
+    height: 200,
+    minorTicks: 5,
+    animation: {
+      dration: 400,
+      easing: "inAndOut"
+    },
+    majorTicks: majorTicks
+  };
+  chart.draw(dataTable, options);
+}
+function updateLoadWattsGauge() {
+  var chart = getChart(".load-watts-gauge", google.visualization.Gauge);
+  var dataTable = google.visualization.arrayToDataTable([
+    ["Label", "Value"],
+    ["Watts", latestData.controller_real_time_data.rt_load_w]
+  ]);
+
+  var min = 0;
+  var multiplier = latestData.controller_rated_data.rt_battery_rated_v === 12 ? 13 : 26;
+  var max = latestData.controller_rated_data.rated_load_a * 13;
+  var diff = max - min;
+  var majorTicks = ["0"];
+  var n = 10.4;
+  var size = diff / n;
+  for(var i = 1; i < n; i++) {
+
+    majorTicks.push(i <= 2 ? Math.round(10 * (min + (size * i))) / 10 : "");
+  }
+  majorTicks.push(max);
+  majorTicks = majorTicks.map(function(v) { return v; })
+
+  var options = {
+    min: min,
+    max: max,
+    width: 200,
+    height: 200,
+    minorTicks: 5,
+    animation: {
+      dration: 400,
+      easing: "inAndOut"
+    },
+    majorTicks: majorTicks
+  };
+  chart.draw(dataTable, options);
+}
+function updateInputWattsGauge() {
+  var chart = getChart(".input-watts-gauge", google.visualization.Gauge);
+  var dataTable = google.visualization.arrayToDataTable([
+    ["Label", "Value"],
+    ["Watts", latestData.controller_real_time_data.rt_input_w]
+  ]);
+
+  var min = 0;
+  var max = latestData.controller_rated_data.rated_input_w;
+  var diff = max - min;
+  var majorTicks = ["0"];
+  var n = 10.4;
+  var size = diff / n;
+  for(var i = 1; i < n; i++) {
+
+    majorTicks.push(i <= 2 ? Math.round(10 * (min + (size * i))) / 10 : "");
+  }
+  majorTicks.push(max);
+  majorTicks = majorTicks.map(function(v) { return v; })
+
+  var options = {
+    min: min,
+    max: max,
+    width: 200,
+    height: 200,
+    minorTicks: 5,
     animation: {
       dration: 400,
       easing: "inAndOut"
@@ -415,6 +927,7 @@ function updateBatteryAmpsGauge() {
 function updateBatterySocTable() {
     var chart = getChart(".battery-soc-table", google.visualization.Table);
     var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn("string", "");
     dataTable.addColumn("string", "Name");
     dataTable.addColumn("number", "%");
 
@@ -427,26 +940,21 @@ function updateBatterySocTable() {
     chart.draw(dataTable);
 
     function fixPercent(row) {
-      row[1] *= 100;
+      row[2] *= 100;
       return row;
     }
 }
 function updateBatteryTempTable() {
     var chart = getChart(".battery-temp-table", google.visualization.Table);
     var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn("string", "");
     dataTable.addColumn("string", "Name");
     dataTable.addColumn("number", "\xB0F");
     dataTable.addRows([
       findRow("rt_battery_temp"),
-//      findRow("rt_case_temp"),
-//      findRow("rt_power_component_temp"),
       findRow("rt_remote_battery_temp"),
       findRow("setting_battery_temp_warning_upper_limit"),
       findRow("setting_battery_temp_warning_lower_limit"),
-//      findRow("setting_control_inner_temp_upper_limit"),
-//      findRow("setting_control_inner_temp_upper_limit_recover"),
-//      findRow("setting_power_component_temp_upper_limit"),
-//      findRow("setting_power_component_temp_upper_limit_recover"),
       findRow("stat_battery_temp"),
       findRow("stat_ambient_temp")
     ].map(fixValue));
@@ -454,7 +962,7 @@ function updateBatteryTempTable() {
     chart.draw(dataTable);
 
     function fixValue(row) {
-      row[1] = fahrenheit(row[1]);
+      row[2] = fahrenheit(row[2]);
       return row;
     }
 }
