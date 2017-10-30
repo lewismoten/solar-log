@@ -34,12 +34,16 @@ try:
             for i in range(len(fields)):
                 rowResult[fields[i]] = row[i]
             result[tableName] = rowResult
-            #get data for the past hour, per minute
-            #sql = "SELECT * FROM %s WHERE create_date >= DATE_SUB(NOW(), INTERVAL 1 HOUR) GROUP BY HOUR(date), MINUTE(date) ORDER BY create_date;" % tableName
+
+    # Get a brief history...
+    # Get {maxRecords} records representing the past {durationMiutes} minutes, grouped by {groupSeconds}
+    maxRecords = 30
+    durationMinutes = 60
+    groupSeconds = (durationMinutes * 60) / (maxRecords - 1)
 
     sql = """
     SELECT
-        DATE_FORMAT(create_date, '%Y-%m-%d %H:%i'),
+        DATE_FORMAT(FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(create_date)/{groupSeconds}) * {groupSeconds}), '%Y-%m-%d %H:%i:%s'),
         AVG(rt_input_v),
         AVG(rt_input_a),
         AVG(rt_input_w),
@@ -54,12 +58,12 @@ try:
     FROM
         controller_real_time_data
     WHERE
-        create_date >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
+        create_date >= DATE_SUB(NOW(), INTERVAL {duration} MINUTE)
     GROUP BY
-        DATE_FORMAT(create_date, '%Y-%m-%d %H:%i')
+        FLOOR(UNIX_TIMESTAMP(create_date)/{groupSeconds})
     ORDER BY create_date;
     """
-    c.execute(sql)
+    c.execute(sql.format(**{"groupSeconds": groupSeconds, "duration": durationMinutes}))
     result["hour_fields"] = [
         "create_date",
         "rt_input_v",
