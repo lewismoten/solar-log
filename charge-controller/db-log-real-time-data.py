@@ -33,6 +33,11 @@ def getValue(record):
             if currentAddress == address:
                 for i in range(size):
                   values.append(bulkAddresses[startAddress]["data"][currentAddress - startAddress + i])
+
+    # Most likely a communication issue...
+    if values[0] == None:
+        return None
+
     if "parts" in record:
         partedValues = {}
         for part in record["parts"]:
@@ -101,7 +106,7 @@ def readControllerData(address, count=1):
     if not isinstance(result, Exception) and result.function_code < 0x80:
         return result.bits if address < 0x3000 else result.registers
     else:
-        return [0xFFFF] * count;
+        return [None] * count;
 
 addresses = [];
 
