@@ -112,7 +112,7 @@ addresses = [];
 
 # Load up all meta data and determine what addresses we need
 for data in chargeController["data"]:
-    if data == "controller_real_time_data" or data == "controller_real_time_status":
+    if data == "controller_real_time_data" or data == "controller_real_time_status" or data == "controller_statistics":
         for record in chargeController["data"][data]:
             r = getRecord(record);
             record.update(r)
