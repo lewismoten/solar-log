@@ -37,7 +37,7 @@ try:
 
     # Get a brief history...
     # Get {maxRecords} records representing the past {durationMiutes} minutes, grouped by {groupSeconds}
-    maxRecords = 30
+    maxRecords = 100
     durationMinutes = 60
     groupSeconds = (durationMinutes * 60) / (maxRecords - 1)
 
