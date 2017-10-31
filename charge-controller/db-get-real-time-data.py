@@ -23,7 +23,7 @@ try:
     c = conn.cursor()
     result = {"hour": []}
     for tableName in chargeController["data"]:
-        if tableName == "controller_real_time_data" or tableName == "controller_real_time_status":
+        if tableName == "controller_real_time_data" or tableName == "controller_real_time_status" or tableName == "controller_settings":
             rowResult = {}
             sql = "SELECT * FROM %s ORDER BY create_date DESC LIMIT 1" % tableName
             c.execute(sql)

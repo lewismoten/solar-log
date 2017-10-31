@@ -112,7 +112,7 @@ addresses = [];
 
 # Load up all meta data and determine what addresses we need
 for data in chargeController["data"]:
-    if data == "controller_real_time_data" or data == "controller_real_time_status" or data == "controller_statistics":
+    if data == "controller_real_time_data" or data == "controller_real_time_status" or data == "controller_statistics" or data == "controller_settings":
         for record in chargeController["data"][data]:
             r = getRecord(record);
             record.update(r)
@@ -159,7 +159,7 @@ def log():
     c = conn.cursor()
 
     for data in chargeController["data"]:
-        if data == "controller_real_time_data" or data == "controller_real_time_status":
+        if data == "controller_real_time_data" or data == "controller_real_time_status" or data == "controller_statistics" or data == "controller_settings":
             sqlFields = []
             sqlTags = []
             sqlValues = []
