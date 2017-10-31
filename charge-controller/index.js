@@ -125,11 +125,16 @@ function tabActivated(event, ui) {
 
 function displayBattery() {
 
+
+  $(".battery-status").text(latestData.controller_real_time_status.rt_battery_status);
+  $(".charging-equipment-status").text(latestData.controller_real_time_status.rt_charging_equipment_status);
+
   updateBatteryVoltageGauge();
   updateBatteryAmpsGauge();
   updateBatteryWattsGauge();
   updateBatterySocGauge();
   updateBatteryTempGauge();
+  updateBatteryRemoteTempGauge();
 
   updateBatteryVoltageHour();
   updateBatteryAmpsHour();
@@ -137,11 +142,11 @@ function displayBattery() {
   updateBatterySocHour();
   updateBatteryTempHour();
 
-  updateBatteryVoltageTable();
-  updateBatteryAmpsTable();
-  updateBatteryWattsTable();
-  updateBatterySocTable();
-  updateBatteryTempTable();
+  // updateBatteryVoltageTable();
+  // updateBatteryAmpsTable();
+  // updateBatteryWattsTable();
+  // updateBatterySocTable();
+  // updateBatteryTempTable();
 
 }
 function displayLoad() {
@@ -154,9 +159,9 @@ function displayLoad() {
   updateLoadAmpsHour();
   updateLoadWattsHour();
 
-  updateLoadVoltageTable();
-  updateLoadAmpsTable();
-  updateLoadWattsTable();
+  // updateLoadVoltageTable();
+  // updateLoadAmpsTable();
+  // updateLoadWattsTable();
 
 }
 function displayInput() {
@@ -277,13 +282,14 @@ function getChart(selector, Constructor) {
   // Lazy-load chart as singleton to enable animation when charts are updated rather than recreated
   return charts[selector] = charts[selector] || new Constructor($(selector)[0]);
 }
-function mapHourField(name) {
-  var index = latestData.hour_fields.indexOf(name);
+function mapHourField() {
+  var indexes = Array.prototype.slice.call(arguments).map(function(name) {
+    return latestData.hour_fields.indexOf(name);
+  })
   return function mapRow(row) {
-    return [
-      moment.utc(row[0], "YYYY-MM-DD HH:mm:ss").local().toDate(),
-      row[index]
-    ];
+    var result = [moment.utc(row[0], "YYYY-MM-DD HH:mm:ss").local().toDate()]
+    indexes.forEach(function(i){result.push(row[i]);});
+    return result;
   }
 }
 function updateBatteryVoltageHour() {
@@ -513,9 +519,10 @@ function updateBatteryTempHour() {
   var chart = getChart(".battery-temp-hour", google.visualization.LineChart);
   var data = new google.visualization.DataTable();
   data.addColumn("datetime", "Time of Day");
-  data.addColumn("number", "\xB0F");
+  data.addColumn("number", "Battery \xB0F");
+  data.addColumn("number", "Remote \xB0F");
   data.addRows(
-    latestData.hour.map(mapHourField("rt_battery_temp"))
+    latestData.hour.map(mapHourField("rt_battery_temp", "rt_remote_battery_temp"))
   );
   var options = {
     legend: {
@@ -1022,6 +1029,50 @@ function updateBatteryTempGauge() {
   ]);
   var values = [
     fahrenheit(latestData.controller_real_time_data.rt_battery_temp),
+    fahrenheit(latestData.controller_settings.setting_battery_temp_warning_upper_limit),
+    fahrenheit(latestData.controller_settings.setting_battery_temp_warning_lower_limit)
+  ];
+
+  var min = Math.min.apply(Math, values) - 25;
+  var max = Math.max.apply(Math, values) + 26;
+  var diff = max - min;
+  var majorTicks = [min];
+  var n = 4;
+  var size = diff / n;
+  for(var i = 1; i < n; i++) {
+    majorTicks.push(Math.round(10 * (min + (size * i))) / 10);
+  }
+  majorTicks.push(max);
+
+  var options = {
+    min: min,
+    max: max,
+    width: 200,
+    height: 200,
+    redFrom: fahrenheit(latestData.controller_settings.setting_battery_temp_warning_upper_limit),
+    redTo: max,
+    yellowFrom: min,
+    yellowTo: fahrenheit(latestData.controller_settings.setting_battery_temp_warning_lower_limit),
+    yellowColor: "#4684ee",
+    minorTicks: 5,
+    animation: {
+      dration: 400,
+      easing: "inAndOut"
+    },
+    majorTicks: majorTicks
+  };
+  chart.draw(dataTable, options);
+}
+function updateBatteryRemoteTempGauge() {
+  var chart = getChart(".battery-remote-temp-gauge", google.visualization.Gauge);
+  //var element = $(".battery-volts-gauge");
+  //var chart = new google.visualization.Gauge(element[0]);
+  var dataTable = google.visualization.arrayToDataTable([
+    ["Label", "Value"],
+    ["\xB0F", fahrenheit(latestData.controller_real_time_data.rt_remote_battery_temp)]
+  ]);
+  var values = [
+    fahrenheit(latestData.controller_real_time_data.rt_remote_battery_temp),
     fahrenheit(latestData.controller_settings.setting_battery_temp_warning_upper_limit),
     fahrenheit(latestData.controller_settings.setting_battery_temp_warning_lower_limit)
   ];

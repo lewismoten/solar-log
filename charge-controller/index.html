@@ -48,34 +48,53 @@
       <li><a href="#tabs-9">Information</a></li>
     </ul>
     <div id="tabs-1">
+      <div>
+          Battery Status:
+          <span class="battery-status"></span>
+      </div>
+      <div>
+          Charging Equipment Status:
+          <span class="charging-equipment-status"></span>
+      </div>
       <table width="100%" class="battery-table">
         <tr>
           <td class="table-cell">Charging Volts</td>
           <td class="table-cell">Charging Amps</td>
           <td class="table-cell">Charging Watts</td>
-          <td class="table-cell">State of Charge</td>
-          <td class="table-cell">Temperature</td>
+          <!-- <td class="table-cell" rowspan="6">
+
+            <div class="battery-volts-table"></div>
+            <div class="battery-amps-table"></div>
+            <div class="battery-watts-table"></div>
+            <div class="battery-soc-table"></div>
+            <div class="battery-temp-table"></div>
+
+          </td> -->
         </tr>
         <tr>
           <td class="table-cell"><div class="gauge battery-volts-gauge"></div></td>
           <td class="table-cell"><div class="gauge battery-amps-gauge"></div></td>
           <td class="table-cell"><div class="gauge battery-watts-gauge"></div></td>
-          <td class="table-cell"><div class="gauge battery-soc-gauge"></div></td>
-          <td class="table-cell"><div class="gauge battery-temp-gauge"></div></td>
         </tr>
         <tr>
           <td class="table-cell battery-volts-hour"></td>
           <td class="table-cell battery-amps-hour"></td>
           <td class="table-cell battery-watts-hour"></td>
-          <td class="table-cell battery-soc-hour"></td>
-          <td class="table-cell battery-temp-hour"></td>
+        </tr>
+
+        <tr>
+          <td class="table-cell">State of Charge</td>
+          <td class="table-cell">Battery Temperature</td>
+          <td class="table-cell">Remote Battery Temperature</td>
         </tr>
         <tr>
-          <td class="table-cell battery-volts-table"></td>
-          <td class="table-cell battery-amps-table"></td>
-          <td class="table-cell battery-watts-table"></td>
-          <td class="table-cell battery-soc-table"></td>
-          <td class="table-cell battery-temp-table"></td>
+          <td class="table-cell"><div class="gauge battery-soc-gauge"></div></td>
+          <td class="table-cell"><div class="gauge battery-temp-gauge"></div></td>
+          <td class="table-cell"><div class="gauge battery-remote-temp-gauge"></div></td>
+        </tr>
+        <tr>
+          <td class="table-cell battery-soc-hour"></td>
+          <td colspan="2" class="table-cell battery-temp-hour"></td>
         </tr>
       </table>
     </div>

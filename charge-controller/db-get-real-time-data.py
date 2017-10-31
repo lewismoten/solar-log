@@ -52,6 +52,7 @@ try:
         TRUNCATE(AVG(rt_battery_w), {decimals}),
         TRUNCATE(AVG(rt_battery_soc) * 100, {decimals}),
         TRUNCATE((AVG(rt_battery_temp) * (9/5)) + 32, {decimals}),
+        TRUNCATE((AVG(rt_remote_battery_temp) * (9/5)) + 32, {decimals}),
         TRUNCATE(AVG(rt_load_v), {decimals}),
         TRUNCATE(AVG(rt_load_a), {decimals}),
         TRUNCATE(AVG(rt_load_w), {decimals})
@@ -74,6 +75,7 @@ try:
         "rt_battery_w",
         "rt_battery_soc",
         "rt_battery_temp",
+        "rt_remote_battery_temp",
         "rt_load_v",
         "rt_load_a",
         "rt_load_w"
