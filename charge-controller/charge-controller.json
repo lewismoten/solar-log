@@ -756,9 +756,9 @@
         "name": "Battery status",
         "type": "multipart",
         "parts": [
-          {"part": 0, "mask": 15, "shift": 0, "name": "Battery Voltage Status", "enum": ["Normal", "Overvolt", "Under Volt", "Low Volt Disconnect", "Fault"]},
-          {"part": 0, "mask": 15, "shift": 4, "name": "Battery Temperature Status", "enum": ["Normal", "Over Temp. (Higher than the warning settings)", "Low Temp. (Lower than the warning settings)"]},
-          {"part": 0, "mask": 1, "shift": 8, "name": "Battery internal resistance abnormal"},
+          {"part": 0, "mask": 15, "shift": 0, "name": "Voltage", "enum": ["Normal", "Overvolt", "Under Volt", "Low Volt Disconnect", "Fault"]},
+          {"part": 0, "mask": 15, "shift": 4, "name": "Temperature", "enum": ["Normal", "Over Temp. (Higher than the warning settings)", "Low Temp. (Lower than the warning settings)"]},
+          {"part": 0, "mask": 1, "shift": 8, "name": "Internal resistance abnormal"},
           {"part": 0, "mask": 1, "shift": 15, "name": "Wrong identification for rated voltage"}
         ],
         "field": "rt_battery_status"
@@ -768,7 +768,10 @@
         "name": "Charging equipment status",
         "type": "multipart",
         "parts": [
-          {"part": 0, "mask": 3, "shift": 14, "name": "Charging Equipment Voltage Status", "enum": ["Normal", "No power connected", "Higher volt input", "Input volt error."]},
+          {"part": 0, "mask": 1, "shift": 0, "showName": false, "name": "Status", "enum": ["Standby", "Running"]},
+          {"part": 0, "mask": 1, "shift": 1, "name": "Charging", "note": "always 1 unless not charging. docs say this means fault. others seeing fault always on unless not charging"},
+          {"part": 0, "mask": 3, "shift": 2, "name": "Mode", "enum": ["None", "Float", "Boost", "Equalization"]},
+          {"part": 0, "mask": 3, "shift": 14, "show0": false, "name": "Voltage Status", "enum": ["Normal", "No power connected", "Higher volt input", "Input volt error."]},
           {"part": 0, "mask": 1, "shift": 13, "name": "Charging MOSFET is short."},
           {"part": 0, "mask": 1, "shift": 12, "name": "Charging or Anti-reverse MOSFET is short."},
           {"part": 0, "mask": 1, "shift": 11, "name": "Anti-reverse MOSFET is short."},
@@ -776,10 +779,7 @@
           {"part": 0, "mask": 1, "shift": 9, "name": "The load is Over current."},
           {"part": 0, "mask": 1, "shift": 8, "name": "The load is short."},
           {"part": 0, "mask": 1, "shift": 7, "name": "Load MOSFET is short."},
-          {"part": 0, "mask": 1, "shift": 4, "name": "PV Input is short."},
-          {"part": 0, "mask": 3, "shift": 2, "name": "Charging Equipment Status", "enum": ["No charging", "Float", "Boost", "Equalization"]},
-          {"part": 0, "mask": 1, "shift": 1, "name": "Charging Equipment Fault Status", "enum": ["Normal", "Fault"]},
-          {"part": 0, "mask": 1, "shift": 0, "name": "Charging Equipment Running Status", "enum": ["Standby", "Running"]}
+          {"part": 0, "mask": 1, "shift": 4, "name": "PV Input is short."}
         ],
         "field": "rt_charging_equipment_status"
       },
