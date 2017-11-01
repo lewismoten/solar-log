@@ -48,14 +48,20 @@
       <li><a href="#tabs-9">Information</a></li>
     </ul>
     <div id="tabs-1">
-      <div>
-          Battery Status:
-          <span class="battery-status"></span>
-      </div>
-      <div>
-          Charging Equipment Status:
-          <span class="charging-equipment-status"></span>
-      </div>
+      <table border="1">
+          <tr>
+              <td>Battery Status</td>
+              <td class="battery-status"></td>
+          </tr>
+          <tr>
+              <td>Charging Equipment Status</td>
+              <td class="charging-status"></td>
+          </tr>
+          <tr>
+              <td>Discharging Equipment Status</td>
+              <td class="discharging-status"></td>
+          </tr>
+      </table>
       <table width="100%" class="battery-table">
         <tr>
           <td class="table-cell">Charging Volts</td>
@@ -84,17 +90,12 @@
 
         <tr>
           <td class="table-cell">State of Charge</td>
-          <td class="table-cell">Battery Temperature</td>
-          <td class="table-cell">Remote Battery Temperature</td>
         </tr>
         <tr>
           <td class="table-cell"><div class="gauge battery-soc-gauge"></div></td>
-          <td class="table-cell"><div class="gauge battery-temp-gauge"></div></td>
-          <td class="table-cell"><div class="gauge battery-remote-temp-gauge"></div></td>
         </tr>
         <tr>
           <td class="table-cell battery-soc-hour"></td>
-          <td colspan="2" class="table-cell battery-temp-hour"></td>
         </tr>
       </table>
     </div>
@@ -151,6 +152,28 @@
     </div>
     <div id="tabs-5">
       <div class="raw-data"></div>
+    </div>
+    <div id="tabs-6">
+      <table width="100%" class="battery-table">
+        <tr>
+          <td class="table-cell">Battery</td>
+          <td class="table-cell">Remote Battery</td>
+        </tr>
+        <tr>
+          <td class="table-cell"><div class="gauge temp-battery-gauge"></div></td>
+          <td class="table-cell"><div class="gauge temp-battery-remote-gauge"></div></td>
+        </tr>
+        <tr>
+          <td class="table-cell">Power Component</td>
+          <td class="table-cell">Case</td>
+        </tr>
+        <tr>
+          <td class="table-cell"><div class="gauge temp-power-gauge"></div></td>
+          <td class="table-cell"><div class="gauge temp-case-gauge"></div></td>
+        </tr>
+      </table>
+      <div class="temp-hour"></div>
+
     </div>
   </div>
 

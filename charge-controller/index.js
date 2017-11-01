@@ -117,30 +117,62 @@ function tabActivated(event, ui) {
     case 2:
       displayInput();
       break;
+    case 5:
+      displayTemperature();
+      break;
     default:
       //console.log("tab activated: %s", index);
       break;
   }
 }
 
+function getStatus(name) {
+  var value = latestData.controller_real_time_status[name];
+  return getStatusFrom(value, findMeta(name)).join(", ");
+}
+function getStatusFrom(value, meta) {
+  var status = [];
+  meta.parts.forEach(function(part) {
+    var subValue = (value >> part.shift) & part.mask;
+    if(part.enum) {
+
+      if(part.show0 === false && subValue == 0) {
+        return;
+      }
+      if(part.showName === false) {
+        status.push(part.enum[subValue]);
+      } else {
+        status.push(part.name + ": " + part.enum[subValue]);
+      }
+    } else if(subValue) {
+      status.push(part.name);
+    }
+  });
+  return status;
+
+}
+function displayTemperature() {
+  updateTemperatureBatteryGauge();
+  updateTemperatureCaseGauge();
+  updateTemperaturePowerGauge();
+  updateTemperatureBatteryRemoteGauge();
+  updateTemperatureHour();
+}
 function displayBattery() {
 
-
-  $(".battery-status").text(latestData.controller_real_time_status.rt_battery_status);
-  $(".charging-equipment-status").text(latestData.controller_real_time_status.rt_charging_equipment_status);
+  $(".battery-status").text(getStatus("rt_battery_status"));
+  $(".charging-status").text(getStatus("rt_charging_equipment_status"));
+  $(".discharging-status").text(getStatus("rt_discharging_equipment_status"));
 
   updateBatteryVoltageGauge();
   updateBatteryAmpsGauge();
   updateBatteryWattsGauge();
   updateBatterySocGauge();
-  updateBatteryTempGauge();
-  updateBatteryRemoteTempGauge();
 
   updateBatteryVoltageHour();
   updateBatteryAmpsHour();
   updateBatteryWattsHour();
   updateBatterySocHour();
-  updateBatteryTempHour();
 
   // updateBatteryVoltageTable();
   // updateBatteryAmpsTable();
@@ -512,17 +544,19 @@ function updateBatterySocHour() {
   };
   chart.draw(data, options);
 }
-function updateBatteryTempHour() {
+function updateTemperatureHour() {
   if (!latestData.hasOwnProperty("hour")) {
     return;
   }
-  var chart = getChart(".battery-temp-hour", google.visualization.LineChart);
+  var chart = getChart(".temp-hour", google.visualization.LineChart);
   var data = new google.visualization.DataTable();
   data.addColumn("datetime", "Time of Day");
   data.addColumn("number", "Battery \xB0F");
-  data.addColumn("number", "Remote \xB0F");
+  data.addColumn("number", "Remote Battery \xB0F");
+  data.addColumn("number", "Case \xB0F");
+  data.addColumn("number", "Power Component \xB0F");
   data.addRows(
-    latestData.hour.map(mapHourField("rt_battery_temp", "rt_remote_battery_temp"))
+    latestData.hour.map(mapHourField("rt_battery_temp", "rt_remote_battery_temp", "rt_case_temp", "rt_power_component_temp"))
   );
   var options = {
     legend: {
@@ -1019,8 +1053,8 @@ function updateBatterySocGauge() {
 function fahrenheit(c) {
   return (c * (9/5)) + 32;
 }
-function updateBatteryTempGauge() {
-  var chart = getChart(".battery-temp-gauge", google.visualization.Gauge);
+function updateTemperatureBatteryGauge() {
+  var chart = getChart(".temp-battery-gauge", google.visualization.Gauge);
   //var element = $(".battery-volts-gauge");
   //var chart = new google.visualization.Gauge(element[0]);
   var dataTable = google.visualization.arrayToDataTable([
@@ -1063,8 +1097,98 @@ function updateBatteryTempGauge() {
   };
   chart.draw(dataTable, options);
 }
-function updateBatteryRemoteTempGauge() {
-  var chart = getChart(".battery-remote-temp-gauge", google.visualization.Gauge);
+function updateTemperatureCaseGauge() {
+  var chart = getChart(".temp-case-gauge", google.visualization.Gauge);
+  //var element = $(".battery-volts-gauge");
+  //var chart = new google.visualization.Gauge(element[0]);
+  var dataTable = google.visualization.arrayToDataTable([
+    ["Label", "Value"],
+    ["\xB0F", fahrenheit(latestData.controller_real_time_data.rt_case_temp)]
+  ]);
+  var values = [
+    fahrenheit(latestData.controller_real_time_data.rt_battery_temp),
+    fahrenheit(latestData.controller_settings.setting_battery_temp_warning_lower_limit),
+    fahrenheit(latestData.controller_settings.setting_control_inner_temp_upper_limit),
+    fahrenheit(latestData.controller_settings.setting_control_inner_temp_upper_limit_recover),
+  ];
+
+  var min = Math.min.apply(Math, values) - 25;
+  var max = fahrenheit(latestData.controller_settings.setting_control_inner_temp_upper_limit);
+  var diff = max - min;
+  var majorTicks = [min];
+  var n = 4;
+  var size = diff / n;
+  for(var i = 1; i < n; i++) {
+    majorTicks.push(Math.round(10 * (min + (size * i))) / 10);
+  }
+  majorTicks.push(max);
+
+  var options = {
+    min: min,
+    max: max,
+    width: 200,
+    height: 200,
+    redFrom: fahrenheit(latestData.controller_settings.setting_control_inner_temp_upper_limit_recover),
+    redTo: fahrenheit(latestData.controller_settings.setting_control_inner_temp_upper_limit),
+    yellowFrom: min,
+    yellowTo: fahrenheit(latestData.controller_settings.setting_battery_temp_warning_lower_limit),
+    yellowColor: "#4684ee",
+    minorTicks: 5,
+    animation: {
+      dration: 400,
+      easing: "inAndOut"
+    },
+    majorTicks: majorTicks
+  };
+  chart.draw(dataTable, options);
+}
+function updateTemperaturePowerGauge() {
+  var chart = getChart(".temp-power-gauge", google.visualization.Gauge);
+  //var element = $(".battery-volts-gauge");
+  //var chart = new google.visualization.Gauge(element[0]);
+  var dataTable = google.visualization.arrayToDataTable([
+    ["Label", "Value"],
+    ["\xB0F", fahrenheit(latestData.controller_real_time_data.rt_power_component_temp)]
+  ]);
+  var values = [
+    fahrenheit(latestData.controller_real_time_data.rt_battery_temp),
+    fahrenheit(latestData.controller_settings.setting_battery_temp_warning_lower_limit),
+    fahrenheit(latestData.controller_settings.setting_power_component_temp_upper_limit),
+    fahrenheit(latestData.controller_settings.setting_power_component_temp_upper_limit_recover),
+  ];
+
+  var min = Math.min.apply(Math, values) - 25;
+  var max = fahrenheit(latestData.controller_settings.setting_power_component_temp_upper_limit);
+  var diff = max - min;
+  var majorTicks = [min];
+  var n = 4;
+  var size = diff / n;
+  for(var i = 1; i < n; i++) {
+    majorTicks.push(Math.round(10 * (min + (size * i))) / 10);
+  }
+  majorTicks.push(max);
+
+  var options = {
+    min: min,
+    max: max,
+    width: 200,
+    height: 200,
+    redFrom: fahrenheit(latestData.controller_settings.setting_power_component_temp_upper_limit_recover),
+    redTo: fahrenheit(latestData.controller_settings.setting_power_component_temp_upper_limit),
+    yellowFrom: min,
+    yellowTo: fahrenheit(latestData.controller_settings.setting_battery_temp_warning_lower_limit),
+    yellowColor: "#4684ee",
+    minorTicks: 5,
+    animation: {
+      dration: 400,
+      easing: "inAndOut"
+    },
+    majorTicks: majorTicks
+  };
+  chart.draw(dataTable, options);
+}
+function updateTemperatureBatteryRemoteGauge() {
+  var chart = getChart(".temp-battery-remote-gauge", google.visualization.Gauge);
   //var element = $(".battery-volts-gauge");
   //var chart = new google.visualization.Gauge(element[0]);
   var dataTable = google.visualization.arrayToDataTable([
