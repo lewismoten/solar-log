@@ -105,6 +105,10 @@ def readControllerData(address, count=1):
     result = readControllerDataNow(address, count)
     if not isinstance(result, Exception) and result.function_code < 0x80:
         return result.bits if address < 0x3000 else result.registers
+    # last try
+    result = readControllerDataNow(address, count)
+    if not isinstance(result, Exception) and result.function_code < 0x80:
+        return result.bits if address < 0x3000 else result.registers
     else:
         return [None] * count;
 
