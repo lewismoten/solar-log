@@ -62,18 +62,58 @@ function scheduleDataRequests() {
 function getAllData() {
    return $.getJSON("./db-get-all.py")
       .then(gotLatestData)
+      .then(getStatistics)
       .fail(gotLatestDataFailed);
 }
 function getRealTimeData() {
    return $.getJSON("./db-get-real-time-data.py")
-      .then(gotRealTimeData)
-      .fail(gotRealTimeDataFailed);
+      .fail(gotRealTimeDataFailed)
+      .then(gotRealTimeData);
 }
 
+var statistics = {};
+
+function getStatistics() {
+  var type = "day";
+  var format = "YYYY-MM-DD HH:mm:ss";
+  var count = 200;
+  var options = {
+    current: {
+      start: moment().startOf(type).format(format),
+      end: moment().endOf(type).format(format),
+      count: count
+    },
+    prior: {
+      start: moment().subtract(1, type).startOf(type).format(format),
+      end: moment().subtract(1, type).endOf(type).format(format),
+      count: count
+    },
+    historical: {
+      start: moment().subtract(13, type).startOf(type).format(format),
+      end: moment().subtract(2, type).endOf(type).format(format),
+      count: count
+    }
+  }
+
+  return $.when(
+    $.getJSON("./db-get-statistics.py", options.current),
+    $.getJSON("./db-get-statistics.py", options.prior),
+    $.getJSON("./db-get-statistics.py", options.historical)
+  ).then(function(current, prior, historical) {
+    statistics.current = current[0];
+    statistics.prior = prior[0];
+    statistics.historical = historical[0];
+  });
+
+}
 function gotLatestDataFailed(jqXHR, textStatus, errorThrown) {
   displayError("Get latest data failed", errorThrown);
 }
 function gotRealTimeDataFailed(jqXHR, textStatus, errorThrown) {
+  if(getRealTimeDataRequestInterval) {
+    clearInterval(getRealTimeDataRequestInterval);
+    getRealTimeDataRequestInterval = void 0;
+  }
   displayError("Get real time data failed", errorThrown);
 }
 
@@ -117,6 +157,9 @@ function tabActivated(event, ui) {
     case 2:
       displayInput();
       break;
+    case 4:
+      displayStatistics();
+      break;
     case 5:
       displayTemperature();
       break;
@@ -150,6 +193,9 @@ function getStatusFrom(value, meta) {
   });
   return status;
 
+}
+function displayStatistics() {
+  updateInputWattsHistory();
 }
 function displayTemperature() {
   updateTemperatureBatteryGauge();
@@ -514,6 +560,49 @@ function updateInputWattsHour() {
   var options = {
     legend: {
       position: "none"
+    },
+    animation:{
+        duration: 1000,
+        easing: 'out'
+      }
+  };
+  chart.draw(data, options);
+}
+function getStatisticsFieldIndex(name) {
+  return statistics.current.fields.indexOf(name);
+}
+function updateInputWattsHistory(current, prior, historical) {
+
+  if (!latestData.hasOwnProperty("hour")) {
+    return;
+  }
+  var chart = getChart(".stats-input-watts", google.visualization.LineChart);
+  var data = new google.visualization.DataTable();
+  data.addColumn("timeofday", "Time of Day");
+  data.addColumn("number", "Today");
+  data.addColumn("number", "Yesterday");
+  data.addColumn("number", "Prior 7 Days");
+
+  var i = getStatisticsFieldIndex("rt_input_w");
+  var start = moment(statistics.current.parameters.start);
+  var seconds = statistics.current.parameters.seconds;
+  var time;
+  for(var n = 0; n < statistics.current.parameters.count; n++) {
+    time = start.format("HH:mm:ss");
+    var row = [time.split(":").map(function(foo){return Number(foo);})];
+    row.push(valueOf(statistics.current));
+    row.push(valueOf(statistics.prior));
+    row.push(valueOf(statistics.historical));
+    data.addRows([row]);
+    start.add(seconds, "seconds");
+  }
+  function valueOf(type) {
+    var match = type.data.filter(function(foo) {return foo[0] === time;})[0];
+    return match ? match[i] : null
+  }
+  var options = {
+    legend: {
+//      position: "none"
     },
     animation:{
         duration: 1000,
