@@ -22,9 +22,11 @@ Verify the following can run: `python charge-controller/all.py`
   * * * * * cd /var/www/html/charge-controller && /usr/bin/python /var/www/html/charge-controller/db-log-real-time-data.py
   # Get all data at 12:00 am
   0 0 * * * cd /var/www/html/charge-controller && /usr/bin/python  /var/www/html/charge-controller/db-log-all.py
-  # Synch real-time clock at 12:01 am & 2:01 am (syncs after DST affected)
-  0 1 * * * cd /var/www/html/charge-controller && /usr/bin/python  /var/www/html/charge-controller/modbus-sync-clock.py
-  2 1 * * * cd /var/www/html/charge-controller && /usr/bin/python  /var/www/html/charge-controller/modbus-sync-clock.py
+  # Synch real-time clock at 12:01 am & 2:01 am
+  # Done twice to sync after Daylight Saving Time switch
+  # NOTE: Statistics reset at 00:00 am
+  # NOTE: Without power, charge controller resets time to February 14, 2017 12:00 am
+  1 0,2 * * * cd /var/www/html/charge-controller && /usr/bin/python  /var/www/html/charge-controller/modbus-sync-clock.py
 ```
 1. Verify the script is running `sudo service cron status`
 
