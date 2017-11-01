@@ -782,6 +782,27 @@
           {"part": 0, "mask": 1, "shift": 0, "name": "Charging Equipment Running Status", "enum": ["Standby", "Running"]}
         ],
         "field": "rt_charging_equipment_status"
+      },
+      {
+        "address": "0x3202",
+        "name": "Discharging equipment status",
+        "type": "multipart",
+        "parts": [
+          {"part": 0, "mask": 1, "shift": 0, "showName": false, "name": "Status", "enum": ["Standby", "Running"]},
+          {"part": 0, "mask": 1, "shift": 1, "name": "Fault"},
+
+          {"part": 0, "mask": 3, "shift": 14, "name": "Status", "enum": ["Normal", "Low", "High", "No Access"]},
+          {"part": 0, "mask": 3, "shift": 12, "name": "Load", "enum": ["Light Load", "Moderate", "Rated", "Overload"]},
+          {"part": 0, "mask": 1, "shift": 11, "name": "Short circuit."},
+          {"part": 0, "mask": 1, "shift": 10, "name": "Unable to discharge."},
+          {"part": 0, "mask": 1, "shift": 9, "name": "Unable to stop discharging."},
+          {"part": 0, "mask": 1, "shift": 8, "name": "Output voltage abnormal."},
+          {"part": 0, "mask": 1, "shift": 7, "name": "Input overpressure."},
+          {"part": 0, "mask": 1, "shift": 6, "name": "High voltage side short circuit."},
+          {"part": 0, "mask": 1, "shift": 5, "name": "Boost overpressure."},
+          {"part": 0, "mask": 1, "shift": 4, "name": "Output overpressue."}
+        ],
+        "field": "rt_discharging_equipment_status"
       }
     ]
   }
