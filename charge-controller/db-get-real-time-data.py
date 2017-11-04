@@ -37,13 +37,22 @@ try:
 
     # Get a brief history...
     # Get {maxRecords} records representing the past {durationMiutes} minutes, grouped by {groupSeconds}
-    maxRecords = 60
+    secondsInADay = 24 * 60 * 60
+    maxRecords = 60//86400
     durationMinutes = 60
     groupSeconds = (durationMinutes * 60) / (maxRecords - 1)
+    parms = {"groupSeconds": groupSeconds, "duration": durationMinutes, "decimals": 2, "day": secondsInADay}
+    #result["parms"] = parms
+
+    # handle 11:59 pm to 12:01 am (rite now appears on same date with modulous rollver)
+    #        --FLOOR((FLOOR(UNIX_TIMESTAMP(create_date) / {day}) * {day}) + (FLOOR((UNIX_TIMESTAMP(create_date) % {day})/{groupSeconds}) * {groupSeconds})),
+    # --GROUP BY
+    # --    FLOOR((FLOOR(UNIX_TIMESTAMP(create_date) / {day}) * {day}) + (FLOOR((UNIX_TIMESTAMP(create_date) % {day})/{groupSeconds}) * {groupSeconds}))
+    #     --FLOOR((FLOOR(UNIX_TIMESTAMP(create_date) / {day}) * {day}) + FLOOR((UNIX_TIMESTAMP(create_date) % {day})/{groupSeconds}))
 
     sql = """
     SELECT
-        DATE_FORMAT(FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(create_date)/{groupSeconds}) * {groupSeconds}), '%Y-%m-%d %H:%i:%s'),
+        UNIX_TIMESTAMP(create_date),
         TRUNCATE(AVG(rt_input_v), {decimals}),
         TRUNCATE(AVG(rt_input_a), {decimals}),
         TRUNCATE(AVG(rt_input_w), {decimals}),
@@ -61,12 +70,17 @@ try:
     FROM
         controller_real_time_data
     WHERE
-        create_date >= DATE_SUB(NOW(), INTERVAL {duration} MINUTE)
+        create_date between DATE_SUB(now(), INTERVAL {duration} MINUTE) and now()
     GROUP BY
-        FLOOR(UNIX_TIMESTAMP(create_date)/{groupSeconds})
+        DATE(create_date),
+        HOUR(create_date),
+        MINUTE(create_date) DIV 2
     ORDER BY create_date;
     """
-    c.execute(sql.format(**{"groupSeconds": groupSeconds, "duration": durationMinutes, "decimals": 2}))
+    #parameters["time"] = "DATE_FORMAT(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(create_date) % {day})/{seconds}) * {seconds}), '%H:%i:%s')".format(**parameters)
+
+    #result["sql"] = sql.format(**parms)
+    c.execute(sql.format(**parms))
     result["hour_fields"] = [
         "create_date",
         "rt_input_v",

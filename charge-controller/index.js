@@ -75,7 +75,7 @@ var statistics = {};
 
 function getStatistics() {
   var type = "day";
-  var format = "YYYY-MM-DD HH:mm:ss";
+  var format = "YYYY-MM-DD";
   var count = 200;
   var options = {
     current: {
@@ -365,7 +365,7 @@ function mapHourField() {
     return latestData.hour_fields.indexOf(name);
   })
   return function mapRow(row) {
-    var result = [moment.utc(row[0], "YYYY-MM-DD HH:mm:ss").local().toDate()]
+    var result = [moment.unix(Number(row[0])).local().toDate()]
     indexes.forEach(function(i){result.push(row[i]);});
     return result;
   }
@@ -584,17 +584,24 @@ function updateInputWattsHistory(current, prior, historical) {
   data.addColumn("number", "Prior 7 Days");
 
   var i = getStatisticsFieldIndex("rt_input_w");
-  var start = moment(statistics.current.parameters.start);
-  var seconds = statistics.current.parameters.seconds;
-  var time;
-  for(var n = 0; n < statistics.current.parameters.count; n++) {
-    time = start.format("HH:mm:ss");
+  // always show 1 day, 5 minute increments
+  var start = new moment().startOf("day");//start.format("HH:mm:ss");
+  // need to sync up actual time - otherwise we are in utc
+  var end = start.clone().endOf("day");
+
+  while(start.isBefore(end)) {
+    var time = start.format("HH:mm:ss");
     var row = [time.split(":").map(function(foo){return Number(foo);})];
     row.push(valueOf(statistics.current));
     row.push(valueOf(statistics.prior));
     row.push(valueOf(statistics.historical));
-    data.addRows([row]);
-    start.add(seconds, "seconds");
+    if(row.some(function(r) {
+      return typeof r === "number" && r > 0;
+    })) {
+      data.addRows([row]);
+    }
+    //start.add(seconds, "seconds");
+    start.add(5, "minutes");
   }
   function valueOf(type) {
     var match = type.data.filter(function(foo) {return foo[0] === time;})[0];

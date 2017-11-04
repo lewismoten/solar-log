@@ -21,13 +21,13 @@ form = cgi.FieldStorage()
 parameters = {}
 
 try:
-  start = datetime.strptime(form.getvalue("start"), "%Y-%m-%d %H:%M:%S")
+  start = datetime.strptime(form.getvalue("start") + " 00:00:00", "%Y-%m-%d %H:%M:%S")
 except Exception as e:
   result["error"] = e
   done()
 
 try:
-  end = datetime.strptime(form.getvalue("end"), "%Y-%m-%d %H:%M:%S")
+  end = datetime.strptime(form.getvalue("end") + " 23:59:59", "%Y-%m-%d %H:%M:%S")
 except Exception as e:
   result["error"] = e
   done()
@@ -64,8 +64,6 @@ result = {
 }
 
 try:
-    with open("charge-controller.json", mode="r", encoding="utf-8") as data:
-        chargeController = json.load(data)
     with open("db-config.json", mode="r", encoding="utf-8") as f:
         db = json.load(f)
 
@@ -78,11 +76,11 @@ try:
 
     c = conn.cursor()
 
-    parameters["time"] = "DATE_FORMAT(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(create_date) % {day})/{seconds}) * {seconds}), '%H:%i:%s')".format(**parameters)
+    parameters["time"] = "DATE_FORMAT(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(create_date) % {day})/{seconds}) * {seconds}), '%H:%i')".format(**parameters)
 
     sql = """
     SELECT
-        {time},
+        DATE_FORMAT(create_date, '%H:%i:00'),
         TRUNCATE(AVG(rt_input_v), {decimals}),
         TRUNCATE(AVG(rt_input_a), {decimals}),
         TRUNCATE(AVG(rt_input_w), {decimals}),
@@ -102,9 +100,11 @@ try:
     WHERE
         create_date BETWEEN '{start}' AND '{end}'
     GROUP BY
-        {time}
+        HOUR(create_date),
+        MINUTE(create_date) DIV 5
     ORDER BY
-        {time}
+        HOUR(create_date),
+        MINUTE(create_date) DIV 5
     ;
     """
     c.execute(sql.format(**parameters))

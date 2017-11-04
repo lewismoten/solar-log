@@ -149,6 +149,7 @@ for address in addresses:
 
 client = getClient()
 def log():
+    #print("logging...")
     # request data from charge controller
     if client.connect():
         for key in sorted(bulkAddresses.keys()):
@@ -172,9 +173,12 @@ def log():
                 sqlTags.append("%s")
                 sqlValues.append(getValue(record))
             sql = "INSERT INTO " + data + " (" + ", ".join(sqlFields) + ") VALUES (" + ", ".join(sqlTags) + ")"
+            #print(sql)
+            #print(sqlValues)
             c.execute(sql, sqlValues)
             conn.commit()
     c.close()
+    #print("...logged")
 # we want to long every 10 seconds, for 1 minute
 # 0, 10, 20, 30, 40, 50 ... do not log 60, that's when the next job starts
 for i in range(5):
