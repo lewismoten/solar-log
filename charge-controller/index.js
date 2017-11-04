@@ -601,7 +601,7 @@ function updateInputWattsHistory(current, prior, historical) {
       data.addRows([row]);
     }
     //start.add(seconds, "seconds");
-    start.add(5, "minutes");
+    start.add(15, "minutes");
   }
   function valueOf(type) {
     var match = type.data.filter(function(foo) {return foo[0] === time;})[0];

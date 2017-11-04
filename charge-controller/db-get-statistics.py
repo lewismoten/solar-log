@@ -20,44 +20,14 @@ form = cgi.FieldStorage()
 
 parameters = {}
 
-try:
-  start = datetime.strptime(form.getvalue("start") + " 00:00:00", "%Y-%m-%d %H:%M:%S")
-except Exception as e:
-  result["error"] = e
-  done()
+now = datetime.now()
+start = form.getvalue("start", now.strftime("%Y-%m-%d"))
+end = form.getvalue("end", now.strftime("%Y-%m-%d"))
 
-try:
-  end = datetime.strptime(form.getvalue("end") + " 23:59:59", "%Y-%m-%d %H:%M:%S")
-except Exception as e:
-  result["error"] = e
-  done()
-
-try:
-  count = int(form.getvalue("count", 50))
-  if count > 1000:
-    count = 1000
-  if count < 1:
-    count = 1
-except Exception as e:
-  result["error"] = e
-  done()
-
-totalSeconds = (end - start).total_seconds() + 1
-
-if totalSeconds < 1:
-    result["error"] = "invalid date range"
-    done()
-
-secondsInADay = 24 * 60 * 60
-if totalSeconds > secondsInADay:
-    totalSeconds = secondsInADay
 parameters = {
     "start": start,
     "end": end,
-    "seconds": int(totalSeconds / count),
-    "count": count,
-    "decimals": 2,
-    "day": secondsInADay
+    "decimals": 2
 }
 result = {
   "parameters": parameters
@@ -76,11 +46,11 @@ try:
 
     c = conn.cursor()
 
-    parameters["time"] = "DATE_FORMAT(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(create_date) % {day})/{seconds}) * {seconds}), '%H:%i')".format(**parameters)
+    #parameters["time"] = "DATE_FORMAT(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(create_date) % {day})/{seconds}) * {seconds}), '%H:%i')".format(**parameters)
 
     sql = """
     SELECT
-        DATE_FORMAT(create_date, '%H:%i:00'),
+        day_grouping.start,
         TRUNCATE(AVG(rt_input_v), {decimals}),
         TRUNCATE(AVG(rt_input_a), {decimals}),
         TRUNCATE(AVG(rt_input_w), {decimals}),
@@ -97,14 +67,13 @@ try:
         TRUNCATE(AVG(rt_load_w), {decimals})
     FROM
         controller_real_time_data
+        INNER JOIN day_grouping ON
+            duration = 15
+            and time(create_date) BETWEEN start and stop
     WHERE
-        create_date BETWEEN '{start}' AND '{end}'
+        create_date BETWEEN '{start} 00:00:00' AND '{end} 23:59:59'
     GROUP BY
-        HOUR(create_date),
-        MINUTE(create_date) DIV 5
-    ORDER BY
-        HOUR(create_date),
-        MINUTE(create_date) DIV 5
+       day_grouping.start
     ;
     """
     c.execute(sql.format(**parameters))
@@ -130,8 +99,6 @@ try:
         "rt_load_w"
     ]
 
-
-    conn.commit()
     c.close()
 except Exception as e:
     result = {"error": str(e), "type": type(e)}
