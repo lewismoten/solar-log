@@ -38,6 +38,7 @@ function googleChartsLoaded() {
   getChargeControllerProtocol()
     .then(getAllData)
     .then(scheduleDataRequests);
+    //.then(getStatistics)
 }
 
 function getChargeControllerProtocol() {
@@ -62,7 +63,6 @@ function scheduleDataRequests() {
 function getAllData() {
    return $.getJSON("./db-get-all.py")
       .then(gotLatestData)
-      .then(getStatistics)
       .fail(gotLatestDataFailed);
 }
 function getRealTimeData() {
@@ -195,7 +195,9 @@ function getStatusFrom(value, meta) {
 
 }
 function displayStatistics() {
-  updateInputWattsHistory();
+  if(statistics.current) {
+    updateInputWattsHistory();
+  }
 }
 function displayTemperature() {
   updateTemperatureBatteryGauge();
