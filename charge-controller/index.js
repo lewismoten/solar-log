@@ -56,7 +56,7 @@ function gotChargeControllerProtocol(data, textStatus, jqXHR) {
 
 function scheduleDataRequests() {
   getRealTimeData();
-  getRealTimeDataRequestInterval = setInterval(getRealTimeData, 10 * 1000);
+  getRealTimeDataRequestInterval = setInterval(getRealTimeData, 60 * 1000);
 }
 
 function getAllData() {
