@@ -12,10 +12,10 @@ xx
 
 This will read all of the data and print it out on the terminal. You can also print individual data:
 
-| data | file | description | Addresses |
-| --- | --- | --- | --- |
-| coils | print_coils.py | print out known Boolean values that have read/write access | 00001 - 09999 |
-| discrete input | print_discrete_input.py | ?? | 10001 - 19999 |
+| type | file | description |
+| --- | --- | --- |
+| coils | print_coils.py | Read/Write Boolean values |
+| discrete input | print_discrete_input.py | Read-only Boolean values |
 | data | print_data.py | ?? |
 | device | print_device.py | ?? |
 | ratings | print_ratings.py | ?? |

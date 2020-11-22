@@ -1,15 +1,18 @@
 {
-  "allIds": [0, 2, 3, 5, 6],
+  "allIds": [
+    0, 2, 3, 5, 6,
+    8192, 8204
+  ],
   "byId": {
     "0": {
       "id": 0,
       "label": "Charging device",
-      "options": ["Off", "On"]
+      "options": ["On", "Off"]
     },
     "2": {
       "id": 2,
       "label": "Manual control the load",
-      "options": ["Off", "On"],
+      "options": ["On", "Off"],
       "optionDetails": ["Manual Off", "Manual On"],
       "note": "When the load is manual mode",
       "enabledIf": [{
@@ -21,8 +24,7 @@
     "3": {
       "id": 3,
       "label": "Default control the load",
-      "options": ["Off", "On"],
-      "optionDetails": ["Manual Off", "Manual On"],
+      "options": ["On", "Off"],
       "enabledIf": [{
         "address": 1,
         "value": false,
@@ -32,18 +34,28 @@
     "5": {
       "id": 5,
       "label": "Enable load test mode",
-      "options": ["Disabled", "Enabled"],
+      "options": ["Enable", "Disable"],
       "note": "Normally disabled"
     },
     "6": {
       "id": 6,
       "label": "Force the load",
-      "options": ["Off", "On"],
-      "optionDetails": [
-        "Turn off (used for temporary test of the load)",
-        "Turn on"
-      ],
+      "options": ["On", "Off"],
       "note": "Used for temporary test of the load"
+    },
+    "8192": {
+      "id": 8192,
+      "label": "Over temperature inside the device",
+      "options": ["Yes", "No"],
+      "optionDetails": [
+        "The temperature inside the controller is higher than the over-temperature protection point.",
+        "Normal"
+      ]
+    },
+    "8204": {
+      "id": 8204,
+      "label": "Day/Night",
+      "options": ["Night", "Day"]
     }
   }
 }

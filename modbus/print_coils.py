@@ -17,7 +17,7 @@ def readCoil(addressInfo):
     return addressInfo
 
 def isCoil(address):
-    return address > -1 and address < 10000
+    return address < 1000
 
 with open("address.json", "r") as f:
   address = json.load(f)

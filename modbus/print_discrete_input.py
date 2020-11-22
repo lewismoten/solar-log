@@ -1,27 +1,34 @@
 #!/usr/bin/python
+import json
 from common import *
-print("#discrete input")
+
+def readDiscreteInput(addressInfo):
+    result = client.read_discrete_inputs(addressInfo["id"], 1, unit=CHARGE_CONTROLLER_UNIT)
+    if isinstance(result, Exception):
+        addressInfo["error"] = true
+        addressInfo["details"] = result
+    else:
+        addressInfo["function_code"] = result.function_code
+        if result.function_code < 0x80:
+            addressInfo["value"] = result.bits[0]
+            addressInfo["text"] = addressInfo["options"][0] if result.bits[0] else addressInfo["options"][1]
+        else:
+            addressInfo["error"] = "Unable to read coil"
+    return addressInfo
+
+def isDiscreteInput(address):
+    return address > 1000 and address < 20000
+
+with open("address.json", "r") as f:
+  address = json.load(f)
+
+def asDiscreteInputWithData(id):
+    return readDiscreteInput(address["byId"][str(id)]);
+
 client = getClient()
 if client.connect():
-
-    result = client.read_discrete_inputs(0x2000, 1, unit=CHARGE_CONTROLLER_UNIT)
-    if isinstance(result, Exception):
-        print("Got exception reading 0x2000")
-        print(result)
-    else:
-        if result.function_code < 0x80:
-            print("Over temperature inside device: {}".format("Higher than over-temperature protection point" if result.getBit(0) else "Normal"))
-        else:
-            print("Unable to read coil 0x2000")
-
-    result = client.read_discrete_inputs(0x200C, 1, unit=CHARGE_CONTROLLER_UNIT)
-    if isinstance(result, Exception):
-        print("Got exception reading 0x200C")
-        print(result)
-    else:
-        if result.function_code < 0x80:
-            print("Day/Night: {}".format("Night" if result.getBit(0) else "Day"))
-        else:
-            print("Unable to read coil 0x200C")
-
+    mapped = map(asDiscreteInputWithData, filter(isDiscreteInput, address["allIds"]))
+    print(json.dumps(list(mapped), indent=4))
     client.close()
+else:
+    print(json.dumps({"error": "unable to connect"}))
