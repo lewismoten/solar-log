@@ -5,3 +5,6 @@ package-lock.json
 # Ignore sftp configuration and swap files
 .ftpconfig
 *.swp
+
+# Python Cache
+__pycache__
