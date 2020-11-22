@@ -1,7 +1,9 @@
 node_modules
 npm-debug.log
-package-lock.json
 
 # Ignore sftp configuration and swap files
 .ftpconfig
 *.swp
+
+# Python cache
+__pycache__

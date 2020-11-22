@@ -177,6 +177,8 @@ for data in chargeController["data"]:
 c.close()
 
 
+# create table lookup_day_by5(id int unsigned not null, start time not null, end time not null, index(id), index(start), primary key(id));
+
 
     #print(sql)
 
