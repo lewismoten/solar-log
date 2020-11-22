@@ -9,8 +9,16 @@
       12560, 12561, 12562,
       12570, 12571, 12573
     ],
+    "ratingIds": [
+      12288, 12289, 12290,
+      12292, 12293, 12294,
+      12295, 12302
+    ]
   },
   "inputRegisterIds": [
+    12288, 12289, 12290,
+    12292, 12293, 12294,
+    12295, 12302,
     12544, 12545, 12546,
     12548, 12549, 12550,
     12556, 12557, 12558,
@@ -20,6 +28,9 @@
   "allIds": [
     0, 2, 3, 5, 6,
     8192, 8204,
+    12288, 12289, 12290,
+    12292, 12293, 12294,
+    12295, 12302,
     12544, 12545, 12546,
     12548, 12549, 12550,
     12556, 12557, 12558,
@@ -65,6 +76,54 @@
       "id": 8204,
       "label": "Day/Night",
       "format": "day"
+    },
+    "12288": {
+      "id": 12288,
+      "label": "Charging equipment rated input voltage",
+      "size": 1,
+      "format": "volt"
+    },
+    "12289": {
+      "id": 12289,
+      "label": "Charging equipment rated input current",
+      "size": 1,
+      "format": "amp"
+    },
+    "12290": {
+      "id": 12290,
+      "label": "Charging equipment rated input power",
+      "format": "watt",
+      "size": 2
+    },
+    "12292": {
+      "id": 12292,
+      "label": "Charging equipment rated output voltage",
+      "size": 1,
+      "format": "volt"
+    },
+    "12293": {
+      "id": 12293,
+      "label": "Charging equipment rated output current",
+      "size": 1,
+      "format": "amp"
+    },
+    "12294": {
+      "id": 12294,
+      "label": "Charging equipment rated output power",
+      "format": "watt",
+      "size": 2
+    },
+    "12295": {
+      "id": 12295,
+      "label": "Charging Mode",
+      "format": "charging mode",
+      "size": 1
+    },
+    "12302": {
+      "id": 12302,
+      "label": "Rated output current of load",
+      "format": "amp",
+      "size": 1
     },
     "12544": {
       "id": 12544,

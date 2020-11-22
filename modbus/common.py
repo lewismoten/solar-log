@@ -69,6 +69,7 @@ def getDateTime(secondMinute, hourDay, monthYear):
     hd = value8(hourDay)
     my = value8(monthYear)
     return datetime.datetime(2000 + my[0], my[1], hd[0], hd[1], sm[0], sm[1])
+def valueRaw(value): return value
 def days(value):
     return "{} Days".format(value)
 def minutes(value):
@@ -80,6 +81,12 @@ def hourMinute(value):
     return "{0} hours {1} minutes".format(hm[0], hm[1]);
 def getTime(second, minute, hour):
     return datetime.time(hour, minute, second)
+def chargingModeText(mode):
+    return {
+        0: "Connect/Disconnect",
+        1: "PWM",
+        2: "MPPT"
+    }[mode]
 
 def bitsAsText(bits, format):
     return {
@@ -95,7 +102,8 @@ def registersAsValue(registers, format):
         'volt': value16,
         'watt': value32,
         'temperature': value16,
-        "percent": percentValue
+        "percent": percentValue,
+        'charging mode': valueRaw
     }[format](*registers)
 
 def registersAsText(registers, format):
@@ -104,5 +112,6 @@ def registersAsText(registers, format):
         'volt': volts,
         'watt': watts,
         'temperature': temperature,
-        'percent': percentText
+        'percent': percentText,
+        'charging mode': chargingModeText
     }[format](*registers)
