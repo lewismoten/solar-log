@@ -54,18 +54,14 @@ def percent(value):
     return "{}%".format(value16(value) * 100)
 def milliohms(value):
     return "{} milliohms".format(value16(value))
-def yesNo(value):
-    values = {
-        0: "No",
-        1: "Yes"
-    }
-    return values.get(value, "Unexpected Value")
-def onOff(value):
-    values = {
-        0: "Off",
-        1: "On"
-    }
-    return values.get(value, "Unexpected Value")
+def yesNo(value, *bits):
+    return 'Yes' if value else 'No'
+def onOff(value, *bits):
+    return 'On' if value else 'Off'
+def enableDisable(value, *bits):
+    return 'Enabled' if value else 'Disabled'
+def dayNight(value, *bits):
+    return 'Night' if value else 'Day'
 def getDateTime(secondMinute, hourDay, monthYear):
     sm = value8(secondMinute)
     hd = value8(hourDay)
@@ -82,3 +78,27 @@ def hourMinute(value):
     return "{0} hours {1} minutes".format(hm[0], hm[1]);
 def getTime(second, minute, hour):
     return datetime.time(hour, minute, second)
+
+def bitsAsText(bits, format):
+    return {
+        'yes': yesNo,
+        'enabled': enableDisable,
+        'day': dayNight,
+        'on': onOff
+    }[format](*bits)
+
+def registersAsValue(registers, format):
+    return {
+        'amp': value16,
+        'volt': value16,
+        'watt': value32,
+        'temperature': value16
+    }[format](*registers)
+
+def registersAsText(registers, format):
+    return {
+        'amp': amps,
+        'volt': volts,
+        'watt': watts,
+        'temperature': temperature
+    }[format](*registers)

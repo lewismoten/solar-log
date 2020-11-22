@@ -10,14 +10,13 @@ def readDiscreteInput(addressInfo):
     else:
         addressInfo["function_code"] = result.function_code
         if result.function_code < 0x80:
+            addressInfo["bits"] = list(result.bits)
+            format = addressInfo["format"]
             addressInfo["value"] = result.bits[0]
-            addressInfo["text"] = addressInfo["options"][0] if result.bits[0] else addressInfo["options"][1]
+            addressInfo["text"] = bitsAsText(result.bits, format)
         else:
-            addressInfo["error"] = "Unable to read coil"
+            addressInfo["error"] = "Unable to read discrete input"
     return addressInfo
-
-def isDiscreteInput(address):
-    return address > 1000 and address < 20000
 
 with open("address.json", "r") as f:
   address = json.load(f)
@@ -27,7 +26,7 @@ def asDiscreteInputWithData(id):
 
 client = getClient()
 if client.connect():
-    mapped = map(asDiscreteInputWithData, filter(isDiscreteInput, address["allIds"]))
+    mapped = map(asDiscreteInputWithData, address["discreteInputIds"])
     print(json.dumps(list(mapped), indent=4))
     client.close()
 else:

@@ -10,14 +10,13 @@ def readCoil(addressInfo):
     else:
         addressInfo["function_code"] = result.function_code
         if result.function_code < 0x80:
+            addressInfo["bits"] = list(result.bits)
+            format = addressInfo["format"]
             addressInfo["value"] = result.bits[0]
-            addressInfo["text"] = addressInfo["options"][0] if result.bits[0] else addressInfo["options"][1]
+            addressInfo["text"] = bitsAsText(result.bits, format)
         else:
             addressInfo["error"] = "Unable to read coil"
     return addressInfo
-
-def isCoil(address):
-    return address < 1000
 
 with open("address.json", "r") as f:
   address = json.load(f)
@@ -27,7 +26,7 @@ def asCoilWithData(id):
 
 client = getClient()
 if client.connect():
-    mapped = map(asCoilWithData, filter(isCoil, address["allIds"]))
+    mapped = map(asCoilWithData, address["coilIds"])
     print(json.dumps(list(mapped), indent=4))
     client.close()
 else:

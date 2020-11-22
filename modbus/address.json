@@ -1,61 +1,131 @@
 {
+  "coilIds": [0, 2, 3, 5, 6],
+  "discreteInputIds": [8192, 8204],
+  "inputRegisterIds": [
+    12544, 12545, 12546,
+    12548, 12549, 12550,
+    12556, 12557, 12558,
+    12560, 12561, 12562
+  ],
   "allIds": [
     0, 2, 3, 5, 6,
-    8192, 8204
+    8192, 8204,
+    12544, 12545, 12546,
+    12548, 12549, 12550,
+    12556, 12557, 12558,
+    12560, 12561, 12562
   ],
   "byId": {
     "0": {
       "id": 0,
       "label": "Charging device",
-      "options": ["On", "Off"]
+      "format": "on"
     },
     "2": {
       "id": 2,
       "label": "Manual control the load",
-      "options": ["On", "Off"],
-      "optionDetails": ["Manual Off", "Manual On"],
       "note": "When the load is manual mode",
-      "enabledIf": [{
-        "address": 1,
-        "value": true,
-        "condition": "When the load is manual mode"
-      }]
+      "format": "on"
     },
     "3": {
       "id": 3,
       "label": "Default control the load",
-      "options": ["On", "Off"],
-      "enabledIf": [{
-        "address": 1,
-        "value": false,
-        "condition": "When the load is default mode"
-      }]
+      "format": "on"
     },
     "5": {
       "id": 5,
       "label": "Enable load test mode",
-      "options": ["Enable", "Disable"],
-      "note": "Normally disabled"
+      "note": "Normally disabled",
+      "format": "enabled"
     },
     "6": {
       "id": 6,
       "label": "Force the load",
-      "options": ["On", "Off"],
-      "note": "Used for temporary test of the load"
+      "note": "Used for temporary test of the load",
+      "format": "on"
     },
     "8192": {
       "id": 8192,
       "label": "Over temperature inside the device",
-      "options": ["Yes", "No"],
-      "optionDetails": [
-        "The temperature inside the controller is higher than the over-temperature protection point.",
-        "Normal"
-      ]
+      "format": "yes"
+
     },
     "8204": {
       "id": 8204,
       "label": "Day/Night",
-      "options": ["Night", "Day"]
+      "format": "day"
+    },
+    "12544": {
+      "id": 12544,
+      "label": "Charging equipment input voltage",
+      "size": 1,
+      "format": "volt"
+    },
+    "12545": {
+      "id": 12545,
+      "label": "Charging equipment input current",
+      "size": 1,
+      "format": "amp"
+    },
+    "12546": {
+      "id": 12546,
+      "label": "Charging equipment input power",
+      "size": 2,
+      "format": "watt"
+    },
+    "12548": {
+      "id": 12548,
+      "label": "Charging equipment output voltage",
+      "size": 1,
+      "format": "volt"
+    },
+    "12549": {
+      "id": 12549,
+      "label": "Charging equipment output current",
+      "size": 1,
+      "format": "amp"
+    },
+    "12550": {
+      "id": 12550,
+      "label": "Charging equipment output power",
+      "size": 2,
+      "format": "watt"
+    },
+    "12556": {
+      "id": 12556,
+      "label": "Discharging equipment output voltage",
+      "size": 1,
+      "format": "volt"
+    },
+    "12557": {
+      "id": 12557,
+      "label": "Discharging equipment output current",
+      "size": 1,
+      "format": "amp"
+    },
+    "12558": {
+      "id": 12558,
+      "label": "Discharging equipment output power",
+      "size": 2,
+      "format": "watt"
+    },
+    "12560": {
+      "id": 12560,
+      "label": "Battery Temperature",
+      "size": 1,
+      "format": "temperature"
+    },
+    "12561": {
+      "id": 12561,
+      "label": "Temperature inside equipment",
+      "size": 1,
+      "format": "temperature"
+    },
+    "12562": {
+      "id": 12562,
+      "label": "Power components temperature",
+      "size": 1,
+      "format": "temperature"
     }
   }
 }
