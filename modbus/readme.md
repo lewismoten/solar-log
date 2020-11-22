@@ -8,15 +8,13 @@ The first thing to do before setting up a cron job, or troubleshooting is to req
 ```bash
 python print_all.py
 ```
-xx
-
 This will read all of the data and print it out on the terminal. You can also print individual data:
 
 | type | file | description |
 | --- | --- | --- |
 | coils | print_coils.py | Read/Write Boolean values |
 | discrete input | print_discrete_input.py | Read-only Boolean values |
-| data | print_data.py | ?? |
+| input registers | print_input_registers.py | Read-only word values |
 | device | print_device.py | ?? |
 | ratings | print_ratings.py | ?? |
 | settings | print_settings.py | ?? |
