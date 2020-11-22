@@ -13,29 +13,55 @@
       12288, 12289, 12290,
       12292, 12293, 12294,
       12295, 12302
+    ],
+    "statisticIds": [
+      13056, 13057, 13058,
+      13059, 13060, 13062,
+      13064, 13066, 13068,
+      13070, 13072, 13074,
+      13076, 13082, 13083,
+      13085, 13086
     ]
   },
   "inputRegisterIds": [
     12288, 12289, 12290,
     12292, 12293, 12294,
     12295, 12302,
+
     12544, 12545, 12546,
     12548, 12549, 12550,
     12556, 12557, 12558,
     12560, 12561, 12562,
-    12570, 12571, 12573
+    12570, 12571, 12573,
+
+    13056, 13057, 13058,
+    13059, 13060, 13062,
+    13064, 13066, 13068,
+    13070, 13072, 13074,
+    13076, 13082, 13083,
+    13085, 13086
   ],
   "allIds": [
     0, 2, 3, 5, 6,
+
     8192, 8204,
+
     12288, 12289, 12290,
     12292, 12293, 12294,
     12295, 12302,
+
     12544, 12545, 12546,
     12548, 12549, 12550,
     12556, 12557, 12558,
     12560, 12561, 12562,
-    12570, 12571, 12573
+    12570, 12571, 12573,
+
+    13056, 13057, 13058,
+    13059, 13060, 13062,
+    13064, 13066, 13068,
+    13070, 13072, 13074,
+    13076, 13082, 13083,
+    13085, 13086
   ],
   "byId": {
     "0": {
@@ -214,6 +240,108 @@
       "label": "Battery's real rated power",
       "size": 1,
       "format": "volt"
+    },
+    "13056": {
+      "id": 13056,
+      "label": "Maximum input voltage (PV) today",
+      "format": "volt",
+      "size": 1
+    },
+    "13057": {
+      "id": 13057,
+      "label": "Minimum input voltage (PV) today",
+      "format": "volt",
+      "size": 1
+    },
+    "13058": {
+      "id": 13058,
+      "label": "Maximum battery voltage today",
+      "format": "volt",
+      "size": 1
+    },
+    "13059": {
+      "id": 13059,
+      "label": "Minimum battery voltage today",
+      "format": "volt",
+      "size": 1
+    },
+    "13060": {
+      "id": 13060,
+      "label": "Consumed energy today",
+      "format": "kWh",
+      "size": 2
+    },
+    "13062": {
+      "id": 13062,
+      "label": "Consumed energy this month",
+      "format": "kWh",
+      "size": 2
+    },
+    "13064": {
+      "id": 13064,
+      "label": "Consumed energy this year",
+      "format": "kWh",
+      "size": 2
+    },
+    "13066": {
+      "id": 13066,
+      "label": "Total consumed energy",
+      "format": "kWh",
+      "size": 2
+    },
+    "13068": {
+      "id": 13068,
+      "label": "Generated energy today",
+      "format": "kWh",
+      "size": 2
+    },
+    "13070": {
+      "id": 13070,
+      "label": "Generated energy this month",
+      "format": "kWh",
+      "size": 2
+    },
+    "13072": {
+      "id": 13072,
+      "label": "Generated energy this year",
+      "format": "kWh",
+      "size": 2
+    },
+    "13074": {
+      "id": 13074,
+      "label": "Total generated energy",
+      "format": "kWh",
+      "size": 2
+    },
+    "13076": {
+      "id": 13076,
+      "label": "Carbon dioxide reduction",
+      "format": "ton",
+      "size": 2
+    },
+    "13082": {
+      "id": 13082,
+      "label": "Battery Voltage",
+      "format": "volt",
+      "size": 1
+    },
+    "13083": {
+      "id": 13083,
+      "label": "Battery Current",
+      "format": "amp2",
+      "size": 2
+    },
+    "13085": {
+      "id": 13085,
+      "label": "Battery Temp.",
+      "format": "temperature",
+      "size": 1
+    },
+    "13086": {
+      "id": 13086,
+      "label": "Ambient Temp.",
+      "format": "temperature",
+      "size": 1
     }
   }
 }

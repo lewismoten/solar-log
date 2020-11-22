@@ -17,7 +17,6 @@ This will read all of the data and print it out on the terminal. You can also pr
 | input registers | print_input_registers.py | Read-only word values |
 | device | print_device.py | ?? |
 | settings | print_settings.py | ?? |
-| statistics | print_statistics.py | ?? |
 | status | print_status.py | ?? |
 
 ## Synchronizing the controllers clock

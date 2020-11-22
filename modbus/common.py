@@ -99,19 +99,25 @@ def bitsAsText(bits, format):
 def registersAsValue(registers, format):
     return {
         'amp': value16,
+        'amp2': value32,
         'volt': value16,
         'watt': value32,
+        'kWh': value32,
         'temperature': value16,
         "percent": percentValue,
-        'charging mode': valueRaw
+        'charging mode': valueRaw,
+        'ton': value32
     }[format](*registers)
 
 def registersAsText(registers, format):
     return {
         'amp': amps,
+        'amp2': bigAmps,
         'volt': volts,
         'watt': watts,
+        'kWh': kilowattHour,
         'temperature': temperature,
         'percent': percentText,
-        'charging mode': chargingModeText
+        'charging mode': chargingModeText,
+        'ton': tons
     }[format](*registers)
