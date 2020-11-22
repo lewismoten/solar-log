@@ -50,8 +50,10 @@ def temperature(value):
     return "{}°F".format(f)
 def coefficient(value):
     return "{} mV/°C/2V".format(value16(value))
-def percent(value):
-    return "{}%".format(value16(value) * 100)
+def percentValue(register):
+    return value16(register) * 100;
+def percentText(register):
+    return "{}%".format(percentValue(register))
 def milliohms(value):
     return "{} milliohms".format(value16(value))
 def yesNo(value, *bits):
@@ -92,7 +94,8 @@ def registersAsValue(registers, format):
         'amp': value16,
         'volt': value16,
         'watt': value32,
-        'temperature': value16
+        'temperature': value16,
+        "percent": percentValue
     }[format](*registers)
 
 def registersAsText(registers, format):
@@ -100,5 +103,6 @@ def registersAsText(registers, format):
         'amp': amps,
         'volt': volts,
         'watt': watts,
-        'temperature': temperature
+        'temperature': temperature,
+        'percent': percentText
     }[format](*registers)
