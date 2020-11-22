@@ -13,7 +13,7 @@ def readCoil(addressInfo):
             addressInfo["bits"] = list(result.bits)
             format = addressInfo["format"]
             addressInfo["value"] = result.bits[0]
-            addressInfo["text"] = bitsAsText(result.bits, format)
+            addressInfo["text"] = bitsAsText(result.bits, addressInfo)
         else:
             addressInfo["error"] = "Unable to read coil"
     return addressInfo

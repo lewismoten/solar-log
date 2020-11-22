@@ -14,8 +14,8 @@ def readInputRegister(addressInfo):
         if result.function_code < 0x80:
             format = addressInfo["format"]
             addressInfo["registers"] = list(result.registers)
-            addressInfo["value"] = registersAsValue(result.registers, format)
-            addressInfo["text"] = registersAsText(result.registers, format)
+            addressInfo["value"] = registersAsValue(result.registers, addressInfo)
+            addressInfo["text"] = registersAsText(result.registers, addressInfo)
         else:
             addressInfo["error"] = "Unable to read input register"
     return addressInfo

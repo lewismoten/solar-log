@@ -88,15 +88,21 @@ def chargingModeText(mode):
         2: "MPPT"
     }[mode]
 
-def bitsAsText(bits, format):
+def bitsAsText(bits, meta):
     return {
         'yes': yesNo,
         'enabled': enableDisable,
         'day': dayNight,
         'on': onOff
-    }[format](*bits)
+    }[meta["format"]](*bits)
 
-def registersAsValue(registers, format):
+def nothing(*x): return '';
+
+def registersAsValue(registers, meta):
+    def asMaskValue(mask):
+        return ((registers[0] >> mask["shift"]) & mask["mask"])
+    def valueMasks(*x):
+        return list(map(asMaskValue, meta["masks"]));
     return {
         'amp': value16,
         'amp2': value32,
@@ -106,10 +112,15 @@ def registersAsValue(registers, format):
         'temperature': value16,
         "percent": percentValue,
         'charging mode': valueRaw,
-        'ton': value32
-    }[format](*registers)
+        'ton': value32,
+        'mask': valueMasks
+    }[meta["format"]](*registers)
 
-def registersAsText(registers, format):
+def registersAsText(registers, meta):
+    def asMaskText(mask):
+        return mask["enum"][str((registers[0] >> mask["shift"]) & mask["mask"])]
+    def textMasks(*x):
+        return list(map(asMaskText, meta["masks"]));
     return {
         'amp': amps,
         'amp2': bigAmps,
@@ -119,5 +130,6 @@ def registersAsText(registers, format):
         'temperature': temperature,
         'percent': percentText,
         'charging mode': chargingModeText,
-        'ton': tons
-    }[format](*registers)
+        'ton': tons,
+        'mask': textMasks
+    }[meta["format"]](*registers)

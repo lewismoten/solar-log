@@ -17,7 +17,6 @@ This will read all of the data and print it out on the terminal. You can also pr
 | input registers | print_input_registers.py | Read-only word values |
 | device | print_device.py | ?? |
 | settings | print_settings.py | ?? |
-| status | print_status.py | ?? |
 
 ## Synchronizing the controllers clock
 Statistics reset at 12:00 am. It's important that the on-board clock reflects the time accurately. If the controller loses power, its clock will reset to February 14, 2017 12:00 am when it is powered up.

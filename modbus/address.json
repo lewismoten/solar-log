@@ -21,6 +21,9 @@
       13070, 13072, 13074,
       13076, 13082, 13083,
       13085, 13086
+    ],
+    "statusIds": [
+      12800, 12801, 12802
     ]
   },
   "inputRegisterIds": [
@@ -33,6 +36,8 @@
     12556, 12557, 12558,
     12560, 12561, 12562,
     12570, 12571, 12573,
+
+    12800, 12801, 12802,
 
     13056, 13057, 13058,
     13059, 13060, 13062,
@@ -55,6 +60,8 @@
     12556, 12557, 12558,
     12560, 12561, 12562,
     12570, 12571, 12573,
+
+    12800, 12801, 12802,
 
     13056, 13057, 13058,
     13059, 13060, 13062,
@@ -240,6 +247,294 @@
       "label": "Battery's real rated power",
       "size": 1,
       "format": "volt"
+    },
+    "12800": {
+      "id": 12800,
+      "label": "Battery Status",
+      "size": 1,
+      "format": "mask",
+      "masks": [
+        {
+          "label": "Voltage",
+          "mask": 7,
+          "shift": 0,
+          "enum": {
+              "0": "Normal",
+              "1": "Overvolt",
+              "2": "Under volt",
+              "3": "Low Volt Disconnect",
+              "4": "Fault"
+          }
+        },
+        {
+          "label": "Temperature",
+          "mask": 15,
+          "shift": 4,
+          "enum": {
+              "0": "Normal",
+              "1": "Over Temperature",
+              "2": "Low Temperature"
+          }
+        },
+        {
+          "label": "Internal Resistance",
+          "mask": 1,
+          "shift": 8,
+          "enum":{
+              "0": "Normal",
+              "1": "Abnormal"
+          }
+        },
+        {
+          "label": "Identification for rated voltage",
+          "mask": 1,
+          "shift": 815,
+          "enum":{
+            "0": "Correct",
+            "1": "Wrong"
+          }
+        }
+      ]
+    },
+    "12801": {
+      "id": 12801,
+      "label": "Charging Equipment Status",
+      "size": 1,
+      "format": "mask",
+      "masks": [
+        {
+          "label": "Input Voltage",
+          "mask": 3,
+          "shift": 14,
+          "enum": {
+            "0": "Normal",
+            "1": "No power connected",
+            "2": "Higher Volt Input",
+            "3": "Input Volt Error"
+          }
+        },
+        {
+          "label": "MOSFET is short",
+          "mask": 1,
+          "shift": 13,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "Charging or Anti-reverse MOSFET is short",
+          "mask": 1,
+          "shift": 12,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "Anti-reverse MOSFET is short",
+          "mask": 1,
+          "shift": 11,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "Input is over current",
+          "mask": 1,
+          "shift": 10,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "Load is over current",
+          "mask": 1,
+          "shift": 9,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "Load is short",
+          "mask": 1,
+          "shift": 8,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "Load MOSFET is short",
+          "mask": 1,
+          "shift": 7,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "PV Input is short",
+          "mask": 1,
+          "shift": 4,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "Battery",
+          "mask": 3,
+          "shift": 2,
+          "enum": {
+            "0": "Not charging",
+            "1": "Float",
+            "2": "Boost",
+            "3": "Equalization"
+          }
+        },
+        {
+          "label": "Fault",
+          "mask": 1,
+          "shift": 1,
+          "enum": {
+            "0": "Normal",
+            "1": "Fault"
+          }
+        },
+        {
+          "label": "Running",
+          "mask": 1,
+          "shift": 0,
+          "enum": {
+            "0": "Standby",
+            "1": "Running"
+          }
+        }
+      ]
+    },
+    "12802": {
+      "id": 12802,
+      "label": "Discharging Equipment Status",
+      "size": 1,
+      "format": "mask",
+      "masks": [
+        {
+          "label": "Input Voltage",
+          "mask": 3,
+          "shift": 14,
+          "enum": {
+            "0": "Normal",
+            "1": "Low",
+            "2": "High",
+            "3": "No access input volt error"
+          }
+        },
+        {
+          "label": "Output Power",
+          "mask": 3,
+          "shift": 12,
+          "enum": {
+            "0": "Light Load",
+            "1": "Moderate",
+            "2": "Rated",
+            "3": "Overload"
+          }
+        },
+        {
+          "label": "Short Circuit",
+          "mask": 1,
+          "shift": 11,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "Unable to discharge",
+          "mask": 1,
+          "shift": 10,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "Unable to stop discharging",
+          "mask": 1,
+          "shift": 9,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "Output Voltage Abnormal",
+          "mask": 1,
+          "shift": 8,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "Input overpressure",
+          "mask": 1,
+          "shift": 7,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "High voltage side short circuit",
+          "mask": 1,
+          "shift": 6,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "Boost Overpressure",
+          "mask": 1,
+          "shift": 5,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "Output Overpressure",
+          "mask": 1,
+          "shift": 4,
+          "enum": {
+            "0": "No",
+            "1": "Yes"
+          }
+        },
+        {
+          "label": "Fault",
+          "mask": 1,
+          "shift": 1,
+          "enum": {
+            "0": "Normal",
+            "1": "Fault"
+          }
+        },
+        {
+          "label": "Running",
+          "mask": 1,
+          "shift": 0,
+          "enum": {
+            "0": "Standby",
+            "1": "Running"
+          }
+        }
+      ]
     },
     "13056": {
       "id": 13056,
