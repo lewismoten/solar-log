@@ -6,18 +6,18 @@ These python scripts read information from the solar charge controller using the
 The first thing to do before setting up a cron job, or troubleshooting is to request information from the controller.
 
 ```bash
-/usr/bin/pythong /var/www/html/modbus/print_all.py
+python print_all.py
 ```
 xx
 
 This will read all of the data and print it out on the terminal. You can also print individual data:
 
-| data | file | description |
-| --- | --- | --- |
-| coils | print_coils.py | ?? |
+| data | file | description | Addresses |
+| --- | --- | --- | --- |
+| coils | print_coils.py | print out known Boolean values that have read/write access | 00001 - 09999 |
+| discrete input | print_discrete_input.py | ?? | 10001 - 19999 |
 | data | print_data.py | ?? |
 | device | print_device.py | ?? |
-| discrete input | print_discrete_input.py | ?? |
 | ratings | print_ratings.py | ?? |
 | settings | print_settings.py | ?? |
 | statistics | print_statistics.py | ?? |

@@ -1,0 +1,49 @@
+{
+  "allIds": [0, 2, 3, 5, 6],
+  "byId": {
+    "0": {
+      "id": 0,
+      "label": "Charging device",
+      "options": ["Off", "On"]
+    },
+    "2": {
+      "id": 2,
+      "label": "Manual control the load",
+      "options": ["Off", "On"],
+      "optionDetails": ["Manual Off", "Manual On"],
+      "note": "When the load is manual mode",
+      "enabledIf": [{
+        "address": 1,
+        "value": true,
+        "condition": "When the load is manual mode"
+      }]
+    },
+    "3": {
+      "id": 3,
+      "label": "Default control the load",
+      "options": ["Off", "On"],
+      "optionDetails": ["Manual Off", "Manual On"],
+      "enabledIf": [{
+        "address": 1,
+        "value": false,
+        "condition": "When the load is default mode"
+      }]
+    },
+    "5": {
+      "id": 5,
+      "label": "Enable load test mode",
+      "options": ["Disabled", "Enabled"],
+      "note": "Normally disabled"
+    },
+    "6": {
+      "id": 6,
+      "label": "Force the load",
+      "options": ["Off", "On"],
+      "optionDetails": [
+        "Turn off (used for temporary test of the load)",
+        "Turn on"
+      ],
+      "note": "Used for temporary test of the load"
+    }
+  }
+}
