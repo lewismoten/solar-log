@@ -7,9 +7,11 @@
     "jquery-ui-daterangepicker": "git://github.com/lewismoten/jquery-ui-daterangepicker.git#ea595a9"
   },
   "devDependencies": {
+    "http-server": "^0.12.3",
     "jquery-ui-daterangepicker": "git://github.com/lewismoten/jquery-ui-daterangepicker.git#ea595a9"
   },
   "scripts": {
+    "start": "http-server --proxy http://solarpi",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
