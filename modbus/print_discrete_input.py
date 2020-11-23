@@ -5,7 +5,7 @@ from common import *
 def readDiscreteInput(addressInfo):
     result = client.read_discrete_inputs(addressInfo["id"], 1, unit=CHARGE_CONTROLLER_UNIT)
     if isinstance(result, Exception):
-        addressInfo["error"] = true
+        addressInfo["error"] = True
         addressInfo["details"] = result
     else:
         addressInfo["function_code"] = result.function_code
@@ -26,8 +26,11 @@ def asDiscreteInputWithData(id):
 
 client = getClient()
 if client.connect():
-    mapped = map(asDiscreteInputWithData, address["discreteInputIds"])
-    print(json.dumps(list(mapped), indent=4))
+    out = list(map(asDiscreteInputWithData, address["discreteInputIds"]))
     client.close()
 else:
-    print(json.dumps({"error": "unable to connect"}))
+    out = {"error": "unable to connect"}
+
+print("Content-Type: application/json")
+print()
+print(json.dumps(out, indent=2))

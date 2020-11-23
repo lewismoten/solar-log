@@ -2,12 +2,18 @@
 import json
 from common import *
 
+# import logging
+# logging.basicConfig()
+# log = logging.getLogger()
+# log.setLevel(logging.DEBUG)
+
+
 def readInputRegister(addressInfo):
     id = addressInfo["id"]
     size = addressInfo["size"]
     result = client.read_input_registers(id, size, unit=CHARGE_CONTROLLER_UNIT)
     if isinstance(result, Exception):
-        addressInfo["error"] = true
+        addressInfo["error"] = True
         addressInfo["details"] = result
     else:
         addressInfo["function_code"] = result.function_code
@@ -28,8 +34,11 @@ def asInputRegisterWithData(id):
 
 client = getClient()
 if client.connect():
-    mapped = map(asInputRegisterWithData, address["inputRegisterIds"])
-    print(json.dumps(list(mapped), indent=4))
+    out = list(map(asInputRegisterWithData, address["inputRegisterIds"]))
     client.close()
 else:
-    print(json.dumps({"error": "unable to connect"}))
+    out = {"error": "unable to connect"}
+
+print("Content-Type: application/json")
+print()
+print(json.dumps(out, indent=2))

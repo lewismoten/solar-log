@@ -5,7 +5,7 @@ from common import *
 def readCoil(addressInfo):
     result = client.read_coils(addressInfo["id"], 1, unit=CHARGE_CONTROLLER_UNIT)
     if isinstance(result, Exception):
-        addressInfo["error"] = true
+        addressInfo["error"] = True
         addressInfo["details"] = result
     else:
         addressInfo["function_code"] = result.function_code
@@ -25,9 +25,14 @@ def asCoilWithData(id):
     return readCoil(address["byId"][str(id)]);
 
 client = getClient()
-if client.connect():
+connected = client.connect()
+if connected:
     mapped = map(asCoilWithData, address["coilIds"])
-    print(json.dumps(list(mapped), indent=4))
+    out = list(mapped)
     client.close()
 else:
-    print(json.dumps({"error": "unable to connect"}))
+    out = {"error": "unable to connect", "connected": connected}
+
+print("Content-Type: application/json")
+print()
+print(json.dumps(out, indent=2))

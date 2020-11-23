@@ -1,3 +1,8 @@
+import logging
+logging.basicConfig()
+log = logging.getLogger()
+log.setLevel(logging.DEBUG)
+
 import print_coils
 import print_discrete_input
 

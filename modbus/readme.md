@@ -2,6 +2,10 @@
 
 These python scripts read information from the solar charge controller using the modbus protocol.
 
+## Installation
+1. Install Modbus client `sudo pip3 install -U pymodbus`
+1. Let web browser access USB on server `777 /dev/ttyUSB0`
+
 ## Reading controller via MOD Bus
 The first thing to do before setting up a cron job, or troubleshooting is to request information from the controller.
 
@@ -176,3 +180,54 @@ Force the load: Turn off (used for temporary test of the load)
 Over temperature inside device: Normal
 Day/Night: Day
 ```
+dmesg | grep tty | grep USB '{print $1}'
+sudo dpkg-reconfigure tzdata
+udevadm
+/usr/bin/python
+/usr/bin/python3
+ps -ef | grep crond
+timedatectl
+sudo service apache2 restart
+sudo nano /etc/apache2/sites-enabled/000-default.conf
+sudo chmod 777 modbus.py
+sudo nano /var/log/apache2/error.log
+which python
+sudo dos2unix modbus.py
+chmod u+x modbus.py
+/var/log
+sudo pip3 install -U pymodbus
+sudo chmod -R 777 /var/www/html
+sudo usermod -a -G www-data $USER
+sudo nano /etc/ssh/sshd_config
+pip3 search sftp
+pip3 search ftp
+mysql -u root@localhost -p
+mysql -u root -p
+sudo mysql_secure_installation
+sudo a2dismod mpm_event
+sudo apt-get install apache2
+sudo pip3 install pymysql
+sudo apt-get install mysql-server
+python --version
+sudo apt-get install python3-pip
+sudo ln -s /usr/bin/python3 /usr/bin/python
+sudo apt-get dist-upgrade
+sudo apt-get update
+sudo raspi-config
+sudo find / -name hosts
+hostname
+ifconfig
+sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+sudo nano /etc/network/interfaces
+lsusb
+wifi
+sudo vi /etc/default/keyboard
+uptime
+
+
+[Sun Nov 22 20:33:01.382499 2020] [cgi:error] [pid 19988] [client 192.168.54.37:57831] AH01215: ERROR:pymodbus.client.sync:[Errno 13] could not open port /dev/ttyUSB0: [Errno 13] Permission denied: '/dev/ttyUSB0': /var/www/html/modbus/print_coils.py, referer: http://solarpi/modbus/index.html
+
+need to allow "anonymouse??" to access /dev/ttyUSB0
+ls -l /dev/ttyUSB0
+gives me ... crw-rw---- 1 root dialout 188, 0 Nov 22 20:40 /dev/ttyUSB0
+tail -f /var/log/apache2/error.log 
