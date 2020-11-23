@@ -2,12 +2,6 @@
 import json
 from common import *
 
-# import logging
-# logging.basicConfig()
-# log = logging.getLogger()
-# log.setLevel(logging.DEBUG)
-
-
 def readInputRegister(addressInfo):
     id = addressInfo["id"]
     size = addressInfo["size"]

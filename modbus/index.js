@@ -40,7 +40,6 @@ function getDiscreteInput() {
      .fail(getFailed)
 }
 function getInputRegisters() {
-                      print_input_registers.py
   return $.getJSON("./print_input_registers.py")
      .then(gotAddresses)
      .fail(getFailed)
