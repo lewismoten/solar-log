@@ -3,20 +3,16 @@ import json
 from common import *
 
 def readDiscreteInput(addressInfo):
-    result = client.read_discrete_inputs(addressInfo["id"], 1, unit=CHARGE_CONTROLLER_UNIT)
+    id = addressInfo["id"]
+    result = client.read_discrete_inputs(id, 1, unit=CHARGE_CONTROLLER_UNIT)
     if isinstance(result, Exception):
-        addressInfo["error"] = True
-        addressInfo["details"] = result
+        o = {"id": id, "error": True}
     else:
-        addressInfo["function_code"] = result.function_code
         if result.function_code < 0x80:
-            addressInfo["bits"] = list(result.bits)
-            format = addressInfo["format"]
-            addressInfo["value"] = result.bits[0]
-            addressInfo["text"] = bitsAsText(result.bits, addressInfo)
+            o = {"id": id, "data": list(result.bits)}
         else:
-            addressInfo["error"] = "Unable to read discrete input"
-    return addressInfo
+            o = {"id": id, "error": True}
+    return o
 
 with open("address.json", "r") as f:
   address = json.load(f)

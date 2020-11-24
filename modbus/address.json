@@ -1,4 +1,71 @@
 {
+  "units": {
+    "volt": {
+      "singular": "volt",
+      "plural": "volts",
+      "suffix": "v",
+      "scale": 100
+    },
+    "amp": {
+      "singular": "amp",
+      "plural": "amps",
+      "suffix": "a",
+      "scale": 100
+    },
+    "watt": {
+      "singular": "watt",
+      "plural": "watts",
+      "suffix": "w",
+      "scale": 100
+    },
+    "kwh": {
+      "singular": "kilowatt hour",
+      "plural": "kilowatt hours",
+      "suffix": " kWh",
+      "scale": 100
+    },
+    "celcius": {
+      "singular": "degree celcius",
+      "plural": "degrees celcius",
+      "suffix": "\u2103",
+      "scale": 100
+    },
+    "percent": {
+      "singular": "percent",
+      "plural": "percent",
+      "suffix": "%",
+      "scale": 1
+    },
+    "ton": {
+      "singular": "ton",
+      "plural": "tons",
+      "suffix": "t",
+      "scale": 100
+    }
+  },
+  "enums": {
+    "on": {
+      "1": "On",
+      "0": "Off"
+    },
+    "yes": {
+      "1": "Yes",
+      "0": "No"
+    },
+    "enabled": {
+      "1": "Enabled",
+      "0": "Disabled"
+    },
+    "night": {
+      "0": "Day",
+      "1": "Night"
+    },
+    "charging mode": {
+      "0": "Connect/Disconnect",
+      "1": "PWM",
+      "2": "MPPT"
+    }
+  },
   "coilIds": [0, 2, 3, 5, 6],
   "discreteInputIds": [8192, 8204],
   "categories": {
@@ -74,53 +141,52 @@
     "0": {
       "id": 0,
       "label": "Charging device",
-      "format": "on"
+      "enum": "on"
     },
     "2": {
       "id": 2,
       "label": "Manual control the load",
       "note": "When the load is manual mode",
-      "format": "on"
+      "enum": "on"
     },
     "3": {
       "id": 3,
       "label": "Default control the load",
-      "format": "on"
+      "enum": "on"
     },
     "5": {
       "id": 5,
       "label": "Enable load test mode",
       "note": "Normally disabled",
-      "format": "enabled"
+      "enum": "enabled"
     },
     "6": {
       "id": 6,
       "label": "Force the load",
       "note": "Used for temporary test of the load",
-      "format": "on"
+      "enum": "on"
     },
     "8192": {
       "id": 8192,
       "label": "Over temperature inside the device",
-      "format": "yes"
-
+      "enum": "yes"
     },
     "8204": {
       "id": 8204,
       "label": "Day/Night",
-      "format": "day"
+      "enum": "night"
     },
     "12288": {
       "id": 12288,
       "label": "Charging equipment rated input voltage",
       "size": 1,
-      "format": "volt"
+      "unit": "volt"
     },
     "12289": {
       "id": 12289,
       "label": "Charging equipment rated input current",
       "size": 1,
-      "format": "amp"
+      "unit": "amp"
     },
     "12290": {
       "id": 12290,
@@ -132,121 +198,121 @@
       "id": 12292,
       "label": "Charging equipment rated output voltage",
       "size": 1,
-      "format": "volt"
+      "unit": "volt"
     },
     "12293": {
       "id": 12293,
       "label": "Charging equipment rated output current",
       "size": 1,
-      "format": "amp"
+      "unit": "amp"
     },
     "12294": {
       "id": 12294,
       "label": "Charging equipment rated output power",
-      "format": "watt",
-      "size": 2
+      "size": 2,
+      "unit": "watt"
     },
     "12295": {
       "id": 12295,
       "label": "Charging Mode",
-      "format": "charging mode",
-      "size": 1
+      "size": 1,
+      "enum": "charging mode"
     },
     "12302": {
       "id": 12302,
       "label": "Rated output current of load",
-      "format": "amp",
-      "size": 1
+      "size": 1,
+      "unit": "amp"
     },
     "12544": {
       "id": 12544,
       "label": "Charging equipment input voltage",
       "size": 1,
-      "format": "volt"
+      "unit": "volt"
     },
     "12545": {
       "id": 12545,
       "label": "Charging equipment input current",
       "size": 1,
-      "format": "amp"
+      "unit": "amp"
     },
     "12546": {
       "id": 12546,
       "label": "Charging equipment input power",
       "size": 2,
-      "format": "watt"
+      "unit": "watt"
     },
     "12548": {
       "id": 12548,
       "label": "Charging equipment output voltage",
       "size": 1,
-      "format": "volt"
+      "unit": "volt"
     },
     "12549": {
       "id": 12549,
       "label": "Charging equipment output current",
       "size": 1,
-      "format": "amp"
+      "unit": "amp"
     },
     "12550": {
       "id": 12550,
       "label": "Charging equipment output power",
       "size": 2,
-      "format": "watt"
+      "unit": "watt"
     },
     "12556": {
       "id": 12556,
       "label": "Discharging equipment output voltage",
       "size": 1,
-      "format": "volt"
+      "unit": "volt"
     },
     "12557": {
       "id": 12557,
       "label": "Discharging equipment output current",
       "size": 1,
-      "format": "amp"
+      "unit": "amp"
     },
     "12558": {
       "id": 12558,
       "label": "Discharging equipment output power",
       "size": 2,
-      "format": "watt"
+      "unit": "watt"
     },
     "12560": {
       "id": 12560,
       "label": "Battery Temperature",
       "size": 1,
-      "format": "temperature"
+      "unit": "celcius"
     },
     "12561": {
       "id": 12561,
       "label": "Temperature inside equipment",
       "size": 1,
-      "format": "temperature"
+      "unit": "celcius"
     },
     "12562": {
       "id": 12562,
       "label": "Power components temperature",
       "size": 1,
-      "format": "temperature"
+      "unit": "celcius"
     },
     "12570": {
       "id": 12570,
       "label": "Battery SOC",
       "size": 1,
-      "format": "percent"
+      "unit": "percent"
     },
     "12571": {
       "id": 12571,
       "label": "Remote battery temperature",
       "size": 1,
-      "format": "temperature"
+      "unit": "celcius"
     },
     "12573": {
       "id": 12573,
       "label": "Battery's real rated power",
       "size": 1,
-      "format": "volt"
+      "unit": "volt"
     },
     "12800": {
       "id": 12800,
@@ -539,104 +605,104 @@
     "13056": {
       "id": 13056,
       "label": "Maximum input voltage (PV) today",
-      "format": "volt",
-      "size": 1
+      "size": 1,
+      "unit": "volt"
     },
     "13057": {
       "id": 13057,
       "label": "Minimum input voltage (PV) today",
-      "format": "volt",
-      "size": 1
+      "size": 1,
+      "unit": "volt"
     },
     "13058": {
       "id": 13058,
       "label": "Maximum battery voltage today",
-      "format": "volt",
-      "size": 1
+      "size": 1,
+      "unit": "volt"
     },
     "13059": {
       "id": 13059,
       "label": "Minimum battery voltage today",
-      "format": "volt",
-      "size": 1
+      "size": 1,
+      "unit": "volt"
     },
     "13060": {
       "id": 13060,
       "label": "Consumed energy today",
-      "format": "kWh",
-      "size": 2
+      "size": 2,
+      "unit": "kwh"
     },
     "13062": {
       "id": 13062,
       "label": "Consumed energy this month",
-      "format": "kWh",
-      "size": 2
+      "size": 2,
+      "unit": "kwh"
     },
     "13064": {
       "id": 13064,
       "label": "Consumed energy this year",
-      "format": "kWh",
-      "size": 2
+      "size": 2,
+      "unit": "kwh"
     },
     "13066": {
       "id": 13066,
       "label": "Total consumed energy",
-      "format": "kWh",
-      "size": 2
+      "size": 2,
+      "unit": "kwh"
     },
     "13068": {
       "id": 13068,
       "label": "Generated energy today",
-      "format": "kWh",
-      "size": 2
+      "size": 2,
+      "unit": "kwh"
     },
     "13070": {
       "id": 13070,
       "label": "Generated energy this month",
-      "format": "kWh",
-      "size": 2
+      "size": 2,
+      "unit": "kwh"
     },
     "13072": {
       "id": 13072,
       "label": "Generated energy this year",
-      "format": "kWh",
-      "size": 2
+      "size": 2,
+      "unit": "kwh"
     },
     "13074": {
       "id": 13074,
       "label": "Total generated energy",
-      "format": "kWh",
-      "size": 2
+      "size": 2,
+      "unit": "kwh"
     },
     "13076": {
       "id": 13076,
       "label": "Carbon dioxide reduction",
-      "format": "ton",
-      "size": 2
+      "size": 2,
+      "unit": "ton"
     },
     "13082": {
       "id": 13082,
       "label": "Battery Voltage",
-      "format": "volt",
-      "size": 1
+      "size": 1,
+      "unit": "volt"
     },
     "13083": {
       "id": 13083,
       "label": "Battery Current",
-      "format": "amp2",
-      "size": 2
+      "size": 2,
+      "unit": "amp"
     },
     "13085": {
       "id": 13085,
       "label": "Battery Temp.",
-      "format": "temperature",
-      "size": 1
+      "size": 1,
+      "unit": "celcius"
     },
     "13086": {
       "id": 13086,
       "label": "Ambient Temp.",
-      "format": "temperature",
-      "size": 1
+      "size": 1,
+      "unit": "celcius"
     }
   }
 }

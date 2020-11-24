@@ -116,6 +116,10 @@ def registersAsValue(registers, meta):
         'mask': valueMasks
     }[meta["format"]](*registers)
 
+def addressLabels(registers, meta):
+    def asMaskLabel(mask): return mask['label']
+    return list(map(asMaskLabel, meta['masks'])) if meta['format'] == 'mask' else ''
+
 def registersAsText(registers, meta):
     def asMaskText(mask):
         return mask["enum"][str((registers[0] >> mask["shift"]) & mask["mask"])]
