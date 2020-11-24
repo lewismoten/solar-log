@@ -3,24 +3,7 @@ from common import *
 print("#settings")
 client = getClient()
 if client.connect():
-    result = client.read_holding_registers(0x9000, 15, unit=CHARGE_CONTROLLER_UNIT)
-    if isinstance(result, Exception):
-        print("Got exception reading 0x9000 - 0x9014")
-        print(result)
-    else:
-        if result.function_code < 0x80:
-            print("Boost voltage: {}".format(volts(result.registers[7])))
-            print("Float voltage: {}".format(volts(result.registers[8])))
-            print("Boost reconnect voltage: {}".format(volts(result.registers[9])))
-            print("Low voltage reconnect: {}".format(volts(result.registers[10])))
-            print("Under voltage recover: {}".format(volts(result.registers[11])))
-            print("Under voltage warning: {}".format(volts(result.registers[12])))
-            print("Low voltage disconnect: {}".format(volts(result.registers[13])))
-            print("Discharging limit voltage: {}".format(volts(result.registers[14])))
-
-        else:
-            print("Unable to read 0x9000 - 0x9014")
-
+    
     result = client.read_holding_registers(0x9013, 15, unit=CHARGE_CONTROLLER_UNIT)
     if isinstance(result, Exception):
         print("Got exception reading 0x9013 - 0x9021")

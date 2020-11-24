@@ -141,7 +141,9 @@
   "holdingRegisterIds": [
     36864, 36865, 36866,
     36867, 36868, 36869,
-    36870
+    36870, 36871, 36872,
+    36873, 36874, 36875,
+    36876, 36877, 36878
   ],
   "categories": {
     "dataIds": [
@@ -214,7 +216,9 @@
 
     36864, 36865, 36866,
     36867, 36868, 36869,
-    36870
+    36870, 36871, 36872,
+    36873, 36874, 36875,
+    36876, 36877, 36878
   ],
   "byId": {
     "0": {
@@ -725,6 +729,54 @@
     "36870": {
       "id": 36870,
       "label": "Equalization voltage",
+      "size": 1,
+      "unit": "volt"
+    },
+    "36871": {
+      "id": 36871,
+      "label": "Boost voltage",
+      "size": 1,
+      "unit": "volt"
+    },
+    "36872": {
+      "id": 36872,
+      "label": "Float voltage",
+      "size": 1,
+      "unit": "volt"
+    },
+    "36873": {
+      "id": 36873,
+      "label": "Boost reconnect voltage",
+      "size": 1,
+      "unit": "volt"
+    },
+    "36874": {
+      "id": 36874,
+      "label": "Low voltage reconnect",
+      "size": 1,
+      "unit": "volt"
+    },
+    "36875": {
+      "id": 36875,
+      "label": "Under voltage recover",
+      "size": 1,
+      "unit": "volt"
+    },
+    "36876": {
+      "id": 36876,
+      "label": "Under voltage warning",
+      "size": 1,
+      "unit": "volt"
+    },
+    "36877": {
+      "id": 36877,
+      "label": "Low voltage disconnect",
+      "size": 1,
+      "unit": "volt"
+    },
+    "36878": {
+      "id": 36878,
+      "label": "Discharging limit voltage",
       "size": 1,
       "unit": "volt"
     }
