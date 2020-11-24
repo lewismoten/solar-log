@@ -14,30 +14,6 @@ function loadingStarted() {
 function loadingStopped() {
   $(".loading").hide();
 }
-function as01(v) { return v ? '1' : '0'}
-function getDataRaw(row) {
-  if(row.bits) return row.bits.map(as01).join('-');
-  if(row.registers) return row.registers.join(':');
-}
-function getDataLabels(row) {
-  if(row.labels) return row.labels.join("<br>")
-}
-function getDataText(row) {
-    if(Array.isArray(row.text)) return row.text.join("<br>")
-    return row.text;
-}
-function getDataAddress(row) {
-    return '0x' + ('0000' + row.id.toString(16).toUpperCase()).substr(-4);
-}
-function getDataValue(row) {
-    if(Array.isArray(row.value)) return row.value.join("<br>")
-    return row.value;
-}
-function getRowLabel(row) {
-  var id = row.id;
-  var meta = schema.byId[id];
-  return meta.label;
-}
 function isDiscreteInput(id) {
   return schema.discreteInputIds.indexOf(id) !== -1;
 }
@@ -47,7 +23,14 @@ function isCoil(id) {
 function isBitAddress(id) {
   return isCoil(id) || isDiscreteInput(id);
 }
-
+function getRowAddress(row) {
+    return '0x' + ('0000' + row.id.toString(16).toUpperCase()).substr(-4);
+}
+function getRowLabel(row) {
+  var id = row.id;
+  var meta = schema.byId[id];
+  return meta.label;
+}
 function getRowValue(row) {
   var id = row.id;
   var meta = schema.byId[id];
@@ -113,7 +96,7 @@ function documentReady() {
       return "row_" + data.id.toString()
     },
     columns: [
-      {name: 'address', title: 'Address', data: getDataAddress},
+      {name: 'address', title: 'Address', data: getRowAddress},
       {name: 'id', title: '(decimal)', data: 'id'},
       {name: 'data', title: 'Data', data: 'data'},
       {name: 'value', title: 'Value', data: getRowValue},
