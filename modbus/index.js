@@ -120,7 +120,7 @@ function documentReady() {
     ]
   });
 
-  return getSchema().then(getInputRegisters).then(getCoils).then(getDiscreteInput);
+  return getSchema().then(getInputRegisters).then(getCoils).then(getDiscreteInput).then(getHoldingRegisters);
 }
 
 function getSchema() {
@@ -142,6 +142,11 @@ function getDiscreteInput() {
 }
 function getInputRegisters() {
   return $.getJSON("./print_input_registers.py")
+     .then(gotAddresses)
+     .fail(getFailed)
+}
+function getHoldingRegisters() {
+  return $.getJSON("./print_holding_registers.py")
      .then(gotAddresses)
      .fail(getFailed)
 }

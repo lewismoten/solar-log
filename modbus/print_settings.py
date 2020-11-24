@@ -9,13 +9,7 @@ if client.connect():
         print(result)
     else:
         if result.function_code < 0x80:
-            batteryType = {
-                0: "User defined",
-                1: "Sealed",
-                2: "GEL",
-                3: "Flooded"
-            }
-            print("Battery Type: {}".format(batteryType.get(result.registers[0])))
+
             print("Battery Capacity: {}".format(ampHours(result.registers[1])))
             print("Temperature compensation coefficient: {}".format(coefficient(result.registers[2])))
             print("High Volt. disconnect: {}".format(volts(result.registers[3])))
