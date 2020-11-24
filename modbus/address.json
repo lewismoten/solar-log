@@ -12,6 +12,12 @@
       "suffix": "a",
       "scale": 100
     },
+    "ah": {
+      "singular": "amp hour",
+      "plural": "amp hours",
+      "suffix": "ah",
+      "scale": 100
+    },
     "watt": {
       "singular": "watt",
       "plural": "watts",
@@ -28,6 +34,12 @@
       "singular": "degree celcius",
       "plural": "degrees celcius",
       "suffix": "\u2103",
+      "scale": 100
+    },
+    "temp coefficient": {
+      "singular": "mV/\u2103/2V",
+      "plural": "mV/\u2103/2V",
+      "suffix": "mV/\u2103/2V",
       "scale": 100
     },
     "percent": {
@@ -126,7 +138,11 @@
   },
   "coilIds": [0, 2, 3, 5, 6],
   "discreteInputIds": [8192, 8204],
-  "holdingRegisterIds": [36864],
+  "holdingRegisterIds": [
+    36864, 36865, 36866,
+    36867, 36868, 36869,
+    36870
+  ],
   "categories": {
     "dataIds": [
       12544, 12545, 12546,
@@ -194,7 +210,11 @@
     13064, 13066, 13068,
     13070, 13072, 13074,
     13076, 13082, 13083,
-    13085, 13086
+    13085, 13086,
+
+    36864, 36865, 36866,
+    36867, 36868, 36869,
+    36870
   ],
   "byId": {
     "0": {
@@ -671,6 +691,42 @@
       "label": "Battery Type",
       "size": 1,
       "enum": "battery type"
+    },
+    "36865": {
+      "id": 36865,
+      "label": "Battery Capacity",
+      "size": 1,
+      "unit": "ah"
+    },
+    "36866": {
+      "id": 36866,
+      "label": "Temperature compensation coefficient",
+      "size": 1,
+      "unit": "temp coefficient"
+    },
+    "36867": {
+      "id": 36867,
+      "label": "High Volt. disconnect",
+      "size": 1,
+      "unit": "volt"
+    },
+    "36868": {
+      "id": 36868,
+      "label": "Charging limit voltage",
+      "size": 1,
+      "unit": "volt"
+    },
+    "36869": {
+      "id": 36869,
+      "label": "Over voltage reconnect",
+      "size": 1,
+      "unit": "volt"
+    },
+    "36870": {
+      "id": 36870,
+      "label": "Equalization voltage",
+      "size": 1,
+      "unit": "volt"
     }
   }
 }

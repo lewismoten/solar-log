@@ -120,7 +120,11 @@ function documentReady() {
     ]
   });
 
-  return getSchema().then(getInputRegisters).then(getCoils).then(getDiscreteInput).then(getHoldingRegisters);
+  return getSchema()
+    .then(getInputRegisters)
+    .then(getCoils)
+    .then(getDiscreteInput)
+    .then(getHoldingRegisters);
 }
 
 function getSchema() {

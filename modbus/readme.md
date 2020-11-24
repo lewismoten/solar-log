@@ -19,8 +19,8 @@ This will read all of the data and print it out on the terminal. You can also pr
 | coils | print_coils.py | Read/Write Boolean values |
 | discrete input | print_discrete_input.py | Read-only Boolean values |
 | input registers | print_input_registers.py | Read-only word values |
+| holding registers | print_holding_registers.py | Read/Write word values |
 | device | print_device.py | ?? |
-| settings | print_settings.py | ?? |
 
 ## Synchronizing the controllers clock
 Statistics reset at 12:00 am. It's important that the on-board clock reflects the time accurately. If the controller loses power, its clock will reset to February 14, 2017 12:00 am when it is powered up.
@@ -230,4 +230,4 @@ uptime
 need to allow "anonymouse??" to access /dev/ttyUSB0
 ls -l /dev/ttyUSB0
 gives me ... crw-rw---- 1 root dialout 188, 0 Nov 22 20:40 /dev/ttyUSB0
-tail -f /var/log/apache2/error.log 
+tail -f /var/log/apache2/error.log

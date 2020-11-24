@@ -9,13 +9,6 @@ if client.connect():
         print(result)
     else:
         if result.function_code < 0x80:
-
-            print("Battery Capacity: {}".format(ampHours(result.registers[1])))
-            print("Temperature compensation coefficient: {}".format(coefficient(result.registers[2])))
-            print("High Volt. disconnect: {}".format(volts(result.registers[3])))
-            print("Charging limit voltage: {}".format(volts(result.registers[4])))
-            print("Over voltage reconnect: {}".format(volts(result.registers[5])))
-            print("Equalization voltage: {}".format(volts(result.registers[6])))
             print("Boost voltage: {}".format(volts(result.registers[7])))
             print("Float voltage: {}".format(volts(result.registers[8])))
             print("Boost reconnect voltage: {}".format(volts(result.registers[9])))
