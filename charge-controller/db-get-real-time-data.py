@@ -70,8 +70,9 @@ try:
     FROM
         controller_real_time_data
     WHERE
-        create_date >= DATE_SUB(now(), INTERVAL 60 * 1 MINUTE)
+        create_date >= DATE_SUB(now(), INTERVAL 1 DAY)
     """
+        # --create_date >= DATE_SUB(now(), INTERVAL 60 * 1 MINUTE)
     # sql = """
     # SELECT
     #     UNIX_TIMESTAMP(create_date),
