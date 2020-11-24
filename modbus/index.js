@@ -47,6 +47,12 @@ function getRowValue(row) {
     var unit = schema.units[meta.unit];
     if(unit.scale) value /= unit.scale;
   }
+  if(meta.packs) {
+    function unpackValue(pack) {
+      return (value >> pack.shift) & pack.mask;
+    }
+    return meta.packs.map(unpackValue);
+  }
   return value;
 }
 function selectEnum(enums, value) {
@@ -75,6 +81,14 @@ function getRowText(row) {
   if(meta.unit) {
     var unit = schema.units[meta.unit];
     if(unit.suffix) return [value, unit.suffix].join('');
+  }
+  if(meta.packs) {
+    function unpackValue(pack, index) {
+      var v = value[index];
+      var enums = schema.enums[pack.enum];
+      return "<tr><td>" + pack.label + "</td><td>" + enums[v.toString()] + "</td></tr>";
+    }
+    return "<table>" + meta.packs.map(unpackValue).join("") + "</table>";
   }
   return value;
 }

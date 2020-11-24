@@ -56,6 +56,22 @@
       "1": "Enabled",
       "0": "Disabled"
     },
+    "fault": {
+      "0": "Normal",
+      "1": "Fault"
+    },
+    "abnormal": {
+      "0": "Normal",
+      "1": "Abnormal"
+    },
+    "wrong": {
+      "0": "Correct",
+      "1": "Wrong"
+    },
+    "running": {
+      "0": "Standby",
+      "1": "Running"
+    },
     "night": {
       "0": "Day",
       "1": "Night"
@@ -64,6 +80,42 @@
       "0": "Connect/Disconnect",
       "1": "PWM",
       "2": "MPPT"
+    },
+    "battery status voltage": {
+      "0": "Normal",
+      "1": "Overvolt",
+      "2": "Under volt",
+      "3": "Low Volt Disconnect",
+      "4": "Fault"
+    },
+    "battery status temperature": {
+      "0": "Normal",
+      "1": "Over Temperature",
+      "2": "Low Temperature"
+    },
+    "charging input voltage": {
+      "0": "Normal",
+      "1": "No power connected",
+      "2": "Higher Volt Input",
+      "3": "Input Volt Error"
+    },
+    "charging phase": {
+      "0": "Not charging",
+      "1": "Float",
+      "2": "Boost",
+      "3": "Equalization"
+    },
+    "discharging input voltage": {
+      "0": "Normal",
+      "1": "Low",
+      "2": "High",
+      "3": "No access input volt error"
+    },
+    "load": {
+      "0": "Light Load",
+      "1": "Moderate",
+      "2": "Rated",
+      "3": "Overload"
     }
   },
   "coilIds": [0, 2, 3, 5, 6],
@@ -318,47 +370,30 @@
       "id": 12800,
       "label": "Battery Status",
       "size": 1,
-      "format": "mask",
-      "masks": [
+      "packs": [
         {
           "label": "Voltage",
           "mask": 7,
           "shift": 0,
-          "enum": {
-              "0": "Normal",
-              "1": "Overvolt",
-              "2": "Under volt",
-              "3": "Low Volt Disconnect",
-              "4": "Fault"
-          }
+          "enum": "battery status voltage"
         },
         {
           "label": "Temperature",
-          "mask": 15,
+          "mask": 1,
           "shift": 4,
-          "enum": {
-              "0": "Normal",
-              "1": "Over Temperature",
-              "2": "Low Temperature"
-          }
+          "enum": "battery status temperature"
         },
         {
           "label": "Internal Resistance",
           "mask": 1,
           "shift": 8,
-          "enum":{
-              "0": "Normal",
-              "1": "Abnormal"
-          }
+          "enum": "abnormal"
         },
         {
           "label": "Identification for rated voltage",
           "mask": 1,
-          "shift": 815,
-          "enum":{
-            "0": "Correct",
-            "1": "Wrong"
-          }
+          "shift": 15,
+          "enum": "wrong"
         }
       ]
     },
@@ -367,118 +402,78 @@
       "label": "Charging Equipment Status",
       "size": 1,
       "format": "mask",
-      "masks": [
+      "packs": [
         {
           "label": "Input Voltage",
           "mask": 3,
           "shift": 14,
-          "enum": {
-            "0": "Normal",
-            "1": "No power connected",
-            "2": "Higher Volt Input",
-            "3": "Input Volt Error"
-          }
+          "enum": "charging input voltage"
         },
         {
           "label": "MOSFET is short",
           "mask": 1,
           "shift": 13,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "Charging or Anti-reverse MOSFET is short",
           "mask": 1,
           "shift": 12,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "Anti-reverse MOSFET is short",
           "mask": 1,
           "shift": 11,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "Input is over current",
           "mask": 1,
           "shift": 10,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "Load is over current",
           "mask": 1,
           "shift": 9,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "Load is short",
           "mask": 1,
           "shift": 8,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "Load MOSFET is short",
           "mask": 1,
           "shift": 7,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "PV Input is short",
           "mask": 1,
           "shift": 4,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "Battery",
           "mask": 3,
           "shift": 2,
-          "enum": {
-            "0": "Not charging",
-            "1": "Float",
-            "2": "Boost",
-            "3": "Equalization"
-          }
+          "enum": "charging phase"
         },
         {
           "label": "Fault",
           "mask": 1,
           "shift": 1,
-          "enum": {
-            "0": "Normal",
-            "1": "Fault"
-          }
+          "enum": "fault"
         },
         {
           "label": "Running",
           "mask": 1,
           "shift": 0,
-          "enum": {
-            "0": "Standby",
-            "1": "Running"
-          }
+          "enum": "running"
         }
       ]
     },
@@ -487,118 +482,78 @@
       "label": "Discharging Equipment Status",
       "size": 1,
       "format": "mask",
-      "masks": [
+      "packs": [
         {
           "label": "Input Voltage",
           "mask": 3,
           "shift": 14,
-          "enum": {
-            "0": "Normal",
-            "1": "Low",
-            "2": "High",
-            "3": "No access input volt error"
-          }
+          "enum": "discharging input voltage"
         },
         {
           "label": "Output Power",
           "mask": 3,
           "shift": 12,
-          "enum": {
-            "0": "Light Load",
-            "1": "Moderate",
-            "2": "Rated",
-            "3": "Overload"
-          }
+          "enum": "load"
         },
         {
           "label": "Short Circuit",
           "mask": 1,
           "shift": 11,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "Unable to discharge",
           "mask": 1,
           "shift": 10,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "Unable to stop discharging",
           "mask": 1,
           "shift": 9,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "Output Voltage Abnormal",
           "mask": 1,
           "shift": 8,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "Input overpressure",
           "mask": 1,
           "shift": 7,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "High voltage side short circuit",
           "mask": 1,
           "shift": 6,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "Boost Overpressure",
           "mask": 1,
           "shift": 5,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "Output Overpressure",
           "mask": 1,
           "shift": 4,
-          "enum": {
-            "0": "No",
-            "1": "Yes"
-          }
+          "enum": "yes"
         },
         {
           "label": "Fault",
           "mask": 1,
           "shift": 1,
-          "enum": {
-            "0": "Normal",
-            "1": "Fault"
-          }
+          "enum": "fault"
         },
         {
           "label": "Running",
           "mask": 1,
           "shift": 0,
-          "enum": {
-            "0": "Standby",
-            "1": "Running"
-          }
+          "enum": "running"
         }
       ]
     },
