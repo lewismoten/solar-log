@@ -36,6 +36,12 @@
       "suffix": "\u2103",
       "scale": 100
     },
+    "milliohm": {
+      "singular": "milliohm",
+      "plural": "milliohms",
+      "suffix": "m\u03a9",
+      "scale": 100
+    },
     "temp coefficient": {
       "singular": "mV/\u2103/2V",
       "plural": "mV/\u2103/2V",
@@ -53,6 +59,21 @@
       "plural": "tons",
       "suffix": "t",
       "scale": 100
+    },
+    "day": {
+      "singular": "day",
+      "plural": "days",
+      "scale": 1
+    },
+    "minute": {
+      "singular": "minute",
+      "plural": "minutes",
+      "scale": 1
+    },
+    "second": {
+      "singular": "second",
+      "plural": "seconds",
+      "scale": 1
     }
   },
   "enums": {
@@ -88,10 +109,37 @@
       "0": "Day",
       "1": "Night"
     },
+    "month": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    },
+    "voltage code": {
+        "0": "Auto Recognize",
+        "1": "12V",
+        "2": "24V"
+    },
+    "load timing control selection": {
+        "0": "Using timer 1",
+        "1": "Using timer 2"
+    },
     "charging mode": {
       "0": "Connect/Disconnect",
       "1": "PWM",
       "2": "MPPT"
+    },
+    "battery charging management mode": {
+      "0": "Voltage compensation",
+      "1": "SOC"
     },
     "battery status voltage": {
       "0": "Normal",
@@ -134,6 +182,12 @@
       "1": "Sealed",
       "2": "GEL",
       "3": "Flooded"
+    },
+    "load control mode": {
+      "0": "Manual Control",
+      "1": "Light ON/OFF",
+      "2": "Light ON+ Timer/",
+      "3": "Time Control"
     }
   },
   "coilIds": [0, 2, 3, 5, 6],
@@ -143,33 +197,23 @@
     36867, 36868, 36869,
     36870, 36871, 36872,
     36873, 36874, 36875,
-    36876, 36877, 36878
+    36876, 36877, 36878,
+
+    36883,
+    36886, 36887, 36888,
+    36889, 36890, 36891,
+    36892, 36893, 36894,
+    36895, 36896, 36897,
+
+    36925, 36926, 36927,
+    36930, 36933, 36936,
+    36939,
+    36963, 36965,
+
+    36967, 36969,
+    36970, 36971, 36972,
+    36973, 36974, 36976
   ],
-  "categories": {
-    "dataIds": [
-      12544, 12545, 12546,
-      12548, 12549, 12550,
-      12556, 12557, 12558,
-      12560, 12561, 12562,
-      12570, 12571, 12573
-    ],
-    "ratingIds": [
-      12288, 12289, 12290,
-      12292, 12293, 12294,
-      12295, 12302
-    ],
-    "statisticIds": [
-      13056, 13057, 13058,
-      13059, 13060, 13062,
-      13064, 13066, 13068,
-      13070, 13072, 13074,
-      13076, 13082, 13083,
-      13085, 13086
-    ],
-    "statusIds": [
-      12800, 12801, 12802
-    ]
-  },
   "inputRegisterIds": [
     12288, 12289, 12290,
     12292, 12293, 12294,
@@ -218,7 +262,21 @@
     36867, 36868, 36869,
     36870, 36871, 36872,
     36873, 36874, 36875,
-    36876, 36877, 36878
+    36876, 36877, 36878,
+
+    36883,
+    36886, 36887, 36888,
+    36889, 36890, 36891,
+    36892, 36893, 36894,
+    36895, 36896, 36897,
+
+    36925, 36926, 36927,
+    36930, 36933, 36936,
+    36939,
+    36963, 36965,
+    36967, 36969,
+    36970, 36971, 36972,
+    36973, 36974, 36976
   ],
   "byId": {
     "0": {
@@ -779,6 +837,347 @@
       "label": "Discharging limit voltage",
       "size": 1,
       "unit": "volt"
+    },
+    "36883": {
+      "id": 36883,
+      "label": "Real time clock",
+      "size": 3,
+      "type": "datetime",
+      "packs": [
+        {
+          "label": "Minute",
+          "index": 0,
+          "mask": 255,
+          "shift": 0
+        },
+        {
+          "label": "Second",
+          "index": 0,
+          "mask": 255,
+          "shift": 8
+        },
+        {
+          "label": "Hour",
+          "index": 1,
+          "mask": 255,
+          "shift": 0
+        },
+        {
+          "label": "Day",
+          "index": 1,
+          "mask": 255,
+          "shift": 8
+        },
+        {
+          "label": "Month",
+          "index": 2,
+          "mask": 255,
+          "shift": 0,
+          "enum": "month"
+        },
+        {
+          "label": "Year",
+          "index": 2,
+          "mask": 255,
+          "shift": 8
+        }
+      ]
+    },
+    "36886": {
+      "id": 36886,
+      "label": "Equalization charging cycle",
+      "size": 1,
+      "unit": "day"
+    },
+    "36887": {
+      "id": 36887,
+      "label": "Battery temperature warning upper limit",
+      "size": 1,
+      "unit": "celcius"
+    },
+    "36888": {
+      "id": 36888,
+      "label": "Battery temperature warning lower limit",
+      "size": 1,
+      "unit": "celcius"
+    },
+    "36889": {
+      "id": 36889,
+      "label": "Controller inner temperature upper limit",
+      "size": 1,
+      "unit": "celcius"
+    },
+    "36890": {
+      "id": 36890,
+      "label": "Controller inner temperature upper limit recover",
+      "size": 1,
+      "unit": "celcius"
+    },
+    "36891": {
+      "id": 36891,
+      "label": "Power component temperature upper limit",
+      "size": 1,
+      "unit": "celcius"
+    },
+    "36892": {
+      "id": 36892,
+      "label": "Power component temperature upper limit recover",
+      "size": 1,
+      "unit": "celcius"
+    },
+    "36893": {
+      "id": 36893,
+      "label": "Line Impedance",
+      "size": 1,
+      "unit": "milliohm"
+    },
+    "36894": {
+      "id": 36894,
+      "label": "Night Time Threshold Volt.(NTTV)",
+      "size": 1,
+      "unit": "volt"
+    },
+    "36895": {
+      "id": 36895,
+      "label": "Light signal startup (night) delay time",
+      "size": 1,
+      "unit": "minute"
+    },
+    "36896": {
+      "id": 36896,
+      "label": "Day Time Threshold Volt.(DTTV)",
+      "size": 1,
+      "unit": "volt"
+    },
+    "36897": {
+      "id": 36897,
+      "label": "Light signal turn off(day) delay time",
+      "size": 1,
+      "unit": "minute"
+    },
+    "36925": {
+      "id": 36925,
+      "label": "Load controlling modes",
+      "size": 1,
+      "enum": "load control mode"
+    },
+    "36926": {
+      "id": 36926,
+      "label": "Working time length 1",
+      "size": 1,
+      "type": "duration",
+      "packs": [
+        {
+          "label": "Minute",
+          "index": 0,
+          "mask": 255,
+          "shift": 0
+        },
+        {
+          "label": "Hour",
+          "index": 0,
+          "mask": 255,
+          "shift": 8
+        }
+      ]
+    },
+    "36927": {
+      "id": 36927,
+      "label": "Working time length 2",
+      "size": 1,
+      "type": "duration",
+      "packs": [
+        {
+          "label": "Minute",
+          "index": 0,
+          "mask": 255,
+          "shift": 0
+        },
+        {
+          "label": "Hour",
+          "index": 0,
+          "mask": 255,
+          "shift": 8
+        }
+      ]
+    },
+    "36930": {
+      "id": 36930,
+      "label": "Turn on timing 1",
+      "size": 3,
+      "type": "time",
+      "packs": [
+        {
+          "label": "Second",
+          "index": 0,
+          "mask": 65535,
+          "shift": 0
+        },
+        {
+          "label": "Minute",
+          "index": 1,
+          "mask": 65535,
+          "shift": 0
+        },
+        {
+          "label": "Hour",
+          "index": 2,
+          "mask": 65535,
+          "shift": 0
+        }
+      ]
+    },
+    "36933": {
+      "id": 36933,
+      "label": "Turn off timing 1",
+      "size": 3,
+      "type": "time",
+      "packs": [
+        {
+          "label": "Second",
+          "index": 0,
+          "mask": 65535,
+          "shift": 0
+        },
+        {
+          "label": "Minute",
+          "index": 1,
+          "mask": 65535,
+          "shift": 0
+        },
+        {
+          "label": "Hour",
+          "index": 2,
+          "mask": 65535,
+          "shift": 0
+        }
+      ]
+    },
+    "36936": {
+      "id": 36936,
+      "label": "Turn on timing 2",
+      "size": 3,
+      "type": "time",
+      "packs": [
+        {
+          "label": "Second",
+          "index": 0,
+          "mask": 65535,
+          "shift": 0
+        },
+        {
+          "label": "Minute",
+          "index": 1,
+          "mask": 65535,
+          "shift": 0
+        },
+        {
+          "label": "Hour",
+          "index": 2,
+          "mask": 65535,
+          "shift": 0
+        }
+      ]
+    },
+    "36939": {
+      "id": 36939,
+      "label": "Turn of timing 2",
+      "size": 3,
+      "type": "time",
+      "packs": [
+        {
+          "label": "Second",
+          "index": 0,
+          "mask": 65535,
+          "shift": 0
+        },
+        {
+          "label": "Minute",
+          "index": 1,
+          "mask": 65535,
+          "shift": 0
+        },
+        {
+          "label": "Hour",
+          "index": 2,
+          "mask": 65535,
+          "shift": 0
+        }
+      ]
+    },
+    "36963": {
+      "id": 36963,
+      "label": "Backlight time",
+      "size": 1,
+      "unit": "second"
+    },
+    "36965": {
+      "id": 36965,
+      "label": "Length of night",
+      "size": 1,
+      "type": "duration",
+      "packs": [
+        {
+          "label": "Minute",
+          "index": 0,
+          "mask": 255,
+          "shift": 0
+        },
+        {
+          "label": "Hour",
+          "index": 0,
+          "mask": 255,
+          "shift": 8
+        }
+      ]
+    },
+    "36967": {
+      "id": 36967,
+      "label": "Battery rated voltage code",
+      "size": 1,
+      "enum": "voltage code"
+    },
+    "36969": {
+      "id": 36969,
+      "label": "Load timing control selection",
+      "size": 1,
+      "enum": "load timing control selection"
+    },
+    "36970": {
+      "id": 36970,
+      "label": "Default Load On/Off in manual mode",
+      "size": 1,
+      "enum": "on"
+    },
+    "36971": {
+      "id": 36971,
+      "label": "Equalize Duration",
+      "size": 1,
+      "unit": "minute"
+    },
+    "36972": {
+      "id": 36972,
+      "label": "Boost Duration",
+      "size": 1,
+      "unit": "minute"
+    },
+    "36973": {
+      "id": 36973,
+      "label": "Discharge Percentage",
+      "size": 1,
+      "unit": "percent"
+    },
+    "36974": {
+      "id": 36974,
+      "label": "Charging Percentage",
+      "size": 1,
+      "unit": "percent"
+    },
+    "36976": {
+      "id": 36976,
+      "label": "Management modes for battery charging and discharging",
+      "size": 1,
+      "enum": "battery charging management mode"
     }
   }
 }

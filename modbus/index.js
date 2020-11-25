@@ -32,9 +32,11 @@ function getRowLabel(row) {
   return meta.label;
 }
 function getRowValue(row) {
+  if(row.error) return 'ERR';
   var id = row.id;
   var meta = schema.byId[id];
   var data = row.data;
+  var value;
 
   if(isBitAddress(id)) {
     return data[0];
@@ -49,6 +51,9 @@ function getRowValue(row) {
   }
   if(meta.packs) {
     function unpackValue(pack) {
+      if("index" in pack) {
+        return (data[pack.index] >> pack.shift) & pack.mask;
+      }
       return (value >> pack.shift) & pack.mask;
     }
     return meta.packs.map(unpackValue);
@@ -65,6 +70,7 @@ function selectEnum(enums, value) {
   return options;
 }
 function getRowText(row) {
+  if(row.error) return 'ERR';
   var value = getRowValue(row);
   var id = row.id;
   var meta = schema.byId[id];
@@ -85,7 +91,13 @@ function getRowText(row) {
   if(meta.packs) {
     function unpackValue(pack, index) {
       var v = value[index];
+      if(!pack.enum) {
+        return "<tr><td>" + pack.label + "</td><td>" + v.toString() + "</td></tr>";
+      }
       var enums = schema.enums[pack.enum];
+      if(!enums) {
+        return "<tr><td>" + pack.label + "</td><td>MISSING ENUM " + pack.enum + "</td></tr>";
+      }
       return "<tr><td>" + pack.label + "</td><td>" + enums[v.toString()] + "</td></tr>";
     }
     return "<table>" + meta.packs.map(unpackValue).join("") + "</table>";
@@ -96,6 +108,7 @@ function getRowUnit(row) {
   var id = row.id;
   var meta = schema.byId[id];
   if(meta.unit) {
+    var value = getRowValue(row);
     var unit = schema.units[meta.unit];
     if(value === 1 && unit.singular) return unit.singular;
     if(value !== 1 && unit.plural) return unit.plural;
@@ -112,7 +125,7 @@ function documentReady() {
     columns: [
       {name: 'address', title: 'Address', data: getRowAddress},
       {name: 'id', title: '(decimal)', data: 'id'},
-      {name: 'data', title: 'Data', data: 'data'},
+      {name: 'data', title: 'Data', data: 'data', defaultContent: ''},
       {name: 'value', title: 'Value', data: getRowValue},
       {name: 'unit', title: 'Unit', data: getRowUnit},
       {name: 'label', title: 'Label', data: getRowLabel},
