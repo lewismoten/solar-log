@@ -2,104 +2,113 @@
 import json
 from common import *
 
+# Prints a condensed output of all data available
+# Front-end uses the same schema file to read data
+# {
+#   info: {
+#       [infoId]: {
+#            [index]: [bytes...],
+#            [index]: [bytes...],
+#       },
+#       [infoId]: {
+#            [index]: [bytes...],
+#            [index]: [bytes...],
+#       }
+#   },
+#   address: {
+#       [id]: bit, # coil
+#       [id]: bit, # discrete input
+#       [id]: [bytes...], # input register
+#       [id]: [bytes...] # holding register
+#   }
+#}
+
 with open("schema.json", "r") as f:
   schema = json.load(f)
 
-def readInfo(info):
-    id = info["id"]
-    result = client.execute(ReadDeviceInformationRequest(id, unit=schema["device"]["unit"]))
+unitId = schema["device"]["unit"]
+
+out = {
+    "info": {},
+    "address": {}
+}
+
+def readCoil(id):
+    result = client.read_coils(id, 1, unit=unitId)
+    appendAddressBit(id, result)
+
+def readDiscreteInput(id):
+    result = client.read_discrete_inputs(id, 1, unit=unitId)
+    appendAddressBit(id, result)
+
+def readHoldingRegisters(id):
+    size = schema["addressById"][str(id)]["size"]
+    result = client.read_holding_registers(id, size, unit=unitId)
+    appendAddressWord(id, result)
+
+def readInputRegister(id):
+    size = schema["addressById"][str(id)]["size"]
+    result = client.read_input_registers(id, size, unit=unitId)
+    appendAddressWord(id, result)
+
+def readInfo(id):
+    result = client.execute(ReadDeviceInformationRequest(id, unit=unitId))
     if isinstance(result, Exception):
-        o = {"id": id, "error": True}
+        addInfoError(id)
     else:
-        if result.function_code < 0x80:
-            def asText(index):
-                return {"index": index, "ascii": result.information[index].decode("ascii")}
-            o = {"id": id, "data": list(map(asText, result.information))}
+        if gotResult(result):
+            parts = {}
+            out["info"][str(id)] = {}
+            for index in result.information:
+                out["info"][str(id)][str(index)] = list(result.information[index])
         else:
-            o = {"id": id, "error": True}
-    return o
+            addInfoError(id)
 
-def readCoil(addressInfo):
-    id = addressInfo["id"]
-    result = client.read_coils(id, 1, unit=schema["device"]["unit"])
+def appendAddressBit(id, result):
     if isinstance(result, Exception):
-        o = {"id": id, "error": True}
+        addAddressError(id)
     else:
-        if result.function_code < 0x80:
-            o = {"id": id, "data": list(result.bits)}
+        if gotResult(result):
+            out["address"][id] = result.bits[0]
         else:
-            o = {"id": id, "error": True}
-    return o
+            addAddressError(id)
 
-def readDiscreteInput(addressInfo):
-    id = addressInfo["id"]
-    result = client.read_discrete_inputs(id, 1, unit=schema["device"]["unit"])
+def appendAddressWord(id, result):
     if isinstance(result, Exception):
-        o = {"id": id, "error": True}
+        addAddressError(id)
     else:
-        if result.function_code < 0x80:
-            o = {"id": id, "data": list(result.bits)}
+        if gotResult(result):
+            out["address"][id] = list(result.registers)
         else:
-            o = {"id": id, "error": True}
-    return o
+            addAddressError(id)
 
-def readHoldingRegisters(addressInfo):
-    id = addressInfo["id"]
-    size = addressInfo["size"]
-    result = client.read_holding_registers(id, size, unit=schema["device"]["unit"])
-    if isinstance(result, Exception):
-        o = {"id": id, "error": True}
-    else:
-        if result.function_code < 0x80:
-            o = {"id": id, "data": list(result.registers)}
-        else:
-            o = {"id": id, "error": True}
-    return o
+def gotResult(result):
+  return result.function_code < 0x80
 
-def readInputRegister(addressInfo):
-    id = addressInfo["id"]
-    size = addressInfo["size"]
-    result = client.read_input_registers(id, size, unit=schema["device"]["unit"])
-    if isinstance(result, Exception):
-        o = {"id": id, "error": True}
-    else:
-        if result.function_code < 0x80:
-            o = {"id": id, "data": list(result.registers)}
-        else:
-            o = {"id": id, "error": True}
-    return o
+def addAddressError(id):
+  out["address"][str(id)] = getError()
 
-def asInfoWithData(id):
-    return readInfo(schema["infoById"][str(id)]);
+def addInfoError(id):
+  out["info"][str(id)] = getError()
 
-def asInputRegisterWithData(id):
-    return readInputRegister(schema["addressById"][str(id)]);
-
-def asHoldingRegistersWithData(id):
-    return readHoldingRegisters(schema["addressById"][str(id)]);
-
-def asDiscreteInputWithData(id):
-    return readDiscreteInput(schema["addressById"][str(id)]);
-
-def asCoilWithData(id):
-    return readCoil(schema["addressById"][str(id)]);
+def getError(reason=True):
+    return {"error": reason}
 
 client = getClient()
 connected = client.connect()
 if connected:
-    info = map(asInfoWithData, schema["allInfoIds"])
-    a = map(asCoilWithData, schema["addressCoilIds"])
-    b = map(asDiscreteInputWithData, schema["addressDiscreteInputIds"])
-    c = map(asHoldingRegistersWithData, schema["addressHoldingRegisterIds"])
-    d = map(asInputRegisterWithData, schema["addressInputRegisterIds"])
-    out = {
-        "info": list(info),
-        "address": list(a) + list(b) + list(c) + list(d)
-    }
+    # TODO: only read data requested via query string
+    # TODO: read multiple sequential addresses at once
+    # TODO: Retry with collisions and timeouts
+    for id in schema["allInfoIds"]: readInfo(id)
+    for id in schema["addressCoilIds"]: readCoil(id)
+    for id in schema["addressDiscreteInputIds"]: readDiscreteInput(id)
+    for id in schema["addressHoldingRegisterIds"]: readHoldingRegisters(id)
+    for id in schema["addressInputRegisterIds"]: readInputRegister(id)
     client.close()
 else:
-    out = {"error": "unable to connect", "connected": connected}
+    out = getError("unable to connect")
 
 print("Content-Type: application/json")
 print()
-print(json.dumps(out, indent=2))
+print(json.dumps(out))
