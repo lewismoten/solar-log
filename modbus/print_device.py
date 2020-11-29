@@ -1,25 +1,36 @@
 #!/usr/bin/python
+import json
 from common import *
-print("#device")
+
+def readInfo(info):
+    id = info["id"]
+    result = client.execute(ReadDeviceInformationRequest(id, unit=CHARGE_CONTROLLER_UNIT))
+    if isinstance(result, Exception):
+        o = {"id": id, "error": True}
+    else:
+        if result.function_code < 0x80:
+            def asText(index):
+                return {"index": index, "ascii": result.information[index].decode("ascii")}
+            o = {"id": id, "data": list(map(asText, result.information))}
+        else:
+            o = {"id": id, "error": True}
+    return o
+
+with open("schema.json", "r") as f:
+  schema = json.load(f)
+
+def asInfoWithData(id):
+    return readInfo(schema["infoById"][str(id)]);
+
 client = getClient()
-if client.connect():
-
-    result = client.execute(ReadDeviceInformationRequest(DeviceInformation.Basic, unit=CHARGE_CONTROLLER_UNIT))
-    if isinstance(result, Exception):
-        print("Got exception reading basic device information")
-        print(result)
-    else:
-        if result.function_code < 0x80:
-            print("Company: {}".format(text(result.information[0])))
-            print("Product: {}".format(text(result.information[1])))
-            print("Version: {}".format(text(result.information[2])))
-
-    result = client.execute(ReadDeviceInformationRequest(DeviceInformation.Regular, unit=CHARGE_CONTROLLER_UNIT))
-    if isinstance(result, Exception):
-        print("Got exception reading regular device information")
-        print(result)
-    else:
-        if result.function_code < 0x80:
-            print("Serial Number: {}".format(text(result.information[3])))
-
+connected = client.connect()
+if connected:
+    mapped = map(asInfoWithData, schema["allInfoIds"])
+    out = list(mapped)
     client.close()
+else:
+    out = {"error": "unable to connect", "connected": connected}
+
+print("Content-Type: application/json")
+print()
+print(json.dumps(out, indent=2))

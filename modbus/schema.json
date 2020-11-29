@@ -1,4 +1,7 @@
 {
+  "device": {
+    "unit": 1
+  },
   "units": {
     "volt": {
       "singular": "volt",
@@ -188,6 +191,26 @@
       "1": "Light ON/OFF",
       "2": "Light ON+ Timer/",
       "3": "Time Control"
+    }
+  },
+  "allInfoIds": [2, 1],
+  "infoById": {
+    "3": {"id": 3},
+    "1": {
+      "id": 1,
+      "type": "Basic",
+      "info": [
+        {"index": 0, "type": "text", "name": "Company"},
+        {"index": 1, "type": "text", "name": "Product"},
+        {"index": 2, "type": "text", "name": "Version"}
+      ]
+    },
+    "2": {
+      "id": 2,
+      "type": "Regular",
+      "info": [
+        {"index": 3, "type": "text", "name": "Serial Number"}
+      ]
     }
   },
   "coilIds": [0, 2, 3, 5, 6],
