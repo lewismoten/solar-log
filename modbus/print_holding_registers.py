@@ -5,7 +5,7 @@ from common import *
 def readHoldingRegisters(addressInfo):
     id = addressInfo["id"]
     size = addressInfo["size"]
-    result = client.read_holding_registers(id, size, unit=CHARGE_CONTROLLER_UNIT)
+    result = client.read_holding_registers(id, size, unit=schema["device"]["unit"])
     if isinstance(result, Exception):
         o = {"id": id, "error": True}
     else:
@@ -15,15 +15,15 @@ def readHoldingRegisters(addressInfo):
             o = {"id": id, "error": True}
     return o
 
-with open("address.json", "r") as f:
-  address = json.load(f)
+with open("schema.json", "r") as f:
+  schema = json.load(f)
 
 def asHoldingRegistersWithData(id):
-    return readHoldingRegisters(address["byId"][str(id)]);
+    return readHoldingRegisters(schema["addressById"][str(id)]);
 
 client = getClient()
 if client.connect():
-    out = list(map(asHoldingRegistersWithData, address["holdingRegisterIds"]))
+    out = list(map(asHoldingRegistersWithData, schema["addressHoldingRegisterIds"]))
     client.close()
 else:
     out = {"error": "unable to connect"}

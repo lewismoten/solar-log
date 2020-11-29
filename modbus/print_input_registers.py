@@ -6,7 +6,7 @@ from common import *
 def readInputRegister(addressInfo):
     id = addressInfo["id"]
     size = addressInfo["size"]
-    result = client.read_input_registers(id, size, unit=CHARGE_CONTROLLER_UNIT)
+    result = client.read_input_registers(id, size, unit=schema["device"]["unit"])
     if isinstance(result, Exception):
         o = {"id": id, "error": True}
     else:
@@ -16,15 +16,15 @@ def readInputRegister(addressInfo):
             o = {"id": id, "error": True}
     return o
 
-with open("address.json", "r") as f:
-  address = json.load(f)
+with open("schema.json", "r") as f:
+  schema = json.load(f)
 
 def asInputRegisterWithData(id):
-    return readInputRegister(address["byId"][str(id)]);
+    return readInputRegister(schema["addressById"][str(id)]);
 
 client = getClient()
 if client.connect():
-    out = list(map(asInputRegisterWithData, address["inputRegisterIds"]))
+    out = list(map(asInputRegisterWithData, schema["addressInputRegisterIds"]))
     client.close()
 else:
     out = {"error": "unable to connect"}

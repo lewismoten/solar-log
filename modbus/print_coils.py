@@ -4,7 +4,7 @@ from common import *
 
 def readCoil(addressInfo):
     id = addressInfo["id"]
-    result = client.read_coils(id, 1, unit=CHARGE_CONTROLLER_UNIT)
+    result = client.read_coils(id, 1, unit=schema["device"]["unit"])
     if isinstance(result, Exception):
         o = {"id": id, "error": True}
     else:
@@ -14,16 +14,16 @@ def readCoil(addressInfo):
             o = {"id": id, "error": True}
     return o
 
-with open("address.json", "r") as f:
-  address = json.load(f)
+with open("schema.json", "r") as f:
+  schema = json.load(f)
 
 def asCoilWithData(id):
-    return readCoil(address["byId"][str(id)]);
+    return readCoil(schema["addressById"][str(id)]);
 
 client = getClient()
 connected = client.connect()
 if connected:
-    mapped = map(asCoilWithData, address["coilIds"])
+    mapped = map(asCoilWithData, schema["addressCoilIds"])
     out = list(mapped)
     client.close()
 else:

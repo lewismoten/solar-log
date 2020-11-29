@@ -15,10 +15,10 @@ function loadingStopped() {
   $(".loading").hide();
 }
 function isDiscreteInput(id) {
-  return schema.discreteInputIds.indexOf(id) !== -1;
+  return schema.addressDiscreteInputIds.indexOf(id) !== -1;
 }
 function isCoil(id) {
-  return schema.coilIds.indexOf(id) !== -1;
+  return schema.addressCoilIds.indexOf(id) !== -1;
 }
 function isBitAddress(id) {
   return isCoil(id) || isDiscreteInput(id);
@@ -28,13 +28,13 @@ function getRowAddress(row) {
 }
 function getRowLabel(row) {
   var id = row.id;
-  var meta = schema.byId[id];
+  var meta = schema.addressById[id];
   return meta.label;
 }
 function getRowValue(row) {
   if(row.error) return 'ERR';
   var id = row.id;
-  var meta = schema.byId[id];
+  var meta = schema.addressById[id];
   var data = row.data;
   var value;
 
@@ -73,7 +73,7 @@ function getRowText(row) {
   if(row.error) return 'ERR';
   var value = getRowValue(row);
   var id = row.id;
-  var meta = schema.byId[id];
+  var meta = schema.addressById[id];
   if(isBitAddress(id)) {
     var enums = schema.enums[meta.enum];
     if(isCoil(id)) {
@@ -106,7 +106,7 @@ function getRowText(row) {
 }
 function getRowUnit(row) {
   var id = row.id;
-  var meta = schema.byId[id];
+  var meta = schema.addressById[id];
   if(meta.unit) {
     var value = getRowValue(row);
     var unit = schema.units[meta.unit];
@@ -150,7 +150,7 @@ function showError(error) {
 }
 
 function getSchema() {
-  return $.getJSON("./address.json")
+  return $.getJSON("./schema.json")
      .then(gotSchema)
      .fail(getFailed)
 }

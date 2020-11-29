@@ -213,9 +213,9 @@
       ]
     }
   },
-  "coilIds": [0, 2, 3, 5, 6],
-  "discreteInputIds": [8192, 8204],
-  "holdingRegisterIds": [
+  "addressCoilIds": [0, 2, 3, 5, 6],
+  "addressDiscreteInputIds": [8192, 8204],
+  "addressHoldingRegisterIds": [
     36864, 36865, 36866,
     36867, 36868, 36869,
     36870, 36871, 36872,
@@ -237,7 +237,7 @@
     36970, 36971, 36972,
     36973, 36974, 36976
   ],
-  "inputRegisterIds": [
+  "addressInputRegisterIds": [
     12288, 12289, 12290,
     12292, 12293, 12294,
     12295, 12302,
@@ -257,7 +257,7 @@
     13076, 13082, 13083,
     13085, 13086
   ],
-  "allIds": [
+  "addressIds": [
     0, 2, 3, 5, 6,
 
     8192, 8204,
@@ -301,7 +301,7 @@
     36970, 36971, 36972,
     36973, 36974, 36976
   ],
-  "byId": {
+  "addressById": {
     "0": {
       "id": 0,
       "label": "Charging device",

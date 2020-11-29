@@ -4,7 +4,7 @@ from common import *
 
 def readDiscreteInput(addressInfo):
     id = addressInfo["id"]
-    result = client.read_discrete_inputs(id, 1, unit=CHARGE_CONTROLLER_UNIT)
+    result = client.read_discrete_inputs(id, 1, unit=schema["device"]["unit"])
     if isinstance(result, Exception):
         o = {"id": id, "error": True}
     else:
@@ -14,15 +14,15 @@ def readDiscreteInput(addressInfo):
             o = {"id": id, "error": True}
     return o
 
-with open("address.json", "r") as f:
-  address = json.load(f)
+with open("schema.json", "r") as f:
+  schema = json.load(f)
 
 def asDiscreteInputWithData(id):
-    return readDiscreteInput(address["byId"][str(id)]);
+    return readDiscreteInput(schema["addressById"][str(id)]);
 
 client = getClient()
 if client.connect():
-    out = list(map(asDiscreteInputWithData, address["discreteInputIds"]))
+    out = list(map(asDiscreteInputWithData, schema["addressDiscreteInputIds"]))
     client.close()
 else:
     out = {"error": "unable to connect"}
