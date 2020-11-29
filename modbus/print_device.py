@@ -4,7 +4,7 @@ from common import *
 
 def readInfo(info):
     id = info["id"]
-    result = client.execute(ReadDeviceInformationRequest(id, unit=CHARGE_CONTROLLER_UNIT))
+    result = client.execute(ReadDeviceInformationRequest(id, unit=schema["device"]["unit"]))
     if isinstance(result, Exception):
         o = {"id": id, "error": True}
     else:
