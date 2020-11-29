@@ -1,10 +1,9 @@
 #!/usr/bin/python
-import json
 from common import *
 
 def readCoil(addressInfo):
     id = addressInfo["id"]
-    result = client.read_coils(id, 1, unit=schema["device"]["unit"])
+    result = client.read_coils(id, 1, unit=unitId)
     if isinstance(result, Exception):
         o = {"id": id, "error": True}
     else:
@@ -13,9 +12,6 @@ def readCoil(addressInfo):
         else:
             o = {"id": id, "error": True}
     return o
-
-with open("schema.json", "r") as f:
-  schema = json.load(f)
 
 def asCoilWithData(id):
     return readCoil(schema["addressById"][str(id)]);

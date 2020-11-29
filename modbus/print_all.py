@@ -1,5 +1,4 @@
 #!/usr/bin/python
-import json
 from common import *
 
 # Prints a condensed output of all data available
@@ -22,11 +21,6 @@ from common import *
 #       [id]: [bytes...] # holding register
 #   }
 #}
-
-with open("schema.json", "r") as f:
-  schema = json.load(f)
-
-unitId = schema["device"]["unit"]
 
 out = {
     "info": {},

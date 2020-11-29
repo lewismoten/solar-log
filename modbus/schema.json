@@ -1,6 +1,10 @@
 {
   "device": {
-    "unit": 1
+    "unit": 1,
+    "method": "rtu",
+    "port": "/dev/ttyUSB0",
+    "baudrate": 115200,
+    "timeout": 1
   },
   "units": {
     "volt": {

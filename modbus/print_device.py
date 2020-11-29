@@ -1,10 +1,9 @@
 #!/usr/bin/python
-import json
 from common import *
 
 def readInfo(info):
     id = info["id"]
-    result = client.execute(ReadDeviceInformationRequest(id, unit=schema["device"]["unit"]))
+    result = client.execute(ReadDeviceInformationRequest(id, unit=unitId))
     if isinstance(result, Exception):
         o = {"id": id, "error": True}
     else:
@@ -15,9 +14,6 @@ def readInfo(info):
         else:
             o = {"id": id, "error": True}
     return o
-
-with open("schema.json", "r") as f:
-  schema = json.load(f)
 
 def asInfoWithData(id):
     return readInfo(schema["infoById"][str(id)]);

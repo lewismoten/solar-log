@@ -1,10 +1,9 @@
 #!/usr/bin/python
-import json
 from common import *
 
 def readDiscreteInput(addressInfo):
     id = addressInfo["id"]
-    result = client.read_discrete_inputs(id, 1, unit=schema["device"]["unit"])
+    result = client.read_discrete_inputs(id, 1, unit=unitId)
     if isinstance(result, Exception):
         o = {"id": id, "error": True}
     else:
@@ -13,9 +12,6 @@ def readDiscreteInput(addressInfo):
         else:
             o = {"id": id, "error": True}
     return o
-
-with open("schema.json", "r") as f:
-  schema = json.load(f)
 
 def asDiscreteInputWithData(id):
     return readDiscreteInput(schema["addressById"][str(id)]);

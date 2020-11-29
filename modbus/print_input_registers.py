@@ -1,12 +1,10 @@
 #!/usr/bin/python
-import json
 from common import *
-
 
 def readInputRegister(addressInfo):
     id = addressInfo["id"]
     size = addressInfo["size"]
-    result = client.read_input_registers(id, size, unit=schema["device"]["unit"])
+    result = client.read_input_registers(id, size, unit=unitId)
     if isinstance(result, Exception):
         o = {"id": id, "error": True}
     else:
@@ -15,9 +13,6 @@ def readInputRegister(addressInfo):
         else:
             o = {"id": id, "error": True}
     return o
-
-with open("schema.json", "r") as f:
-  schema = json.load(f)
 
 def asInputRegisterWithData(id):
     return readInputRegister(schema["addressById"][str(id)]);

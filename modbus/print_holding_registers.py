@@ -1,11 +1,10 @@
 #!/usr/bin/python
-import json
 from common import *
 
 def readHoldingRegisters(addressInfo):
     id = addressInfo["id"]
     size = addressInfo["size"]
-    result = client.read_holding_registers(id, size, unit=schema["device"]["unit"])
+    result = client.read_holding_registers(id, size, unit=unitId)
     if isinstance(result, Exception):
         o = {"id": id, "error": True}
     else:
@@ -14,9 +13,6 @@ def readHoldingRegisters(addressInfo):
         else:
             o = {"id": id, "error": True}
     return o
-
-with open("schema.json", "r") as f:
-  schema = json.load(f)
 
 def asHoldingRegistersWithData(id):
     return readHoldingRegisters(schema["addressById"][str(id)]);

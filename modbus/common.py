@@ -1,20 +1,24 @@
 #!/usr/bin/python
 import ctypes
 import datetime
+import json
 
 from pymodbus.client.sync import ModbusSerialClient as ModbusClient
 from pymodbus.exceptions import ModbusIOException
 from pymodbus.mei_message import ReadDeviceInformationRequest
 from pymodbus.constants import DeviceInformation
 
-CHARGE_CONTROLLER_UNIT = 1
+with open("schema.json", "r") as file:
+  schema = json.load(file)
+unitId = schema["device"]["unit"]
+#CHARGE_CONTROLLER_UNIT = unitId
 
 def getClient():
     return ModbusClient(
-        method = "rtu",
-        port = "/dev/ttyUSB0",
-        baudrate = 115200,
-        timeout = 1
+        method = schema["device"]["method"],
+        port = schema["device"]["port"],
+        baudrate = schema["device"]["baudrate"],
+        timeout = schema["device"]["timeout"]
     )
 
 def pair(array):
