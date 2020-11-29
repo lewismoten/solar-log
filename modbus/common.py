@@ -11,7 +11,6 @@ from pymodbus.constants import DeviceInformation
 with open("schema.json", "r") as file:
   schema = json.load(file)
 unitId = schema["device"]["unit"]
-#CHARGE_CONTROLLER_UNIT = unitId
 
 def getClient():
     return ModbusClient(

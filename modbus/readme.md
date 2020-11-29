@@ -5,15 +5,10 @@ These python scripts read information from the solar charge controller using the
 ## Installation
 1. Install Modbus client `sudo pip3 install -U pymodbus`
 1. Let web browser access USB on server `777 /dev/ttyUSB0` (security risk)
+1. Verify usb is accessible `python print_all.py`
+1. Access usb directly from web server `modbus/index.html`
 
-## Reading controller via MOD Bus
-The first thing to do before setting up a cron job, or troubleshooting is to request information from the controller to verify that it can be accessed.
-
-```bash
-python print_all.py
-```
-This will read all of the data and print it out on the terminal. You can also print individual data:
-
+### Files
 | type | file | description |
 | --- | --- | --- |
 | coils | print_coils.py | Read/Write Boolean values |
@@ -27,15 +22,6 @@ This will read all of the data and print it out on the terminal. You can also pr
 Statistics reset at 12:00 am. It's important that the on-board clock reflects the time accurately. If the controller loses power, its clock will reset to February 14, 2017 12:00 am when it is powered up.
 
 `python synchronize-clock.py`
-
-## Read data and log into database
-1. charge-controller.json - data available from the charge controller and where/how to store in database
-1. db-config.json - configuration
-1. ?? ?? db-get-latest.py - get the most recent data
-1. db-log-all.py - log everything into the database - device info, statistics, ratings, etc.
-1. db-log-real-time-data.py - log the real time data / status's
-1. db-setup.py - create db tables
-
 
 ## Setup Crontab
 
