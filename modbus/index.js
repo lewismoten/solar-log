@@ -137,7 +137,16 @@ function documentReady() {
     .then(getInputRegisters)
     .then(getCoils)
     .then(getDiscreteInput)
-    .then(getHoldingRegisters);
+    .then(getHoldingRegisters)
+    .catch(showError);
+}
+
+function showError(error) {
+  alert('error: ' + error);
+  // if "unable to connect", make sure the world
+  // still has permission to access the usb
+  // (note: highly insecure...)
+  // sudo chmod 777 /dev/ttyUSB0
 }
 
 function getSchema() {
@@ -182,6 +191,7 @@ function updateAddress(data) {
   }
 }
 function gotAddresses(data, textStatus, jqXHR) {
+  if(data.error) throw data.error;
   data.forEach(updateAddress);
   $(".data").DataTable().draw();
 }
