@@ -71,9 +71,7 @@ function selectEnum(enums, value) {
   function getOption(key) {
     var option = '<option value=' + key;
     if(key === value.toString()) option += ' selected';
-    option += '>' + enums[key] + '</option>';
-    console.log('getOption key: %s value: %s selected: %s enums[key]: %s', key, value, key === value, enums[key], option, enums[key]);
-    return option;
+    return option + '>' + enums[key] + '</option>';
   }
   options = '<select>' + Object.keys(enums).map(getOption).join("") + '</select>';
   return options;
@@ -90,7 +88,7 @@ function getRowEdit(row) {
     if(isBitAddress(id)) value = value ? "1" : "0"
     return selectEnum(enums, value);
   }
-  return '<input value="' + value + '">'
+  return '<input value="' + value + '" size="6">'
 }
 function getRowText(row) {
   if(row.error) return 'ERR';
