@@ -17,8 +17,14 @@ function loadingStopped() {
 function isDiscreteInput(id) {
   return schema.addressDiscreteInputIds.indexOf(id) !== -1;
 }
+function canEdit(id) {
+  return isCoil(id) || isHoldingRegister(id);
+}
 function isCoil(id) {
   return schema.addressCoilIds.indexOf(id) !== -1;
+}
+function isHoldingRegister(id) {
+  return schema.addressHoldingRegisterIds.indexOf(id) !== -1;
 }
 function isBitAddress(id) {
   return isCoil(id) || isDiscreteInput(id);
@@ -64,27 +70,39 @@ function getRowValue(row) {
 function selectEnum(enums, value) {
   function getOption(key) {
     var option = '<option value=' + key;
-    if(key === (value ? "1" : "0")) option += ' selected';
-    return option + '>' + enums[key] + '</option>';
+    if(key === value.toString()) option += ' selected';
+    option += '>' + enums[key] + '</option>';
+    console.log('getOption key: %s value: %s selected: %s enums[key]: %s', key, value, key === value, enums[key], option, enums[key]);
+    return option;
   }
   options = '<select>' + Object.keys(enums).map(getOption).join("") + '</select>';
   return options;
+}
+function getRowEdit(row) {
+  if(!canEdit(row.id)) return '';
+  if(row.error) return 'ERR';
+  var value = getRowValue(row);
+  var id = row.id;
+  var meta = schema.addressById[id];
+  var enums;
+  if(meta.enum) enums = schema.enums[meta.enum];
+  if(enums) {
+    if(isBitAddress(id)) value = value ? "1" : "0"
+    return selectEnum(enums, value);
+  }
+  return '<input value="' + value + '">'
 }
 function getRowText(row) {
   if(row.error) return 'ERR';
   var value = getRowValue(row);
   var id = row.id;
   var meta = schema.addressById[id];
-  if(isBitAddress(id)) {
-    var enums = schema.enums[meta.enum];
-    if(isCoil(id)) {
-      return selectEnum(enums, value);
-    }
+  var enums;
+  if(meta.enum) enums = schema.enums[meta.enum];
+  if(isBitAddress(id))
     return enums[value ? "1" : "0"]
-  }
-  if(meta.enum) {
-    return schema.enums[meta.enum][value.toString()];
-  }
+  if(enums)
+    return enums[value.toString()];
   if(meta.unit) {
     var unit = schema.units[meta.unit];
     if(unit.suffix) return [value, unit.suffix].join('');
@@ -130,7 +148,8 @@ function documentReady() {
       {name: 'value', title: 'Value', data: getRowValue},
       {name: 'unit', title: 'Unit', data: getRowUnit},
       {name: 'label', title: 'Label', data: getRowLabel},
-      {name: 'text', title: 'Text', data: getRowText}
+      {name: 'text', title: 'Text', data: getRowText},
+      {name: 'edit', title: 'Edit', data: getRowEdit}
     ]
   });
 
