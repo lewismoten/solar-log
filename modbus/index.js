@@ -46,6 +46,7 @@ function getRowValue(row) {
     else if(data.length === 1) value = data[0];
   }
   if(meta.unit) {
+    if(meta.size === 1) value = (value << 16) >> 16;
     var unit = schema.units[meta.unit];
     if(unit.scale) value /= unit.scale;
   }
