@@ -152,6 +152,7 @@ function documentReady() {
   });
 
   return getSchema()
+    .then(getDevice)
     .then(getInputRegisters)
     .then(getCoils)
     .then(getDiscreteInput)
@@ -173,6 +174,11 @@ function getSchema() {
      .fail(getFailed)
 }
 
+function getDevice() {
+  return $.getJSON("./print_device.py")
+     .then(gotDevice)
+     .fail(getFailed)
+}
 function getCoils() {
   return $.getJSON("./print_coils.py")
      .then(gotAddresses)
@@ -212,6 +218,13 @@ function gotAddresses(data, textStatus, jqXHR) {
   if(data.error) throw data.error;
   data.forEach(updateAddress);
   $(".data").DataTable().draw();
+}
+function gotDevice(data, textStatus, jqXHR) {
+  if(data.error) throw data.error;
+  $(".info0").text(data[1].data[0].ascii)
+  $(".info1").text(data[1].data[1].ascii)
+  $(".info2").text(data[1].data[2].ascii)
+  $(".info3").text(data[0].data[0].ascii)
 }
 function gotSchema(data) {
   schema = data;
