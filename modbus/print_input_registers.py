@@ -14,7 +14,7 @@ def readInputRegister(addressInfo):
             if result.function_code < 0x80:
                 o = {"id": id, "data": list(result.registers)}
             else:
-                o = {"id": id, "error": True}
+                o = {"id": id, "error": True, "message": "Invalid function code: {0}".format(function_code)}
     except Exception as e:
         o = {"id": id, "error": True, "message": "{0}".format(e), "function_code": function_code}
 

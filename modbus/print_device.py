@@ -15,7 +15,7 @@ def readInfo(info):
                     return {"index": index, "ascii": result.information[index].decode("ascii")}
                 o = {"id": id, "data": list(map(asText, result.information))}
             else:
-                o = {"id": id, "error": True, "function_code": result.function_code}
+                o = {"id": id, "error": True, "message": "Invalid function code: {0}".format(function_code)}
     except Exception as e:
         o = {"id": id, "error": True, "message": "{0}".format(e), "function_code": function_code}
 

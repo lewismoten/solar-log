@@ -3,14 +3,19 @@ from common import *
 
 def readDiscreteInput(addressInfo):
     id = addressInfo["id"]
-    result = client.read_discrete_inputs(id, 1, unit=unitId)
-    if isinstance(result, Exception):
-        o = {"id": id, "error": True}
-    else:
-        if result.function_code < 0x80:
-            o = {"id": id, "data": list(result.bits)}
+    function_code = 'none'
+    try:
+        result = client.read_discrete_inputs(id, 1, unit=unitId)
+        if isinstance(result, Exception):
+            o = {"id": id, "error": True, "message": "{0}".format(result)}
         else:
-            o = {"id": id, "error": True}
+            function_code = result.function_code;
+            if result.function_code < 0x80:
+                o = {"id": id, "data": list(result.bits)}
+            else:
+                o = {"id": id, "error": True, "message": "Invalid function code: {0}".format(function_code)}
+    except Exception as e:
+        o = {"id": id, "error": True, "message": "{0}".format(e), "function_code": function_code}
     return o
 
 def asDiscreteInputWithData(id):
