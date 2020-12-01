@@ -1107,7 +1107,7 @@
     },
     "36939": {
       "id": 36939,
-      "label": "Turn of timing 2",
+      "label": "Turn off timing 2",
       "size": 3,
       "type": "time",
       "packs": [
