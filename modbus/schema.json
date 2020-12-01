@@ -4,7 +4,7 @@
     "method": "rtu",
     "port": "/dev/ttyUSB0",
     "baudrate": 115200,
-    "timeout": 2
+    "timeout": 1
   },
   "units": {
     "volt": {

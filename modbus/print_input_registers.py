@@ -21,7 +21,11 @@ def readInputRegister(addressInfo):
     return o
 
 def asInputRegisterWithData(id):
-    return readInputRegister(schema["addressById"][str(id)]);
+    item = {"id": id, "error": True}
+    for x in range(RETRY_COUNT):
+        item = readInputRegister(schema["addressById"][str(id)]);
+        if not "error" in item: break
+    return item;
 
 client = getClient()
 if client.connect():

@@ -19,7 +19,11 @@ def readCoil(addressInfo):
     return o
 
 def asCoilWithData(id):
-    return readCoil(schema["addressById"][str(id)]);
+    item = {"id": id, "error": True}
+    for x in range(RETRY_COUNT):
+        item = readCoil(schema["addressById"][str(id)]);
+        if not "error" in item: break
+    return item;
 
 client = getClient()
 connected = client.connect()

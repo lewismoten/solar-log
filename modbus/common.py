@@ -8,6 +8,8 @@ from pymodbus.exceptions import ModbusIOException
 from pymodbus.mei_message import ReadDeviceInformationRequest
 from pymodbus.constants import DeviceInformation
 
+RETRY_COUNT = 6
+
 with open("schema.json", "r") as file:
   schema = json.load(file)
 unitId = schema["device"]["unit"]

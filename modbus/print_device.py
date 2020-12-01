@@ -22,7 +22,12 @@ def readInfo(info):
     return o
 
 def asInfoWithData(id):
-    return readInfo(schema["infoById"][str(id)]);
+    item = {"id": id, "error": True}
+    for x in range(RETRY_COUNT):
+        item = readInfo(schema["infoById"][str(id)]);
+        if not "error" in item: break
+    return item;
+
 
 client = getClient()
 connected = client.connect()
