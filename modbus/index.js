@@ -133,6 +133,10 @@ function getRowUnit(row) {
   }
   return '';
 }
+function getRowData(row) {
+  if(row.error) return row.message || 'ERROR';
+  return row.data;
+}
 function documentReady() {
   var table = $(".data").DataTable({
     paging: false,
@@ -142,7 +146,7 @@ function documentReady() {
     columns: [
       {name: 'address', title: 'Address', data: getRowAddress},
       {name: 'id', title: '(decimal)', data: 'id'},
-      {name: 'data', title: 'Data', data: 'data', defaultContent: ''},
+      {name: 'data', title: 'Data', data: getRowData, defaultContent: ''},
       {name: 'value', title: 'Value', data: getRowValue},
       {name: 'unit', title: 'Unit', data: getRowUnit},
       {name: 'label', title: 'Label', data: getRowLabel},
@@ -224,16 +228,18 @@ function gotDevice(data, textStatus, jqXHR) {
   var basic = "1";
   var regular = "0";
   if(data[regular].error) {
-    $(".info0").text('error')
-    $(".info1").text('error')
-    $(".info2").text('error')
+    message = data[regular].message||'error';
+    $(".info0").text(message)
+    $(".info1").text(message)
+    $(".info2").text(message)
   } else {
     $(".info0").text(data[regular].data[0].ascii)
     $(".info1").text(data[regular].data[1].ascii)
     $(".info2").text(data[regular].data[2].ascii)
   }
   if(data[basic].error) {
-    $(".info3").text('error')
+    message = data[regular].message||'error';
+    $(".info3").text(message)
   }else {
     $(".info3").text(data[basic].data[0].ascii)
 
