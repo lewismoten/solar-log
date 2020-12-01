@@ -3,7 +3,7 @@
 These python scripts read information from the solar charge controller using the modbus protocol.
 
 ## Installation
-1. Install Modbus client `sudo pip3 install -U pymodbus`
+1. Install Modbus client `sudo pip3 install -U pymodbus` (original version tested was 1.3.2)
 1. Let web browser access USB on server `sudo chmod 777 /dev/ttyUSB0` (security risk)
 1. Verify usb is accessible `python print_all.py`
 1. Access usb directly from web server `modbus/index.html`
