@@ -202,7 +202,7 @@ function getHoldingRegisters() {
 }
 
 function getFailed(jqXHR, textStatus, errorThrown) {
-  console.log(errorThrown);
+  console.error(errorThrown);
 }
 
 function updateAddress(data) {
@@ -221,10 +221,23 @@ function gotAddresses(data, textStatus, jqXHR) {
 }
 function gotDevice(data, textStatus, jqXHR) {
   if(data.error) throw data.error;
-  $(".info0").text(data[1].data[0].ascii)
-  $(".info1").text(data[1].data[1].ascii)
-  $(".info2").text(data[1].data[2].ascii)
-  $(".info3").text(data[0].data[0].ascii)
+  var basic = "1";
+  var regular = "0";
+  if(data[regular].error) {
+    $(".info0").text('error')
+    $(".info1").text('error')
+    $(".info2").text('error')
+  } else {
+    $(".info0").text(data[regular].data[0].ascii)
+    $(".info1").text(data[regular].data[1].ascii)
+    $(".info2").text(data[regular].data[2].ascii)
+  }
+  if(data[basic].error) {
+    $(".info3").text('error')
+  }else {
+    $(".info3").text(data[basic].data[0].ascii)
+
+  }
 }
 function gotSchema(data) {
   schema = data;

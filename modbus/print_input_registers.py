@@ -4,14 +4,20 @@ from common import *
 def readInputRegister(addressInfo):
     id = addressInfo["id"]
     size = addressInfo["size"]
-    result = client.read_input_registers(id, size, unit=unitId)
-    if isinstance(result, Exception):
-        o = {"id": id, "error": True}
-    else:
-        if result.function_code < 0x80:
-            o = {"id": id, "data": list(result.registers)}
+    function_code = 'none'
+    try:
+        result = client.read_input_registers(id, size, unit=unitId)
+        if isinstance(result, Exception):
+            o = {"id": id, "error": True, "message": "{0}".format(result)}
         else:
-            o = {"id": id, "error": True}
+            function_code = result.function_code;
+            if result.function_code < 0x80:
+                o = {"id": id, "data": list(result.registers)}
+            else:
+                o = {"id": id, "error": True}
+    except Exception as e:
+        o = {"id": id, "error": True, "message": "{0}".format(e), "function_code": function_code}
+
     return o
 
 def asInputRegisterWithData(id):

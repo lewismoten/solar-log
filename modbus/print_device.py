@@ -3,16 +3,22 @@ from common import *
 
 def readInfo(info):
     id = info["id"]
-    result = client.execute(ReadDeviceInformationRequest(id, unit=unitId))
-    if isinstance(result, Exception):
-        o = {"id": id, "error": True}
-    else:
-        if result.function_code < 0x80:
-            def asText(index):
-                return {"index": index, "ascii": result.information[index].decode("ascii")}
-            o = {"id": id, "data": list(map(asText, result.information))}
+    function_code = 'none'
+    try:
+        result = client.execute(ReadDeviceInformationRequest(id, unit=unitId))
+        if isinstance(result, Exception):
+            o = {"id": id, "error": True, "message": "{0}".format(result)}
         else:
-            o = {"id": id, "error": True}
+            function_code = result.function_code;
+            if result.function_code < 0x80:
+                def asText(index):
+                    return {"index": index, "ascii": result.information[index].decode("ascii")}
+                o = {"id": id, "data": list(map(asText, result.information))}
+            else:
+                o = {"id": id, "error": True, "function_code": result.function_code}
+    except Exception as e:
+        o = {"id": id, "error": True, "message": "{0}".format(e), "function_code": function_code}
+
     return o
 
 def asInfoWithData(id):
