@@ -122,7 +122,7 @@ function getRowText(row) {
     }
     var packValues = meta.packs.reduce(unpackValue, {});
     if(meta.type === "datetime") {
-      return new Date(
+      var theDate = new Date(
         packValues["Year"] + 2000,
         packValues["Month"] - 1,
         packValues["Day"],
@@ -130,6 +130,16 @@ function getRowText(row) {
         packValues["Minute"],
         packValues["Second"]
       );
+      var options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour12: true,
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit'
+      };
+      return theDate.toLocaleString(['en'], options)
     }
     return "<table>" + meta.packs.map(function(pack) {
       var label = pack.label;
