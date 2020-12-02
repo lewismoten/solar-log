@@ -874,7 +874,8 @@
           "label": "Year",
           "index": 2,
           "mask": 255,
-          "shift": 8
+          "shift": 8,
+          "add": 2000
         },
         {
           "label": "Month",

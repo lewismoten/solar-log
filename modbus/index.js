@@ -95,7 +95,6 @@ function getRowEdit(row) {
     function unpackValue(result, pack, index) {
       var v = value[index];
       var key = pack.label;
-      result[key] = input(v);
       if(pack.enum) {
         var enums = schema.enums[pack.enum];
         if(!enums) {
@@ -103,6 +102,9 @@ function getRowEdit(row) {
         } else {
           result[key] = selectEnum(enums, v);
         }
+      } else {
+        if(pack.add) v+= pack.add;
+        result[key] = input(v);
       }
       return result;
     }
@@ -134,7 +136,10 @@ function getRowText(row) {
     function unpackValue(result, pack, index) {
       var v = value[index];
       var key = pack.label;
+
+      if(pack.add) v += pack.add;
       result[key] = v;
+
       if(pack.enum) {
         var enums = schema.enums[pack.enum];
         if(!enums) {
@@ -149,7 +154,7 @@ function getRowText(row) {
     switch(meta.type) {
       case "datetime":
         var theDate = new Date(
-          packValues["Year"] + 2000,
+          packValues["Year"],
           packValues["Month"] - 1,
           packValues["Day"],
           packValues["Hour"],
