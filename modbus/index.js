@@ -106,18 +106,36 @@ function getRowText(row) {
     if(unit.suffix) return [value, unit.suffix].join('');
   }
   if(meta.packs) {
-    function unpackValue(pack, index) {
+    function unpackValue(result, pack, index) {
       var v = value[index];
-      if(!pack.enum) {
-        return "<tr><td>" + pack.label + "</td><td>" + v.toString() + "</td></tr>";
+      var key = pack.label;
+      result[key] = v;
+      if(pack.enum) {
+        var enums = schema.enums[pack.enum];
+        if(!enums) {
+          result[key + '_enum'] = 'Missing' + pack.enum;
+        } else {
+          result[key + '_enum'] = enums[v.toString()];
+        }
       }
-      var enums = schema.enums[pack.enum];
-      if(!enums) {
-        return "<tr><td>" + pack.label + "</td><td>MISSING ENUM " + pack.enum + "</td></tr>";
-      }
-      return "<tr><td>" + pack.label + "</td><td>" + enums[v.toString()] + "</td></tr>";
+      return result;
     }
-    return "<table>" + meta.packs.map(unpackValue).join("") + "</table>";
+    var packValues = meta.packs.reduce(unpackValue, {});
+    if(meta.type === "datetime") {
+      return new Date(
+        packValues["Year"] + 2000,
+        packValues["Month"] - 1,
+        packValues["Day"],
+        packValues["Hour"],
+        packValues["Minute"],
+        packValues["Second"]
+      );
+    }
+    return "<table>" + meta.packs.map(function(pack) {
+      var label = pack.label;
+      var value = packValues[label + '_enum'] || packValues[label]
+      return "<tr><td>" + label + "</td><td>" +  value + "</td></tr>";
+    }).join("") + "</table>";
   }
   return value;
 }
