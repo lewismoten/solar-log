@@ -230,6 +230,18 @@
       "info": [
         {"index": 3, "type": "text", "name": "Serial Number"}
       ]
+    },
+    "3": {
+      "id": 3,
+      "type": "Extended",
+      "info": [
+      ]
+    },
+    "4": {
+      "id": 4,
+      "type": "Specific",
+      "info": [
+      ]
     }
   },
   "addressCoilIds": [0, 2, 3, 5, 6],
