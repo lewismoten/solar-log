@@ -4,6 +4,10 @@
     "method": "rtu",
     "port": "/dev/ttyUSB0",
     "baudrate": 115200,
+    "databits": 8,
+    "stopbits": 1,
+    "parity": "none",
+    "flowcontrol": "none",
     "timeout": 1
   },
   "units": {
@@ -115,6 +119,14 @@
     "night": {
       "0": "Day",
       "1": "Night"
+    },
+    "clear": {
+      "0": "",
+      "1": "Clear"
+    },
+    "automatic": {
+      "0": "Manual",
+      "1": "Automatic"
     },
     "month": {
       "1": "January",
@@ -310,6 +322,11 @@
       "label": "Charging device",
       "enum": "on"
     },
+    "1": {
+      "id": 1,
+      "label": "Output control mode",
+      "enum": "automatic"
+    },
     "2": {
       "id": 2,
       "label": "Manual control the load",
@@ -332,6 +349,16 @@
       "label": "Force the load",
       "note": "Used for temporary test of the load",
       "enum": "on"
+    },
+    "13": {
+      "id": 13,
+      "label": "Restore system defaults",
+      "enum": "yes"
+    },
+    "14": {
+      "id": 14,
+      "label": "Clear generating electricity statistics",
+      "enum": "clear"
     },
     "8192": {
       "id": 8192,
