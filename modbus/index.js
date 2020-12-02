@@ -240,6 +240,9 @@ function asHex(value) {
   var text = ('0000' + value.toString(16)).substr(-4).toUpperCase();
   return text.substr(0, 2) + ' ' + text.substr(2, 2);
 }
+function getRowPermissions(row) {
+  return canEdit(row.id) ? 'writable' : 'read only'
+}
 function getRowDataHex(row) {
   if(row.error) return row.message || 'ERROR';
   if(Array.isArray(row.data)) {
@@ -257,6 +260,7 @@ function documentReady() {
     columns: [
       {name: 'address', title: 'Address', data: getRowAddress},
       {name: 'id', title: 'Addr (dec)', data: 'id', visible: false},
+      {name: 'permissions', title: 'Permissions', data: getRowPermissions, visible: false},
       {name: 'label', title: 'Setting', data: getRowLabel},
       {name: 'value', title: 'Value', data: getRowValue, visible: false},
       {name: 'unit', title: 'Unit', data: getRowUnit, visible: false},
