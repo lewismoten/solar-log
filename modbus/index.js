@@ -218,6 +218,9 @@ function getRowUnit(row) {
   if(meta.type) {
     return meta.type;
   }
+  if(meta.enum) {
+    return 'selection';
+  }
   return '';
 }
 function getRowData(row) {
