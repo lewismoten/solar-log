@@ -363,4 +363,5 @@ function gotDevice(data, textStatus, jqXHR) {
 }
 function gotSchema(data) {
   schema = data;
+  $(".device").text(schema.device.unit);
 }
