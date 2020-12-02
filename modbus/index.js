@@ -225,7 +225,28 @@ function getRowUnit(row) {
 }
 function getRowData(row) {
   if(row.error) return row.message || 'ERROR';
+  if(Array.isArray(row.data)) {
+    if(isBitAddress(row.id)) return row.data[0] ? "1" : "0";
+    if(row.data.length == 1) {
+      return row.data[0];
+    } else {
+      return "[ " + row.data.join(" ][ ") + " ]"
+    }
+
+  }
   return row.data;
+}
+function asHex(value) {
+  var text = ('0000' + value.toString(16)).substr(-4).toUpperCase();
+  return text.substr(0, 2) + ' ' + text.substr(2, 2);
+}
+function getRowDataHex(row) {
+  if(row.error) return row.message || 'ERROR';
+  if(Array.isArray(row.data)) {
+    if(isBitAddress(row.id)) return row.data[0] ? '01' : '00';
+      return row.data.map(asHex).join(' ');
+  }
+  return '';
 }
 function documentReady() {
   var table = $(".data").DataTable({
@@ -234,9 +255,10 @@ function documentReady() {
       return "row_" + data.id.toString()
     },
     columns: [
-      {name: 'address', title: 'Address', data: getRowAddress},
-      {name: 'id', title: '(decimal)', data: 'id'},
-      {name: 'data', title: 'Data', data: getRowData, defaultContent: ''},
+      {name: 'address', title: 'Addr', data: getRowAddress},
+      {name: 'id', title: 'Addr (dec)', data: 'id'},
+      {name: 'dataHex', title: 'Data', data: getRowDataHex},
+      {name: 'data', title: 'Data (dec)', data: getRowData},
       {name: 'value', title: 'Value', data: getRowValue},
       {name: 'unit', title: 'Unit', data: getRowUnit},
       {name: 'label', title: 'Label', data: getRowLabel},
