@@ -121,25 +121,36 @@ function getRowText(row) {
       return result;
     }
     var packValues = meta.packs.reduce(unpackValue, {});
-    if(meta.type === "datetime") {
-      var theDate = new Date(
-        packValues["Year"] + 2000,
-        packValues["Month"] - 1,
-        packValues["Day"],
-        packValues["Hour"],
-        packValues["Minute"],
-        packValues["Second"]
-      );
-      var options = {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour12: true,
-        hour: 'numeric',
-        minute: '2-digit',
-        second: '2-digit'
-      };
-      return theDate.toLocaleString(['en'], options)
+    switch(meta.type) {
+      case "datetime":
+        var theDate = new Date(
+          packValues["Year"] + 2000,
+          packValues["Month"] - 1,
+          packValues["Day"],
+          packValues["Hour"],
+          packValues["Minute"],
+          packValues["Second"]
+        );
+        var options = {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour12: true,
+          hour: 'numeric',
+          minute: '2-digit',
+          second: '2-digit'
+        };
+        return theDate.toLocaleString(['en'], options)
+      case "duration":
+        function minPadding(num, size) {
+          var text = num.toString();
+          if(text.length < size) {
+            text = ('0000000000' + text).substr(-size);
+          }
+          return text
+        }
+        console.log('packValues', packValues)
+        return [minPadding(packValues["Hours"], 2), minPadding(packValues["Minutes"], 2)].join(":");
     }
     return "<table>" + meta.packs.map(function(pack) {
       var label = pack.label;
@@ -158,6 +169,9 @@ function getRowUnit(row) {
     if(value === 1 && unit.singular) return unit.singular;
     if(value !== 1 && unit.plural) return unit.plural;
     return unit.plural || unit.singular || unit.suffix || '';
+  }
+  if(meta.type) {
+    return meta.type;
   }
   return '';
 }

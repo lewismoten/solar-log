@@ -994,13 +994,13 @@
       "type": "duration",
       "packs": [
         {
-          "label": "Minute",
+          "label": "Minutes",
           "index": 0,
           "mask": 255,
           "shift": 0
         },
         {
-          "label": "Hour",
+          "label": "Hours",
           "index": 0,
           "mask": 255,
           "shift": 8
@@ -1014,13 +1014,13 @@
       "type": "duration",
       "packs": [
         {
-          "label": "Minute",
+          "label": "Minutes",
           "index": 0,
           "mask": 255,
           "shift": 0
         },
         {
-          "label": "Hour",
+          "label": "Hours",
           "index": 0,
           "mask": 255,
           "shift": 8
@@ -1144,13 +1144,13 @@
       "type": "duration",
       "packs": [
         {
-          "label": "Minute",
+          "label": "Minutes",
           "index": 0,
           "mask": 255,
           "shift": 0
         },
         {
-          "label": "Hour",
+          "label": "Hours",
           "index": 0,
           "mask": 255,
           "shift": 8
