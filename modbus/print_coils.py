@@ -13,7 +13,7 @@ def readCoil(addressInfo):
             if result.function_code < 0x80:
                 o = {"id": id, "data": list(result.bits)}
             else:
-                o = {"id": id, "error": True, "message": "Invalid function code: {0}".format(function_code)}
+                o = {"id": id, "error": True, "code": result.exception_code, "message": modbusError(result.exception_code)}
     except Exception as e:
         o = {"id": id, "error": True, "message": "{0}".format(e), "function_code": function_code}
     return o
@@ -22,7 +22,7 @@ def asCoilWithData(id):
     item = {"id": id, "error": True}
     for x in range(RETRY_COUNT):
         item = readCoil(schema["addressById"][str(id)]);
-        if not "error" in item: break
+        if stopTrying(item): break
     return item;
 
 client = getClient()

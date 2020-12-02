@@ -14,6 +14,24 @@ with open("schema.json", "r") as file:
   schema = json.load(file)
 unitId = schema["device"]["unit"]
 
+def stopTrying(item):
+     return not "error" in item or "code" in item
+
+def modbusError(code):
+    codes = {
+        "1": "invalid / not implemented function",
+        "2": "invalid address",
+        "3": "invalid value",
+        "4": "device failure",
+        "5": "acknowledge",
+        "6": "busy",
+        "8": "memory parity error"
+    }
+    error = "Exception code {0}".format(code)
+    if(str(code) in codes):
+        error = codes[str(code)]
+    return error;
+
 def getClient():
     return ModbusClient(
         method = schema["device"]["method"],
