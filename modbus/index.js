@@ -80,7 +80,7 @@ function input(value) {
   return '<input value="' + value + '" size="6">'
 }
 function getRowEdit(row) {
-  if(!canEdit(row.id)) return '';
+  if(!canEdit(row.id)) return getRowText(row);
   if(row.error) return 'ERR';
   var value = getRowValue(row);
   var id = row.id;
@@ -255,15 +255,15 @@ function documentReady() {
       return "row_" + data.id.toString()
     },
     columns: [
-      {name: 'address', title: 'Addr', data: getRowAddress},
-      {name: 'id', title: 'Addr (dec)', data: 'id'},
+      {name: 'address', title: 'Address', data: getRowAddress},
+      {name: 'id', title: 'Addr (dec)', data: 'id', visible: false},
+      {name: 'label', title: 'Setting', data: getRowLabel},
+      {name: 'value', title: 'Value', data: getRowValue, visible: false},
+      {name: 'unit', title: 'Unit', data: getRowUnit, visible: false},
+      {name: 'text', title: 'Text', data: getRowText, visible: false},
+      {name: 'edit', title: 'Value', data: getRowEdit},
       {name: 'dataHex', title: 'Data', data: getRowDataHex},
-      {name: 'data', title: 'Data (dec)', data: getRowData},
-      {name: 'value', title: 'Value', data: getRowValue},
-      {name: 'unit', title: 'Unit', data: getRowUnit},
-      {name: 'label', title: 'Label', data: getRowLabel},
-      {name: 'text', title: 'Text', data: getRowText},
-      {name: 'edit', title: 'Edit', data: getRowEdit}
+      {name: 'data', title: 'Data (dec)', data: getRowData, visible: false}
     ]
   });
 
