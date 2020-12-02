@@ -141,6 +141,22 @@ function getRowText(row) {
           second: '2-digit'
         };
         return theDate.toLocaleString(['en'], options)
+      case "time":
+        var theDate = new Date(
+          packValues["Hour"],
+          packValues["Minute"],
+          packValues["Second"]
+        );
+        theDate.setHours(packValues["Hour"]);
+        theDate.setMinutes(packValues["Minute"]);
+        theDate.setSeconds(packValues["Second"]);
+        var options = {
+          hour12: true,
+          hour: 'numeric',
+          minute: '2-digit',
+          second: '2-digit'
+        };
+        return theDate.toLocaleTimeString(['en'], options)
       case "duration":
         function minPadding(num, size) {
           var text = num.toString();
@@ -149,7 +165,6 @@ function getRowText(row) {
           }
           return text
         }
-        console.log('packValues', packValues)
         return [minPadding(packValues["Hours"], 2), minPadding(packValues["Minutes"], 2)].join(":");
     }
     return "<table>" + meta.packs.map(function(pack) {
