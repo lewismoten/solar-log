@@ -23,7 +23,7 @@
       "singular": "amp hour",
       "plural": "amp hours",
       "suffix": "ah",
-      "scale": 100
+      "scale": 1
     },
     "watt": {
       "singular": "watt",
