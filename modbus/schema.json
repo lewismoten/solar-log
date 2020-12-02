@@ -874,13 +874,13 @@
           "label": "Minute",
           "index": 0,
           "mask": 255,
-          "shift": 0
+          "shift": 8
         },
         {
           "label": "Second",
           "index": 0,
           "mask": 255,
-          "shift": 8
+          "shift": 0
         },
         {
           "label": "Hour",
