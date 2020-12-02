@@ -124,9 +124,13 @@
       "0": "",
       "1": "Clear"
     },
-    "automatic": {
-      "0": "Manual",
-      "1": "Automatic"
+    "manual": {
+      "1": "Manual",
+      "0": "Automatic"
+    },
+    "manual on": {
+      "1": "Manual On",
+      "0": "Manual Off"
     },
     "month": {
       "1": "January",
@@ -325,18 +329,18 @@
     "1": {
       "id": 1,
       "label": "Output control mode",
-      "enum": "automatic"
+      "enum": "manual"
     },
     "2": {
       "id": 2,
       "label": "Manual control the load",
       "note": "When the load is manual mode",
-      "enum": "on"
+      "enum": "manual on"
     },
     "3": {
       "id": 3,
       "label": "Default control the load",
-      "enum": "on"
+      "enum": "manual on"
     },
     "5": {
       "id": 5,
@@ -358,7 +362,8 @@
     "14": {
       "id": 14,
       "label": "Clear generating electricity statistics",
-      "enum": "clear"
+      "enum": "clear",
+      "root": true
     },
     "8192": {
       "id": 8192,
@@ -412,11 +417,23 @@
       "size": 1,
       "enum": "charging mode"
     },
+    "12301": {
+      "id": 12301,
+      "label": "Rated load voltage",
+      "size": 1,
+      "unit": "volt"
+    },
     "12302": {
       "id": 12302,
       "label": "Rated output current of load",
       "size": 1,
       "unit": "amp"
+    },
+    "12303": {
+      "id": 12303,
+      "label": "Rated load power",
+      "size": 2,
+      "unit": "watt"
     },
     "12544": {
       "id": 12544,
