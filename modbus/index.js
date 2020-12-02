@@ -76,6 +76,9 @@ function selectEnum(enums, value) {
   options = '<select>' + Object.keys(enums).map(getOption).join("") + '</select>';
   return options;
 }
+function input(value) {
+  return '<input value="' + value + '" size="6">'
+}
 function getRowEdit(row) {
   if(!canEdit(row.id)) return '';
   if(row.error) return 'ERR';
@@ -92,7 +95,7 @@ function getRowEdit(row) {
     function unpackValue(result, pack, index) {
       var v = value[index];
       var key = pack.label;
-      result[key] = '<input value="' + v + '" size="6">';
+      result[key] = input(v);
       if(pack.enum) {
         var enums = schema.enums[pack.enum];
         if(!enums) {
@@ -110,7 +113,7 @@ function getRowEdit(row) {
       return "<tr><td>" + label + "</td><td>" +  input + "</td></tr>";
     }).join("") + "</table>";
   }
-  return '<input value="' + value + '" size="6">'
+  return input(value);
 }
 function getRowText(row) {
   if(row.error) return 'ERR';
