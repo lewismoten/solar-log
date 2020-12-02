@@ -246,10 +246,10 @@ function documentReady() {
   });
 
   return getSchema()
-    // .then(getDevice)
-    // .then(getInputRegisters)
-    // .then(getCoils)
-    // .then(getDiscreteInput)
+    .then(getDevice)
+    .then(getInputRegisters)
+    .then(getCoils)
+    .then(getDiscreteInput)
     .then(getHoldingRegisters)
     .catch(showError);
 }
