@@ -88,6 +88,28 @@ function getRowEdit(row) {
     if(isBitAddress(id)) value = value ? "1" : "0"
     return selectEnum(enums, value);
   }
+  if(meta.packs) {
+    function unpackValue(result, pack, index) {
+      var v = value[index];
+      var key = pack.label;
+      result[key] = '<input value="' + v + '" size="6">';
+      if(pack.enum) {
+        var enums = schema.enums[pack.enum];
+        if(!enums) {
+          result[key] = 'Missing: ' + pack.enum;
+        } else {
+          result[key] = selectEnum(enums, v);
+        }
+      }
+      return result;
+    }
+    var packValues = meta.packs.reduce(unpackValue, {});
+    return "<table>" + meta.packs.map(function(pack) {
+      var label = pack.label;
+      var input = packValues[label]
+      return "<tr><td>" + label + "</td><td>" +  input + "</td></tr>";
+    }).join("") + "</table>";
+  }
   return '<input value="' + value + '" size="6">'
 }
 function getRowText(row) {

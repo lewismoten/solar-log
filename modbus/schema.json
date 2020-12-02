@@ -871,26 +871,8 @@
       "type": "datetime",
       "packs": [
         {
-          "label": "Minute",
-          "index": 0,
-          "mask": 255,
-          "shift": 8
-        },
-        {
-          "label": "Second",
-          "index": 0,
-          "mask": 255,
-          "shift": 0
-        },
-        {
-          "label": "Hour",
-          "index": 1,
-          "mask": 255,
-          "shift": 0
-        },
-        {
-          "label": "Day",
-          "index": 1,
+          "label": "Year",
+          "index": 2,
           "mask": 255,
           "shift": 8
         },
@@ -902,10 +884,28 @@
           "enum": "month"
         },
         {
-          "label": "Year",
-          "index": 2,
+          "label": "Day",
+          "index": 1,
           "mask": 255,
           "shift": 8
+        },
+        {
+          "label": "Hour",
+          "index": 1,
+          "mask": 255,
+          "shift": 0
+        },
+        {
+          "label": "Minute",
+          "index": 0,
+          "mask": 255,
+          "shift": 8
+        },
+        {
+          "label": "Second",
+          "index": 0,
+          "mask": 255,
+          "shift": 0
         }
       ]
     },
@@ -994,16 +994,16 @@
       "type": "duration",
       "packs": [
         {
+            "label": "Hours",
+            "index": 0,
+            "mask": 255,
+            "shift": 8
+        },
+        {
           "label": "Minutes",
           "index": 0,
           "mask": 255,
           "shift": 0
-        },
-        {
-          "label": "Hours",
-          "index": 0,
-          "mask": 255,
-          "shift": 8
         }
       ]
     },
@@ -1014,16 +1014,16 @@
       "type": "duration",
       "packs": [
         {
+            "label": "Hours",
+            "index": 0,
+            "mask": 255,
+            "shift": 8
+        },
+        {
           "label": "Minutes",
           "index": 0,
           "mask": 255,
           "shift": 0
-        },
-        {
-          "label": "Hours",
-          "index": 0,
-          "mask": 255,
-          "shift": 8
         }
       ]
     },
@@ -1034,8 +1034,8 @@
       "type": "time",
       "packs": [
         {
-          "label": "Second",
-          "index": 0,
+          "label": "Hour",
+          "index": 2,
           "mask": 65535,
           "shift": 0
         },
@@ -1046,8 +1046,8 @@
           "shift": 0
         },
         {
-          "label": "Hour",
-          "index": 2,
+          "label": "Second",
+          "index": 0,
           "mask": 65535,
           "shift": 0
         }
@@ -1060,8 +1060,8 @@
       "type": "time",
       "packs": [
         {
-          "label": "Second",
-          "index": 0,
+          "label": "Hour",
+          "index": 2,
           "mask": 65535,
           "shift": 0
         },
@@ -1072,8 +1072,8 @@
           "shift": 0
         },
         {
-          "label": "Hour",
-          "index": 2,
+          "label": "Second",
+          "index": 0,
           "mask": 65535,
           "shift": 0
         }
@@ -1086,8 +1086,8 @@
       "type": "time",
       "packs": [
         {
-          "label": "Second",
-          "index": 0,
+          "label": "Hour",
+          "index": 2,
           "mask": 65535,
           "shift": 0
         },
@@ -1098,8 +1098,8 @@
           "shift": 0
         },
         {
-          "label": "Hour",
-          "index": 2,
+          "label": "Second",
+          "index": 0,
           "mask": 65535,
           "shift": 0
         }
@@ -1112,8 +1112,8 @@
       "type": "time",
       "packs": [
         {
-          "label": "Second",
-          "index": 0,
+          "label": "Hour",
+          "index": 2,
           "mask": 65535,
           "shift": 0
         },
@@ -1124,8 +1124,8 @@
           "shift": 0
         },
         {
-          "label": "Hour",
-          "index": 2,
+          "label": "Second",
+          "index": 0,
           "mask": 65535,
           "shift": 0
         }
@@ -1144,16 +1144,16 @@
       "type": "duration",
       "packs": [
         {
+            "label": "Hours",
+            "index": 0,
+            "mask": 255,
+            "shift": 8
+        },
+        {
           "label": "Minutes",
           "index": 0,
           "mask": 255,
           "shift": 0
-        },
-        {
-          "label": "Hours",
-          "index": 0,
-          "mask": 255,
-          "shift": 8
         }
       ]
     },
