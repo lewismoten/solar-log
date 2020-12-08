@@ -3,7 +3,7 @@ import cgi
 import json
 import pymysql
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
+#from dateutil.relativedelta import relativedelta
 
 result = {"error": "unknown"}
 
@@ -17,14 +17,17 @@ def done():
     print(json.dumps(result, default=json_serial, sort_keys = True, indent = 2))
     exit()
 
-form = cgi.FieldStorage()
-
-parameters = {}
-
+# form = cgi.FieldStorage()
+#
+# parameters = {}
+#
 now = datetime.today()
-defaultStart = now + relativedelta(years=-1);
-start = form.getvalue("start", defaultStart.strftime("%Y-%m-%d"))
-end = form.getvalue("end", now.strftime("%Y-%m-%d"))
+# defaultStart = now + relativedelta(years=-1);
+# start = form.getvalue("start", defaultStart.strftime("%Y-%m-%d"))
+# end = form.getvalue("end", now.strftime("%Y-%m-%d"))
+
+start = datetime(now.year - 1, now.month, now.day).strftime("%Y-%m-%d")
+end = now.strftime("%Y-%m-%d")
 
 parameters = {
     "start": start,
