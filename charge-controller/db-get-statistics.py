@@ -48,23 +48,21 @@ try:
 
     c = conn.cursor()
 
-    #parameters["time"] = "DATE_FORMAT(FROM_UNIXTIME(FLOOR((UNIX_TIMESTAMP(create_date) % {day})/{seconds}) * {seconds}), '%H:%i')".format(**parameters)
-
     sql = """
     SELECT
         DATE_FORMAT(create_date, '%Y-%m-%d'),
-        TRUNCATE(MAX(stat_max_input_v_today), {decimals}),
         TRUNCATE(MIN(stat_min_input_v_today), {decimals}),
-        TRUNCATE(MAX(stat_max_battery_v_today), {decimals}),
+        TRUNCATE(MAX(stat_max_input_v_today), {decimals}),
         TRUNCATE(MIN(stat_min_battery_v_today), {decimals}),
+        TRUNCATE(MAX(stat_max_battery_v_today), {decimals}),
         TRUNCATE(MAX(stat_min_battery_v_today), {decimals}),
         TRUNCATE(MAX(stat_consumed_kwh_today), {decimals}),
-        TRUNCATE(MAX(stat_generated_kwh_today), {decimals})
         TRUNCATE(MAX(stat_consumed_kwh_month), {decimals}),
-        TRUNCATE(MAX(stat_generated_kwh_month), {decimals}),
         TRUNCATE(MAX(stat_consumed_kwh_year), {decimals}),
-        TRUNCATE(MAX(stat_generated_kwh_year), {decimals}),
         TRUNCATE(MAX(stat_consumed_kwh_total), {decimals}),
+        TRUNCATE(MAX(stat_generated_kwh_today), {decimals}),
+        TRUNCATE(MAX(stat_generated_kwh_month), {decimals}),
+        TRUNCATE(MAX(stat_generated_kwh_year), {decimals}),
         TRUNCATE(MAX(stat_generated_kwh_total), {decimals})
     FROM
         controller_statistics
@@ -75,9 +73,7 @@ try:
         MONTH(create_date),
         DAY(create_date)
     ORDER BY
-        YEAR(create_date) DESC,
-        MONTH(create_date) DESC,
-        DAY(create_date) DESC
+        create_date ASC
     ;
     """
     c.execute(sql.format(**parameters))
@@ -87,17 +83,17 @@ try:
 
     result["fields"] = [
         "create_date",
-        "stat_max_input_v_today",
         "stat_min_input_v_today",
-        "stat_max_battery_v_today",
+        "stat_max_input_v_today",
         "stat_min_battery_v_today",
+        "stat_max_battery_v_today",
         "stat_consumed_kwh_today",
-        "stat_generated_kwh_today",
         "stat_consumed_kwh_month",
-        "stat_generated_kwh_month",
         "stat_consumed_kwh_year",
-        "stat_generated_kwh_year",
         "stat_consumed_kwh_total",
+        "stat_generated_kwh_today",
+        "stat_generated_kwh_month",
+        "stat_generated_kwh_year",
         "stat_generated_kwh_total"
     ]
 
