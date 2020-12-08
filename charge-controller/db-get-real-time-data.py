@@ -49,7 +49,7 @@ try:
     # --GROUP BY
     # --    FLOOR((FLOOR(UNIX_TIMESTAMP(create_date) / {day}) * {day}) + (FLOOR((UNIX_TIMESTAMP(create_date) % {day})/{groupSeconds}) * {groupSeconds}))
     #     --FLOOR((FLOOR(UNIX_TIMESTAMP(create_date) / {day}) * {day}) + FLOOR((UNIX_TIMESTAMP(create_date) % {day})/{groupSeconds}))
-
+#
     sql = """
     SELECT
         UNIX_TIMESTAMP(create_date),
@@ -70,7 +70,7 @@ try:
     FROM
         controller_real_time_data
     WHERE
-        create_date >= DATE_SUB(now(), INTERVAL 1 DAY)
+        create_date >= DATE_SUB(now(), INTERVAL 6 HOUR)
     """
         # --create_date >= DATE_SUB(now(), INTERVAL 60 * 1 MINUTE)
     # sql = """
