@@ -58,7 +58,6 @@ try:
         TRUNCATE(MAX(stat_max_input_v_today), {decimals}),
         TRUNCATE(MIN(stat_min_battery_v_today), {decimals}),
         TRUNCATE(MAX(stat_max_battery_v_today), {decimals}),
-        TRUNCATE(MAX(stat_min_battery_v_today), {decimals}),
         TRUNCATE(MAX(stat_consumed_kwh_today), {decimals}),
         TRUNCATE(MAX(stat_consumed_kwh_month), {decimals}),
         TRUNCATE(MAX(stat_consumed_kwh_year), {decimals}),

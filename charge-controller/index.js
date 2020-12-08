@@ -1,4 +1,5 @@
 var latestData = {};
+var latestStatistics = {};
 var chargeControllerProtocol = {};
 var getRealTimeDataRequestInterval;
 
@@ -37,8 +38,8 @@ function documentReady() {
 function googleChartsLoaded() {
   getChargeControllerProtocol()
     .then(getAllData)
-    .then(scheduleDataRequests);
-    //.then(getStatistics)
+    .then(scheduleDataRequests)
+    .then(getStatistics2);
 }
 
 function getChargeControllerProtocol() {
@@ -73,6 +74,19 @@ function getRealTimeData() {
 
 var statistics = {};
 
+function getStatistics2() {
+  return $.getJSON("./db-get-statistics.py")
+     .then(gotStatistics)
+     .fail(gotLatestDataFailed);
+}
+function gotStatistics(data, textStatus, jqXHR) {
+  if (data.error) {
+    gotRealTimeDataFailed(jqXHR, textStatus, data.error);
+    return;
+  }
+  latestStatistics = Object.assign(latestStatistics, data);
+  tabActivated();
+}
 function getStatistics() {
   var type = "day";
   var format = "YYYY-MM-DD";
@@ -195,9 +209,13 @@ function getStatusFrom(value, meta) {
 
 }
 function displayStatistics() {
-  if(statistics.current) {
-    updateInputWattsHistory();
-  }
+  displayVoltageStatistics();
+  displayKwhTodayStatistics();
+  displayKwhTotalStatistics();
+  // foo
+  // if(statistics.current) {
+  //   updateInputWattsHistory();
+  // }
 }
 function displayTemperature() {
   updateTemperatureBatteryGauge();
@@ -369,6 +387,20 @@ function mapHourField() {
   return function mapRow(row) {
     var result = [moment.unix(Number(row[0])).local().toDate()]
     indexes.forEach(function(i){result.push(row[i]);});
+    return result;
+  }
+}
+function mapStatisticsField() {
+  var indexes = Array.prototype.slice.call(arguments).map(function(name) {
+    return latestStatistics.fields.indexOf(name);
+  })
+  return function mapRow(row) {
+    var result = [
+    moment(row[0]).toDate()
+    ];
+    indexes.forEach(function(i) {
+      result.push(row[i]);
+    });
     return result;
   }
 }
@@ -633,7 +665,84 @@ function updateBatterySocHour() {
   );
   var options = {
     legend: {
-      position: "none"
+      position: "bottom"
+    },
+    animation:{
+        duration: 1000,
+        easing: 'out'
+      }
+  };
+  chart.draw(data, options);
+}
+function displayVoltageStatistics() {
+  if(!latestStatistics.data) return;
+  var chart = getChart(".statstics-voltages", google.visualization.LineChart);
+  var data = new google.visualization.DataTable();
+  data.addColumn("datetime", "Day");
+  data.addColumn("number", "PV Array Max");
+  data.addColumn("number", "Battery Min");
+  data.addColumn("number", "Battery Max");
+  data.addRows(
+    latestStatistics.data.map(mapStatisticsField(
+      "stat_max_input_v_today",
+      "stat_min_battery_v_today",
+      "stat_max_battery_v_today"
+    ))
+  );
+  var options = {
+    title: "Voltage",
+    legend: {
+      position: "bottom"
+    },
+    animation:{
+        duration: 1000,
+        easing: 'out'
+      }
+  };
+  chart.draw(data, options);
+}
+function displayKwhTodayStatistics() {
+  if(!latestStatistics.data) return;
+  var chart = getChart(".statstics-kwh-today", google.visualization.LineChart);
+  var data = new google.visualization.DataTable();
+  data.addColumn("datetime", "Day");
+  data.addColumn("number", "Consumed");
+  data.addColumn("number", "Generated");
+  data.addRows(
+    latestStatistics.data.map(mapStatisticsField(
+      "stat_consumed_kwh_today",
+      "stat_generated_kwh_today"
+    ))
+  );
+  var options = {
+    title: "kWh each day",
+    legend: {
+      position: "bottom"
+    },
+    animation:{
+        duration: 1000,
+        easing: 'out'
+      }
+  };
+  chart.draw(data, options);
+}
+function displayKwhTotalStatistics() {
+  if(!latestStatistics.data) return;
+  var chart = getChart(".statstics-kwh-total", google.visualization.LineChart);
+  var data = new google.visualization.DataTable();
+  data.addColumn("datetime", "Day");
+  data.addColumn("number", "Consumed");
+  data.addColumn("number", "Generated");
+  data.addRows(
+    latestStatistics.data.map(mapStatisticsField(
+      "stat_consumed_kwh_month",
+      "stat_generated_kwh_month"
+    ))
+  );
+  var options = {
+    title: "kWh each month",
+    legend: {
+      position: "bottom"
     },
     animation:{
         duration: 1000,
