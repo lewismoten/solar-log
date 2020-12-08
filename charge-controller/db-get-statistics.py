@@ -3,6 +3,7 @@ import cgi
 import json
 import pymysql
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 result = {"error": "unknown"}
 
@@ -20,8 +21,9 @@ form = cgi.FieldStorage()
 
 parameters = {}
 
-now = datetime.now()
-start = form.getvalue("start", now.strftime("%Y-%m-%d"))
+now = datetime.today()
+defaultStart = now + relativedelta(years=-1);
+start = form.getvalue("start", defaultStart.strftime("%Y-%m-%d"))
 end = form.getvalue("end", now.strftime("%Y-%m-%d"))
 
 parameters = {
@@ -50,30 +52,32 @@ try:
 
     sql = """
     SELECT
-        day_grouping.start,
-        TRUNCATE(AVG(rt_input_v), {decimals}),
-        TRUNCATE(AVG(rt_input_a), {decimals}),
-        TRUNCATE(AVG(rt_input_w), {decimals}),
-        TRUNCATE(AVG(rt_battery_v), {decimals}),
-        TRUNCATE(AVG(rt_battery_a), {decimals}),
-        TRUNCATE(AVG(rt_battery_w), {decimals}),
-        TRUNCATE(AVG(rt_battery_soc) * 100, {decimals}),
-        TRUNCATE((AVG(rt_battery_temp) * (9/5)) + 32, {decimals}),
-        TRUNCATE((AVG(rt_remote_battery_temp) * (9/5)) + 32, {decimals}),
-        TRUNCATE((AVG(rt_power_component_temp) * (9/5)) + 32, {decimals}),
-        TRUNCATE((AVG(rt_case_temp) * (9/5)) + 32, {decimals}),
-        TRUNCATE(AVG(rt_load_v), {decimals}),
-        TRUNCATE(AVG(rt_load_a), {decimals}),
-        TRUNCATE(AVG(rt_load_w), {decimals})
+        DATE_FORMAT(create_date, '%Y-%m-%d'),
+        TRUNCATE(MAX(stat_max_input_v_today), {decimals}),
+        TRUNCATE(MIN(stat_min_input_v_today), {decimals}),
+        TRUNCATE(MAX(stat_max_battery_v_today), {decimals}),
+        TRUNCATE(MIN(stat_min_battery_v_today), {decimals}),
+        TRUNCATE(MAX(stat_min_battery_v_today), {decimals}),
+        TRUNCATE(MAX(stat_consumed_kwh_today), {decimals}),
+        TRUNCATE(MAX(stat_generated_kwh_today), {decimals})
+        TRUNCATE(MAX(stat_consumed_kwh_month), {decimals}),
+        TRUNCATE(MAX(stat_generated_kwh_month), {decimals}),
+        TRUNCATE(MAX(stat_consumed_kwh_year), {decimals}),
+        TRUNCATE(MAX(stat_generated_kwh_year), {decimals}),
+        TRUNCATE(MAX(stat_consumed_kwh_total), {decimals}),
+        TRUNCATE(MAX(stat_generated_kwh_total), {decimals})
     FROM
-        controller_real_time_data
-        INNER JOIN day_grouping ON
-            duration = 15
-            and time(create_date) BETWEEN start and stop
+        controller_statistics
     WHERE
         create_date BETWEEN '{start} 00:00:00' AND '{end} 23:59:59'
     GROUP BY
-       day_grouping.start
+        YEAR(create_date),
+        MONTH(create_date),
+        DAY(create_date)
+    ORDER BY
+        YEAR(create_date) DESC,
+        MONTH(create_date) DESC,
+        DAY(create_date) DESC
     ;
     """
     c.execute(sql.format(**parameters))
@@ -83,20 +87,18 @@ try:
 
     result["fields"] = [
         "create_date",
-        "rt_input_v",
-        "rt_input_a",
-        "rt_input_w",
-        "rt_battery_v",
-        "rt_battery_a",
-        "rt_battery_w",
-        "rt_battery_soc",
-        "rt_battery_temp",
-        "rt_remote_battery_temp",
-        "rt_power_component_temp",
-        "rt_case_temp",
-        "rt_load_v",
-        "rt_load_a",
-        "rt_load_w"
+        "stat_max_input_v_today",
+        "stat_min_input_v_today",
+        "stat_max_battery_v_today",
+        "stat_min_battery_v_today",
+        "stat_consumed_kwh_today",
+        "stat_generated_kwh_today",
+        "stat_consumed_kwh_month",
+        "stat_generated_kwh_month",
+        "stat_consumed_kwh_year",
+        "stat_generated_kwh_year",
+        "stat_consumed_kwh_total",
+        "stat_generated_kwh_total"
     ]
 
     c.close()
