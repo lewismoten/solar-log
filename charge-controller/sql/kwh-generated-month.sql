@@ -9,3 +9,4 @@ SELECT
       MONTH(create_date)
   ORDER BY
       create_date ASC
+;

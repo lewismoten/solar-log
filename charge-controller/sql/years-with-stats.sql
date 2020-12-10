@@ -4,3 +4,4 @@ SELECT DISTINCT
       controller_statistics
   ORDER BY
       create_date ASC
+;
