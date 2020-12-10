@@ -1,5 +1,8 @@
 var latestData = {};
-var latestStatistics = {};
+var latestStatistics = {
+  days: {},
+  kwhPerMonth: {}
+};
 var chargeControllerProtocol = {};
 var getRealTimeDataRequestInterval;
 
@@ -28,7 +31,8 @@ function documentReady() {
         "line",
         "timeline",
         "gauge",
-        "table"
+        "table",
+        "bar"
       ]
     }
   );
@@ -39,7 +43,7 @@ function googleChartsLoaded() {
   getChargeControllerProtocol()
     .then(getAllData)
     .then(scheduleDataRequests)
-    .then(getStatistics2);
+    .then(getStatistics2)
 }
 
 function getChargeControllerProtocol() {
@@ -77,6 +81,12 @@ var statistics = {};
 function getStatistics2() {
   return $.getJSON("./db-get-statistics.py")
      .then(gotStatistics)
+     .fail(gotLatestDataFailed)
+     .then(getStatisticsPerMonth);
+}
+function getStatisticsPerMonth() {
+  return $.getJSON("./api/kwh-generated-by-month.py")
+     .then(gotStatisticsPerMonth)
      .fail(gotLatestDataFailed);
 }
 function gotStatistics(data, textStatus, jqXHR) {
@@ -84,7 +94,15 @@ function gotStatistics(data, textStatus, jqXHR) {
     gotRealTimeDataFailed(jqXHR, textStatus, data.error);
     return;
   }
-  latestStatistics = Object.assign(latestStatistics, data);
+  latestStatistics.days = Object.assign(latestStatistics.days, data);
+  tabActivated();
+}
+function gotStatisticsPerMonth(data, textStatus, jqXHR) {
+  if (data.error) {
+    gotRealTimeDataFailed(jqXHR, textStatus, data.error);
+    return;
+  }
+  latestStatistics.kwhPerMonth = Object.assign(latestStatistics.kwhPerMonth, data);
   tabActivated();
 }
 function getStatistics() {
@@ -184,6 +202,7 @@ function tabActivated(event, ui) {
 }
 
 function getStatus(name) {
+  if(!latestData || !latestData.controller_real_time_status) return;
   var value = latestData.controller_real_time_status[name];
   return getStatusFrom(value, findMeta(name)).join(", ");
 }
@@ -211,7 +230,11 @@ function getStatusFrom(value, meta) {
 function displayStatistics() {
   displayVoltageStatistics();
   displayKwhTodayStatistics();
-  displayKwhTotalStatistics();
+  try {
+
+    displayKwhByMonthStatistics();
+
+  } catch(e) {console.error(e); throw e};
   // foo
   // if(statistics.current) {
   //   updateInputWattsHistory();
@@ -390,16 +413,21 @@ function mapHourField() {
     return result;
   }
 }
-function mapStatisticsField() {
-  var indexes = Array.prototype.slice.call(arguments).map(function(name) {
-    return latestStatistics.fields.indexOf(name);
+function mapField(source, fields) {
+  fields = Array.prototype.slice.call(arguments);
+  source = fields.shift();
+  var indexes = fields.map(function(name) {
+    return source.fields.indexOf(name);
   })
   return function mapRow(row) {
-    var result = [
-    moment(row[0]).toDate()
-    ];
+    var result = [];
     indexes.forEach(function(i) {
-      result.push(row[i]);
+      var value = row[i];
+
+      if(source.fields[i].indexOf('date') === -1)
+        result.push(row[i]);
+      else
+        result.push(moment(row[i]).toDate());
     });
     return result;
   }
@@ -675,7 +703,7 @@ function updateBatterySocHour() {
   chart.draw(data, options);
 }
 function displayVoltageStatistics() {
-  if(!latestStatistics.data) return;
+  if(!latestStatistics.days.data) return;
   var chart = getChart(".statstics-voltages", google.visualization.LineChart);
   var data = new google.visualization.DataTable();
   data.addColumn("datetime", "Day");
@@ -683,7 +711,9 @@ function displayVoltageStatistics() {
   data.addColumn("number", "Battery Min");
   data.addColumn("number", "Battery Max");
   data.addRows(
-    latestStatistics.data.map(mapStatisticsField(
+    latestStatistics.days.data.map(mapField(
+      latestStatistics.days,
+      "create_date",
       "stat_max_input_v_today",
       "stat_min_battery_v_today",
       "stat_max_battery_v_today"
@@ -702,14 +732,16 @@ function displayVoltageStatistics() {
   chart.draw(data, options);
 }
 function displayKwhTodayStatistics() {
-  if(!latestStatistics.data) return;
+  if(!latestStatistics.days.data) return;
   var chart = getChart(".statstics-kwh-today", google.visualization.LineChart);
   var data = new google.visualization.DataTable();
   data.addColumn("datetime", "Day");
   data.addColumn("number", "Consumed");
   data.addColumn("number", "Generated");
   data.addRows(
-    latestStatistics.data.map(mapStatisticsField(
+    latestStatistics.days.data.map(mapField(
+      latestStatistics.days,
+      "create_date",
       "stat_consumed_kwh_today",
       "stat_generated_kwh_today"
     ))
@@ -726,29 +758,42 @@ function displayKwhTodayStatistics() {
   };
   chart.draw(data, options);
 }
-function displayKwhTotalStatistics() {
-  if(!latestStatistics.data) return;
-  var chart = getChart(".statstics-kwh-total", google.visualization.LineChart);
+function displayKwhByMonthStatistics() {
+  if(!latestStatistics.kwhPerMonth.data) return;
+  function asRow(values) {
+    return values.map(function(value, index){
+      if(index === 0) return moment(value).toDate();
+      return value;
+    })
+  }
+  var rows = latestStatistics.kwhPerMonth.data.map(asRow);
+  var chart = getChart(".statstics-kwh-total", google.charts.Bar);
   var data = new google.visualization.DataTable();
-  data.addColumn("datetime", "Day");
-  data.addColumn("number", "Consumed");
-  data.addColumn("number", "Generated");
-  data.addRows(
-    latestStatistics.data.map(mapStatisticsField(
-      "stat_consumed_kwh_month",
-      "stat_generated_kwh_month"
-    ))
-  );
+  data.addColumn("date", "Month");
+  latestStatistics.kwhPerMonth.years.forEach(function addYear(year) {
+    data.addColumn("number", year);
+  });
+  data.addRows(rows);
   var options = {
-    title: "kWh each month",
-    legend: {
-      position: "bottom"
+    chart: {
+      title: 'kWh Generated'
     },
-    animation:{
-        duration: 1000,
-        easing: 'out'
+    axes: {
+      x: {
+        0: {
+          label: ''
+        }
       }
+    }
   };
+  var monthFormatter = new google.visualization.DateFormat({pattern: 'MMMM'});
+  monthFormatter.format(data, 0);
+
+  var kWhFormatter = new google.visualization.PatternFormat('{0} kWh');
+  latestStatistics.kwhPerMonth.years.forEach(function(year, idx) {
+    idx++;
+    kWhFormatter.format(data, [idx], idx)
+  });
   chart.draw(data, options);
 }
 function updateTemperatureHour() {

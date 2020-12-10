@@ -59,11 +59,9 @@ try:
         TRUNCATE(MIN(stat_min_battery_v_today), {decimals}),
         TRUNCATE(MAX(stat_max_battery_v_today), {decimals}),
         TRUNCATE(MAX(stat_consumed_kwh_today), {decimals}),
-        TRUNCATE(MAX(stat_consumed_kwh_month), {decimals}),
         TRUNCATE(MAX(stat_consumed_kwh_year), {decimals}),
         TRUNCATE(MAX(stat_consumed_kwh_total), {decimals}),
         TRUNCATE(MAX(stat_generated_kwh_today), {decimals}),
-        TRUNCATE(MAX(stat_generated_kwh_month), {decimals}),
         TRUNCATE(MAX(stat_generated_kwh_year), {decimals}),
         TRUNCATE(MAX(stat_generated_kwh_total), {decimals})
     FROM
@@ -90,11 +88,9 @@ try:
         "stat_min_battery_v_today",
         "stat_max_battery_v_today",
         "stat_consumed_kwh_today",
-        "stat_consumed_kwh_month",
         "stat_consumed_kwh_year",
         "stat_consumed_kwh_total",
         "stat_generated_kwh_today",
-        "stat_generated_kwh_month",
         "stat_generated_kwh_year",
         "stat_generated_kwh_total"
     ]
