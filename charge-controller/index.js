@@ -73,9 +73,15 @@ function getAllData() {
 function getRealTimeData() {
    return $.getJSON("./db-get-real-time-data.py")
       .fail(gotRealTimeDataFailed)
-      .then(gotRealTimeData);
+      .then(gotRealTimeData)
+      .then(getControllerRealTimeStatus);
 }
 
+function getControllerRealTimeStatus() {
+  return $.getJSON("./api/controller-real-time-status.py")
+     .then(gotRealTimeDataStatus)
+     .fail(gotRealTimeDataFailed);
+}
 var statistics = {};
 
 function getStatistics2() {
@@ -168,6 +174,14 @@ function gotRealTimeData(data, textStatus, jqXHR) {
   tabActivated();
 
 }
+function gotRealTimeDataStatus(data, textStatus, jqXHR) {
+  if (data.error) {
+    gotRealTimeDataFailed(jqXHR, textStatus, data.error);
+    return;
+  }
+  latestData = Object.assign(latestData, {statusOverTime: data});
+  tabActivated();
+}
 function gotLatestData(data, textStatus, jqXHR) {
   if (data.error) {
     gotLatestDataFailed(jqXHR, textStatus, data.error);
@@ -189,6 +203,8 @@ function tabActivated(event, ui) {
     case 2:
       displayInput();
       break;
+      case 3:
+      displayStatus();
     case 4:
       displayStatistics();
       break;
@@ -199,6 +215,10 @@ function tabActivated(event, ui) {
       //console.log("tab activated: %s", index);
       break;
   }
+}
+
+function displayStatus() {
+  updateBatteryStatusTimeline();
 }
 
 function getStatus(name) {
@@ -254,6 +274,7 @@ function displayBattery() {
   $(".discharging-status").text(getStatus("rt_discharging_equipment_status"));
 
   updateBatteryVoltageGauge();
+  updateBatteryVoltageInfo();
   updateBatteryAmpsGauge();
   updateBatteryWattsGauge();
   updateBatterySocGauge();
@@ -431,6 +452,249 @@ function mapField(source, fields) {
     });
     return result;
   }
+}
+function parsePart(value, part) {
+  var subValue = (value >> part.shift) & part.mask;
+  var parsed;
+  if(part.enum) {
+    parsed = part.enum[subValue];
+  } else if(subValue) {
+    parsed = part.name;
+  }
+  return parsed;
+}
+function addressByField(field) {
+  var meta;
+  var data = chargeControllerProtocol.data;
+  Object.keys(data).find(function(key) {
+    meta = data[key].find(function(address) {
+      return address.field === field;
+    });
+    return meta;
+  });
+  return meta;
+}
+
+function unixToDate(value) {
+  return moment.unix(Number(value)).local().toDate()
+}
+function getDischargingEquipmentStatusTimelineData() {
+  var v = latestData.statusOverTime;
+  var fieldIndex = v.fields.indexOf('rt_discharging_equipment_status');
+  var dateIndex = v.fields.indexOf('create_date');
+  var address = addressByField("rt_discharging_equipment_status");
+  function statusReducer(index, title) {
+    var part = address.parts[index];
+    var lastValue;
+    var start;
+    var end;
+    function parse(row) {
+      const value = row[fieldIndex];
+      var result = parsePart(value, part);
+      if(index === 1) {
+        // let non-default values pass through
+        return result === part.enum[0] ? undefined : result;
+      }
+      if(index > 2) {
+        // only pass name if non-default value
+        return result === part.enum[0] ? undefined : part.name;
+      }
+      return result;
+    }
+
+    function buildRow() {
+      return [
+        title,
+        lastValue,
+        unixToDate(start),
+        unixToDate(end)
+      ];
+    }
+    return function(all, row, index, array) {
+      create_date = row[dateIndex];
+      value = parse(row);
+      if(value === lastValue) {
+        end = end ? Math.max(end, create_date) : create_date;
+        start = start ? Math.min(start, create_date) : create_date;
+      } else {
+        if (lastValue) all.push(buildRow());
+        lastValue = value;
+        start = create_date;
+        end = create_date;
+      };
+      if(index === array.length -1 && lastValue) {
+        all.push(buildRow());
+      }
+      return all;
+    }
+  }
+  return [].concat(
+    v.data.reduce(statusReducer(0, 'Discharge Status'), []),
+    v.data.reduce(statusReducer(1, 'Discharge Fault'), []),
+    v.data.reduce(statusReducer(2, 'Output Power'), []),
+    v.data.reduce(statusReducer(3, 'Discharge Fault'), []),
+    v.data.reduce(statusReducer(4, 'Discharge Fault'), []),
+    v.data.reduce(statusReducer(5, 'Discharge Fault'), []),
+    v.data.reduce(statusReducer(6, 'Discharge Fault'), []),
+    v.data.reduce(statusReducer(7, 'Discharge Fault'), []),
+    v.data.reduce(statusReducer(8, 'Discharge Fault'), []),
+    v.data.reduce(statusReducer(9, 'Discharge Fault'), []),
+    v.data.reduce(statusReducer(10, 'Discharge Fault'), []),
+    v.data.reduce(statusReducer(11, 'Discharge Fault'), [])
+  );
+}
+function getChargingEquipmentStatusTimelineData() {
+  var v = latestData.statusOverTime;
+  var fieldIndex = v.fields.indexOf('rt_charging_equipment_status');
+  var dateIndex = v.fields.indexOf('create_date');
+  var address = addressByField("rt_charging_equipment_status");
+  function statusReducer(index, title) {
+    var part = address.parts[index];
+    var lastValue;
+    var start;
+    var end;
+    function parse(row) {
+      const value = row[fieldIndex];
+      var result = parsePart(value, part);
+      if(index === 1 || index === 2) {
+        // let non-default values pass through
+        return result === part.enum[0] ? undefined : result;
+      }
+      if(index > 2) {
+        // only pass name if non-default value
+        return result === part.enum[0] ? undefined : part.name;
+      }
+      return result;
+    }
+
+    function buildRow() {
+      return [
+        title,
+        lastValue,
+        unixToDate(start),
+        unixToDate(end)
+      ];
+    }
+    return function(all, row, index, array) {
+      create_date = row[dateIndex];
+      value = parse(row);
+      if(value === lastValue) {
+        end = end ? Math.max(end, create_date) : create_date;
+        start = start ? Math.min(start, create_date) : create_date;
+      } else {
+        if (lastValue) all.push(buildRow());
+        lastValue = value;
+        start = create_date;
+        end = create_date;
+      };
+      if(index === array.length -1 && lastValue) {
+        all.push(buildRow());
+      }
+      return all;
+    }
+  }
+  return [].concat(
+    v.data.reduce(statusReducer(0, 'Charger Status'), []),
+    v.data.reduce(statusReducer(1, 'Charging'), []),
+    v.data.reduce(statusReducer(2, 'Charging'), []),
+    v.data.reduce(statusReducer(3, 'Charging Fault'), []),
+    v.data.reduce(statusReducer(4, 'Charging Fault'), []),
+    v.data.reduce(statusReducer(5, 'Charging Fault'), []),
+    v.data.reduce(statusReducer(6, 'Charging Fault'), []),
+    v.data.reduce(statusReducer(7, 'Charging Fault'), []),
+    v.data.reduce(statusReducer(8, 'Charging Fault'), []),
+    v.data.reduce(statusReducer(9, 'Charging Fault'), []),
+    v.data.reduce(statusReducer(10, 'Charging Fault'), [])
+  );
+}
+function getBatteryStatusTimelineData() {
+  var v = latestData.statusOverTime;
+  var fieldIndex = v.fields.indexOf('rt_battery_status');
+  var dateIndex = v.fields.indexOf('create_date');
+  var address = addressByField("rt_battery_status");
+  function batteryStatusReducer(index, title) {
+    var part = address.parts[index];
+    var lastValue;
+    var start;
+    var end;
+    function parse(row) {
+      const value = row[fieldIndex];
+      var result = parsePart(value, part);
+      return result === part.enum[0] ? undefined : part.name;
+    }
+
+    function buildRow() {
+      return [
+        title,
+        lastValue,
+        unixToDate(start),
+        unixToDate(end)
+      ];
+    }
+    return function(all, row, index, array) {
+      create_date = row[dateIndex];
+      value = parse(row);
+      if(value === lastValue) {
+        end = end ? Math.max(end, create_date) : create_date;
+        start = start ? Math.min(start, create_date) : create_date;
+      } else {
+        if (lastValue) all.push(buildRow());
+        lastValue = value;
+        start = create_date;
+        end = create_date;
+      };
+      if(index === array.length -1 && lastValue) {
+        all.push(buildRow());
+      }
+      return all;
+    }
+  }
+  return [].concat(
+    v.data.reduce(batteryStatusReducer(0, 'Battery Fault'), []),
+    v.data.reduce(batteryStatusReducer(1, 'Battery Fault'), []),
+    v.data.reduce(batteryStatusReducer(2, 'Battery Fault'), []),
+    v.data.reduce(batteryStatusReducer(3, 'Battery Fault'), [])
+  );
+}
+
+function updateBatteryStatusTimeline() {
+  if (!latestData.hasOwnProperty("statusOverTime")) {
+    return;
+  }
+  try {
+  var v = latestData.statusOverTime;
+
+  var chart = getChart(".status-timeline", google.visualization.Timeline);
+  var data = new google.visualization.DataTable();
+  data.addColumn({ type: 'string', id: 'Type' });
+  data.addColumn({ type: 'string', id: 'Name' });
+  data.addColumn({ type: 'datetime', id: 'Start' });
+  data.addColumn({ type: 'datetime', id: 'End' });
+
+  var rows = [].concat(
+    getBatteryStatusTimelineData(),
+    getChargingEquipmentStatusTimelineData(),
+    getDischargingEquipmentStatusTimelineData()
+  );
+
+  if(rows.length === 0) {
+    start = unixToDate(v.data[0][0]);
+    end = unixToDate(v.data[v.data.length - 1][0]);
+    rows.push(['Battery Fault', 'None', start, end])
+  }
+  data.addRows(rows);
+   var options = {
+     timeline: {
+       groupByRowLabel: true,
+       avoidOverlappingGridLines: false
+     },
+     title: 'Battery Status'
+   };
+  chart.draw(data, options);
+} catch(e) {
+  console.error(e);
+  throw e;
+}
 }
 function updateBatteryVoltageHour() {
   if (!latestData.hasOwnProperty("hour")) {
@@ -830,54 +1094,138 @@ function updateBatteryVoltageGauge() {
     ["Volts", latestData.controller_real_time_data.rt_battery_v]
   ]);
 
+  var s = latestData.controller_settings;
+
   var voltages = [
     latestData.controller_real_time_data.rt_battery_v,
     latestData.controller_real_time_data.rt_battery_rated_v,
-    latestData.controller_real_time_data.rt_load_v,
-    latestData.controller_settings.setting_high_volt_disconnect,
-    latestData.controller_settings.setting_charging_limit_volt,
-    latestData.controller_settings.setting_over_volt_reconnect,
-    latestData.controller_settings.setting_equalization_voltage,
-    latestData.controller_settings.setting_boost_voltage,
-    latestData.controller_settings.setting_float_voltage,
-    latestData.controller_settings.setting_boost_reconnect_voltage,
-    latestData.controller_settings.setting_low_volt_reconnect,
-    latestData.controller_settings.setting_under_volt_recover,
-    latestData.controller_settings.setting_under_volt_warning,
-    latestData.controller_settings.setting_low_volt_disconnect,
-    latestData.controller_settings.setting_discharge_limit_volt
+    // latestData.controller_real_time_data.rt_load_v,
+    s.setting_high_volt_disconnect,
+    s.setting_charging_limit_volt,
+    s.setting_over_volt_reconnect,
+    s.setting_equalization_voltage,
+    s.setting_boost_voltage,
+    s.setting_float_voltage,
+    s.setting_boost_reconnect_voltage,
+    s.setting_low_volt_reconnect,
+    s.setting_under_volt_recover,
+    s.setting_under_volt_warning,
+    s.setting_low_volt_disconnect,
+    s.setting_discharge_limit_volt
   ];
 
-  var min = 0;//Math.min.apply(Math, voltages);
-  var max = Math.max.apply(Math, voltages);
+  var min = Math.floor(
+    Math.min(
+      latestData.controller_real_time_data.rt_battery_v,
+      latestData.controller_real_time_data.rt_battery_rated_v,
+      s.setting_high_volt_disconnect,
+      s.setting_charging_limit_volt,
+      s.setting_over_volt_reconnect,
+      s.setting_equalization_voltage,
+      s.setting_boost_voltage,
+      s.setting_float_voltage,
+      s.setting_boost_reconnect_voltage,
+      s.setting_low_volt_reconnect,
+      s.setting_under_volt_recover,
+      s.setting_under_volt_warning,
+      s.setting_low_volt_disconnect,
+      s.setting_discharge_limit_volt
+    )
+  );
+  var max = Math.ceil(Math.max(
+    latestData.controller_real_time_data.rt_battery_v,
+    latestData.controller_real_time_data.rt_battery_rated_v,
+    s.setting_high_volt_disconnect,
+    s.setting_charging_limit_volt,
+    s.setting_over_volt_reconnect,
+    s.setting_equalization_voltage,
+    s.setting_boost_voltage,
+    s.setting_float_voltage,
+    s.setting_boost_reconnect_voltage,
+    s.setting_low_volt_reconnect,
+    s.setting_under_volt_recover,
+    s.setting_under_volt_warning,
+    s.setting_low_volt_disconnect,
+    s.setting_discharge_limit_volt
+  ));
   var diff = max - min;
-  var majorTicks = ["0"];
+  var majorTicks = [];//["0"];
   var n = 4;
   var size = diff / n;
-  for(var i = 1; i < n; i++) {
-    majorTicks.push(Math.round(10 * (min + (size * i))) / 10);
+  for(var i = min; i < max; i++) {
+    majorTicks.push(i);
   }
+  // for(var i = 1; i < n; i++) {
+  //   majorTicks.push(Math.round(10 * (min + (size * i))) / 10);
+  // }
   majorTicks.push(max);
   majorTicks = majorTicks.map(function(v) { return v; })
-
+//yyy
   var options = {
     min: min,
     max: max,
-    redFrom: latestData.controller_settings.setting_charging_limit_volt,
-    redTo: max,
-    greenFrom: latestData.controller_settings.setting_low_volt_reconnect,
-    greenTo: latestData.controller_settings.setting_charging_limit_volt,
-    yellowFrom: min,
-    yellowTo: latestData.controller_settings.setting_under_volt_warning,
+    redFrom: min,
+    redTo: s.setting_low_volt_disconnect,
+    greenFrom: Math.max(
+      s.setting_low_volt_reconnect,
+      s.setting_under_volt_warning
+    ),
+    greenTo: Math.min(
+      s.setting_boost_reconnect_voltage,
+      s.setting_boost_voltage,
+      s.setting_float_voltage,
+      s.setting_charging_limit_volt,
+      s.setting_equalization_voltage,
+      s.setting_high_volt_disconnect
+    ),
+    yellowFrom: s.setting_low_volt_disconnect,
+    yellowTo: s.setting_under_volt_warning,
     width: 200,
     height: 200,
-    minorTicks: 4,
+    minorTicks: 5,
     animation: {
       dration: 400,
       easing: "inAndOut"
     },
     majorTicks: majorTicks
   };
+  chart.draw(dataTable, options);
+}
+function updateBatteryVoltageInfo() {
+  var s = latestData.controller_settings || {};
+  var rtd = latestData.controller_real_time_data || {};
+//zzz
+  var chart = getChart(".battery-volts-info", google.visualization.Table);
+  var dataTable = new google.visualization.DataTable();
+  dataTable.addColumn('string', 'Setting');
+  dataTable.addColumn('number', 'Voltage');
+  var rows = [
+    ['High Disconnect', s.setting_high_volt_disconnect],
+    ['Charging Limit', s.setting_charging_limit_volt],
+    ['Over Reconnect', s.setting_over_volt_reconnect],
+    ['Equalization', s.setting_equalization_voltage],
+    ['Boost', s.setting_boost_voltage],
+    ['Float', s.setting_float_voltage],
+    ['Boost Reconnect', s.setting_boost_reconnect_voltage],
+    ['Low Reconnect', s.setting_low_volt_reconnect],
+    ['Under Recover', s.setting_under_volt_recover],
+    ['Under Warning', s.setting_under_volt_warning],
+    ['Low Disconnect', s.setting_low_volt_disconnect],
+    ['Discharge Limit', s.setting_discharge_limit_volt],
+    [String.fromCodePoint(0x1F50B) + ' Battery', rtd.rt_battery_v],
+    ['Nominal/Rated', rtd.rt_battery_rated_v],
+  ];
+  rows.sort(function(a, b) {
+    return b[1] - a[1];
+    // var v1 = Number(r1[1]);
+    // var v2 = Number(r2[1]);
+    // // console.log('sort r1, r2', r1, r2, v1, v2)
+    // if(v1 < v2) return -1;
+    // if(v1 > v2) return -1;
+    // return 0;
+  })
+  dataTable.addRows(rows);
+  options = {width: '100%'};
   chart.draw(dataTable, options);
 }
 function updateLoadVoltageGauge() {

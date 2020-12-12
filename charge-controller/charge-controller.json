@@ -757,9 +757,9 @@
         "type": "multipart",
         "parts": [
           {"part": 0, "mask": 15, "shift": 0, "name": "Voltage", "enum": ["Normal", "Overvolt", "Under Volt", "Low Volt Disconnect", "Fault"]},
-          {"part": 0, "mask": 15, "shift": 4, "name": "Temperature", "enum": ["Normal", "Over Temp. (Higher than the warning settings)", "Low Temp. (Lower than the warning settings)"]},
-          {"part": 0, "mask": 1, "shift": 8, "name": "Internal resistance abnormal"},
-          {"part": 0, "mask": 1, "shift": 15, "name": "Wrong identification for rated voltage"}
+          {"part": 0, "mask": 15, "shift": 4, "name": "Temperature", "enum": ["Normal", "High", "Low"]},
+          {"part": 0, "mask": 1, "shift": 8, "name": "Internal resistance", "enum": ["Normal", "Abnormal"]},
+          {"part": 0, "mask": 1, "shift": 15, "name": "Identification for rated voltage", "enum": ["Normal", "Wrong"]}
         ],
         "field": "rt_battery_status"
       },
@@ -769,17 +769,17 @@
         "type": "multipart",
         "parts": [
           {"part": 0, "mask": 1, "shift": 0, "showName": false, "name": "Status", "enum": ["Standby", "Running"]},
-          {"part": 0, "mask": 1, "shift": 1, "name": "Charging", "note": "always 1 unless not charging. docs say this means fault. others seeing fault always on unless not charging"},
+          {"part": 0, "mask": 1, "shift": 1, "name": "Charging", "enum": ["No", "Yes"], "note": "always 1 unless not charging. docs say this means fault. others seeing fault always on unless not charging"},
           {"part": 0, "mask": 3, "shift": 2, "name": "Mode", "enum": ["None", "Float", "Boost", "Equalization"]},
           {"part": 0, "mask": 3, "shift": 14, "show0": false, "name": "Voltage Status", "enum": ["Normal", "No power connected", "Higher volt input", "Input volt error."]},
-          {"part": 0, "mask": 1, "shift": 13, "name": "Charging MOSFET is short."},
-          {"part": 0, "mask": 1, "shift": 12, "name": "Charging or Anti-reverse MOSFET is short."},
-          {"part": 0, "mask": 1, "shift": 11, "name": "Anti-reverse MOSFET is short."},
-          {"part": 0, "mask": 1, "shift": 10, "name": "Input is over current."},
-          {"part": 0, "mask": 1, "shift": 9, "name": "The load is Over current."},
-          {"part": 0, "mask": 1, "shift": 8, "name": "The load is short."},
-          {"part": 0, "mask": 1, "shift": 7, "name": "Load MOSFET is short."},
-          {"part": 0, "mask": 1, "shift": 4, "name": "PV Input is short."}
+          {"part": 0, "mask": 1, "shift": 13, "name": "Charging MOSFET is short.", "enum": ["No", "Yes"]},
+          {"part": 0, "mask": 1, "shift": 12, "name": "Charging or Anti-reverse MOSFET is short.", "enum": ["No", "Yes"]},
+          {"part": 0, "mask": 1, "shift": 11, "name": "Anti-reverse MOSFET is short.", "enum": ["No", "Yes"]},
+          {"part": 0, "mask": 1, "shift": 10, "name": "Input is over current.", "enum": ["No", "Yes"]},
+          {"part": 0, "mask": 1, "shift": 9, "name": "The load is Over current.", "enum": ["No", "Yes"]},
+          {"part": 0, "mask": 1, "shift": 8, "name": "The load is short.", "enum": ["No", "Yes"]},
+          {"part": 0, "mask": 1, "shift": 7, "name": "Load MOSFET is short.", "enum": ["No", "Yes"]},
+          {"part": 0, "mask": 1, "shift": 4, "name": "PV Input is short.", "enum": ["No", "Yes"]}
         ],
         "field": "rt_charging_equipment_status"
       },
@@ -789,18 +789,18 @@
         "type": "multipart",
         "parts": [
           {"part": 0, "mask": 1, "shift": 0, "showName": false, "name": "Status", "enum": ["Standby", "Running"]},
-          {"part": 0, "mask": 1, "shift": 1, "name": "Fault"},
+          {"part": 0, "mask": 3, "shift": 14, "name": "Input voltage", "enum": ["Normal", "Low Voltage", "High Voltage", "No Voltage"]},
+          {"part": 0, "mask": 3, "shift": 12, "name": "Output power", "enum": ["Light Load", "Moderate", "Rated", "Overload"]},
 
-          {"part": 0, "mask": 3, "shift": 14, "name": "Status", "enum": ["Normal", "Low", "High", "No Access"]},
-          {"part": 0, "mask": 3, "shift": 12, "name": "Load", "enum": ["Light Load", "Moderate", "Rated", "Overload"]},
-          {"part": 0, "mask": 1, "shift": 11, "name": "Short circuit."},
-          {"part": 0, "mask": 1, "shift": 10, "name": "Unable to discharge."},
-          {"part": 0, "mask": 1, "shift": 9, "name": "Unable to stop discharging."},
-          {"part": 0, "mask": 1, "shift": 8, "name": "Output voltage abnormal."},
-          {"part": 0, "mask": 1, "shift": 7, "name": "Input overpressure."},
-          {"part": 0, "mask": 1, "shift": 6, "name": "High voltage side short circuit."},
-          {"part": 0, "mask": 1, "shift": 5, "name": "Boost overpressure."},
-          {"part": 0, "mask": 1, "shift": 4, "name": "Output overpressue."}
+          {"part": 0, "mask": 1, "shift": 1, "name": "Fault", "enum": ["No", "Yes"]},
+          {"part": 0, "mask": 1, "shift": 11, "name": "Short circuit", "enum": ["No", "Yes"]},
+          {"part": 0, "mask": 1, "shift": 10, "name": "Can discharge", "enum": ["Yes", "No"]},
+          {"part": 0, "mask": 1, "shift": 9, "name": "Can stop discharging", "enum": ["Yes", "No"]},
+          {"part": 0, "mask": 1, "shift": 8, "name": "Output voltage abnormal", "enum": ["No", "Yes"]},
+          {"part": 0, "mask": 1, "shift": 7, "name": "Input overpressure", "enum": ["No", "Yes"]},
+          {"part": 0, "mask": 1, "shift": 6, "name": "High voltage short circuit", "enum": ["No", "Yes"]},
+          {"part": 0, "mask": 1, "shift": 5, "name": "Boost overpressure", "enum": ["No", "Yes"]},
+          {"part": 0, "mask": 1, "shift": 4, "name": "Output overpressue", "enum": ["No", "Yes"]}
         ],
         "field": "rt_discharging_equipment_status"
       }

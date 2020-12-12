@@ -27,7 +27,15 @@
       width: auto;
       margin: auto !important;
     }
-
+    .hour {
+      width: 100%;
+      height: 100%;
+    }
+    .timeline {
+      display: inline-block;
+      width: 100%;
+      height: 100%;
+    }
   </style>
 </head>
 <body>
@@ -40,7 +48,7 @@
       <li><a href="#tabs-1">Battery</a></li>
       <li><a href="#tabs-2">Load</a></li>
       <li><a href="#tabs-3">Solar Array</a></li>
-      <li><a href="#tabs-4">Summary</a></li>
+      <li><a href="#tabs-4">Status</a></li>
       <li><a href="#tabs-5">Statistics</a></li>
       <li><a href="#tabs-6">Temperature</a></li>
       <li><a href="#tabs-7">Power</a></li>
@@ -48,54 +56,24 @@
       <li><a href="#tabs-9">Information</a></li>
     </ul>
     <div id="tabs-1">
-      <table border="1">
-          <tr>
-              <td>Battery Status</td>
-              <td class="battery-status"></td>
-          </tr>
-          <tr>
-              <td>Charging Equipment Status</td>
-              <td class="charging-status"></td>
-          </tr>
-          <tr>
-              <td>Discharging Equipment Status</td>
-              <td class="discharging-status"></td>
-          </tr>
-      </table>
+
       <table width="100%" class="battery-table">
         <tr>
-          <td class="table-cell">Charging Volts</td>
-          <td class="table-cell">Charging Amps</td>
-          <td class="table-cell">Charging Watts</td>
-          <!-- <td class="table-cell" rowspan="6">
-
-            <div class="battery-volts-table"></div>
-            <div class="battery-amps-table"></div>
-            <div class="battery-watts-table"></div>
-            <div class="battery-soc-table"></div>
-            <div class="battery-temp-table"></div>
-
-          </td> -->
+          <td><div class="hour battery-volts-hour"></div></td>
+          <td><div class="gauge battery-volts-gauge"></div></td>
+          <td rowspan="4"><div class="battery-volts-info"></div></td>
         </tr>
         <tr>
-          <td class="table-cell"><div class="gauge battery-volts-gauge"></div></td>
-          <td class="table-cell"><div class="gauge battery-amps-gauge"></div></td>
-          <td class="table-cell"><div class="gauge battery-watts-gauge"></div></td>
+          <td><div class="hour battery-soc-hour"></div></td>
+          <td><div class="gauge battery-soc-gauge"></div></td>
         </tr>
         <tr>
-          <td class="table-cell battery-volts-hour"></td>
-          <td class="table-cell battery-amps-hour"></td>
-          <td class="table-cell battery-watts-hour"></td>
-        </tr>
-
-        <tr>
-          <td class="table-cell">State of Charge</td>
+          <td><div class="hour battery-amps-hour"></div></td>
+          <td><div class="gauge battery-amps-gauge"></div></td>
         </tr>
         <tr>
-          <td class="table-cell"><div class="gauge battery-soc-gauge"></div></td>
-        </tr>
-        <tr>
-          <td class="table-cell battery-soc-hour"></td>
+          <td><div class="hour battery-watts-hour"></div></td>
+          <td><div class="gauge battery-watts-gauge"></div></td>
         </tr>
       </table>
     </div>
@@ -148,8 +126,7 @@
       </table>
     </div>
     <div id="tabs-4">
-      Summary
-      <div id="chart_status" style="height:100%;width:100%"></div>
+      <div class="timeline status-timeline" style="height:100%;width:100%">Status Timeline Loading...</div>
     </div>
     <div id="tabs-5">
       <div class="statstics-voltages"></div>
