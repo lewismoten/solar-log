@@ -620,7 +620,12 @@ function getBatteryStatusTimelineData() {
     function parse(row) {
       const value = row[fieldIndex];
       var result = parsePart(value, part);
-      return result === part.enum[0] ? undefined : part.name;
+      if(index === 0) {
+        result = result === part.enum[0] ? undefined : result;
+      } else {
+        result = result === part.enum[0] ? undefined : part.name;
+      }
+      return result;
     }
 
     function buildRow() {
