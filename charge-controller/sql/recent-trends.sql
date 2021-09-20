@@ -17,5 +17,6 @@ SELECT
 FROM
     controller_real_time_data
 WHERE
-    create_date >= DATE_SUB(now(), INTERVAL 6 HOUR)
+    unit = 1
+    AND create_date >= DATE_SUB(now(), INTERVAL 1 DAY)
 ;
