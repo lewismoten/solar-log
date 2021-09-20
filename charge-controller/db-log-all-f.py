@@ -22,7 +22,7 @@ def getRecord(record):
     t.update(record);
     return t;
 
-def getValue(record):
+def getValue(record, unit):
     address = int(record["address"], 0x10)
     size = record["size"]
     values = [];
@@ -31,7 +31,7 @@ def getValue(record):
         for currentAddress in range(startAddress, startAddress + bulkAddresses[startAddress]["size"]):
             if currentAddress == address:
                 for i in range(size):
-                  values.append(bulkAddresses[startAddress]["data"][currentAddress - startAddress + i])
+                  values.append(bulkAddresses[startAddress]["data" + str(unit)][currentAddress - startAddress + i])
     if "parts" in record:
         partedValues = {}
         for part in record["parts"]:
@@ -77,23 +77,23 @@ def getValue(record):
         value = value * record["multiplier"]
         return value
 
-def readHolding(address, count=1):
-    return client.read_holding_registers(address, count, unit=CHARGE_CONTROLLER_UNIT)
-def readInput(address, count=1):
-    return client.read_input_registers(address, count, unit=CHARGE_CONTROLLER_UNIT)
-def readDescrete(address, count=1):
-    return client.read_discrete_inputs(address, count, unit=CHARGE_CONTROLLER_UNIT)
-def readCoils(address, count=1):
-    return client.read_coils(address, count, unit=CHARGE_CONTROLLER_UNIT)
-def readControllerData(address, count=1):
+def readHolding(address, count=1, unit=CHARGE_CONTROLLER_UNIT):
+    return client.read_holding_registers(address, count, unit=unit)
+def readInput(address, count=1, unit=CHARGE_CONTROLLER_UNIT):
+    return client.read_input_registers(address, count, unit=unit)
+def readDescrete(address, count=1, unit=CHARGE_CONTROLLER_UNIT):
+    return client.read_discrete_inputs(address, count, unit=unit)
+def readCoils(address, count=1, unit=CHARGE_CONTROLLER_UNIT):
+    return client.read_coils(address, count, unit=unit)
+def readControllerData(address, count=1, unit=CHARGE_CONTROLLER_UNIT):
     if address < 0x2000:
-        result = readCoils(address, count)
+        result = readCoils(address, count, unit)
     elif address < 0x3000:
-        result = readDescrete(address, count)
+        result = readDescrete(address, count, unit)
     elif address < 0x9000:
-        result = readInput(address, count)
+        result = readInput(address, count, unit)
     else:
-        result = readHolding(address, count)
+        result = readHolding(address, count, unit)
     if not isinstance(result, Exception) and result.function_code < 0x80:
         return result.bits if address < 0x3000 else result.registers
     else:
@@ -116,10 +116,12 @@ for data in chargeController["data"]:
 # lets get ready to build our queries
 addresses.sort()
 bulkAddresses = {}
+#unit=CHARGE_CONTROLLER_UNIT
 
 size = 1
 lastAddress = 0xFFFF
 startAddress = 0xFFFF
+units = [1, 2]
 
 for address in addresses:
     if address == lastAddress + 1:
@@ -138,7 +140,8 @@ for address in addresses:
 client = getClient()
 if client.connect():
     for key in sorted(bulkAddresses.keys()):
-        bulkAddresses[key]["data"] = readControllerData(key, bulkAddresses[key]["size"])
+        for UNIT in units:
+            bulkAddresses[key]["data" + str(UNIT)] = readControllerData(key, bulkAddresses[key]["size"], UNIT)
     client.close()
 
 import pymysql
@@ -148,32 +151,36 @@ with open("db-config.json", "r") as f:
 conn = pymysql.connect(db=db["db"],user=db["user"],password=db["password"],host=db["host"])
 c = conn.cursor()
 
-for data in chargeController["data"]:
-    if data == "controller_real_time_data" or data == "controller_real_time_status":
-        sqlFields = []
-        sqlTags = []
-        sqlValues = []
+for UNIT in units:
+    for data in chargeController["data"]:
+        if data == "controller_real_time_data" or data == "controller_real_time_status":
+            sqlFields = []
+            sqlTags = []
+            sqlValues = []
 
-        #table_sql = "CREATE TABLE IF NOT EXISTS " + data + " (\n\tid INT UNSIGNED NOT NULL AUTO_INCREMENT,\n\tcreate_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n"
+            #table_sql = "CREATE TABLE IF NOT EXISTS " + data + " (\n\tid INT UNSIGNED NOT NULL AUTO_INCREMENT,\n\tcreate_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,unit INT NOT NULL DEFAULT 1,\n"
+            sqlFields.append("unit");
+            sqlTags.append("%s");
+            sqlValues.append(UNIT);
 
-        for record in chargeController["data"][data]:
-            #dbtype = "FLOAT"
-            #if "dbtype" in record:
-            #    dbtype = record["dbtype"]
-            #table_sql = table_sql + "\t" + record["field"] + " " + dbtype + ",\n"
-            sqlFields.append(record["field"])
-            sqlTags.append("%s")
-            sqlValues.append(getValue(record))
+            for record in chargeController["data"][data]:
+                #dbtype = "FLOAT"
+                #if "dbtype" in record:
+                #    dbtype = record["dbtype"]
+                #table_sql = table_sql + "\t" + record["field"] + " " + dbtype + ",\n"
+                sqlFields.append(record["field"])
+                sqlTags.append("%s")
+                sqlValues.append(getValue(record, UNIT))
 
-        #table_sql = table_sql + "\tINDEX (create_date),\n\tPRIMARY KEY(id)\n);\n\n"
-        #dropSql = "drop table if exists " + data
-        #print(dropSql)
-        #c.execute(dropSql);
-        #print(table_sql)
-        #c.execute(table_sql)
-        sql = "INSERT INTO " + data + " (" + ", ".join(sqlFields) + ") VALUES (" + ", ".join(sqlTags) + ")"
-        c.execute(sql, sqlValues)
-        conn.commit()
+            #table_sql = table_sql + "\tINDEX (create_date),\n\tPRIMARY KEY(id)\n);\n\n"
+            #dropSql = "drop table if exists " + data
+            #print(dropSql)
+            #c.execute(dropSql);
+            #print(table_sql)
+            #c.execute(table_sql)
+            sql = "INSERT INTO " + data + " (" + ", ".join(sqlFields) + ") VALUES (" + ", ".join(sqlTags) + ")"
+            c.execute(sql, sqlValues)
+            conn.commit()
 c.close()
 
 

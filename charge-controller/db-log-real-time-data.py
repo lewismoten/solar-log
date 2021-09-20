@@ -23,7 +23,7 @@ def getRecord(record):
     t.update(record);
     return t;
 
-def getValue(record):
+def getValue(record, unit):
     address = int(record["address"], 0x10)
     size = record["size"]
     values = [];
@@ -32,7 +32,7 @@ def getValue(record):
         for currentAddress in range(startAddress, startAddress + bulkAddresses[startAddress]["size"]):
             if currentAddress == address:
                 for i in range(size):
-                  values.append(bulkAddresses[startAddress]["data"][currentAddress - startAddress + i])
+                  values.append(bulkAddresses[startAddress]["data" + str(unit)][currentAddress - startAddress + i])
 
     # Most likely a communication issue...
     if values[0] == None:
@@ -79,34 +79,34 @@ def getValue(record):
         value = value * record["multiplier"]
         return value
 
-def readHolding(address, count=1):
-    return client.read_holding_registers(address, count, unit=CHARGE_CONTROLLER_UNIT)
-def readInput(address, count=1):
-    return client.read_input_registers(address, count, unit=CHARGE_CONTROLLER_UNIT)
-def readDescrete(address, count=1):
-    return client.read_discrete_inputs(address, count, unit=CHARGE_CONTROLLER_UNIT)
-def readCoils(address, count=1):
+def readHolding(address, count=1, unit=CHARGE_CONTROLLER_UNIT):
+    return client.read_holding_registers(address, count, unit=unit)
+def readInput(address, count=1, unit=CHARGE_CONTROLLER_UNIT):
+    return client.read_input_registers(address, count, unit=unit)
+def readDescrete(address, count=1, unit=CHARGE_CONTROLLER_UNIT):
+    return client.read_discrete_inputs(address, count, unit=unit)
+def readCoils(address, count=1, unit=CHARGE_CONTROLLER_UNIT):
     return client.read_coils(address, count, unit=CHARGE_CONTROLLER_UNIT)
-def readControllerDataNow(address, count=1):
+def readControllerDataNow(address, count=1, unit=CHARGE_CONTROLLER_UNIT):
     if address < 0x2000:
-        result = readCoils(address, count)
+        result = readCoils(address, count, unit)
     elif address < 0x3000:
-        result = readDescrete(address, count)
+        result = readDescrete(address, count, unit)
     elif address < 0x9000:
-        result = readInput(address, count)
+        result = readInput(address, count, unit)
     else:
-        result = readHolding(address, count)
+        result = readHolding(address, count, unit)
     return result
-def readControllerData(address, count=1):
-    result = readControllerDataNow(address, count)
+def readControllerData(address, count=1, unit=CHARGE_CONTROLLER_UNIT):
+    result = readControllerDataNow(address, count, unit)
     if not isinstance(result, Exception) and result.function_code < 0x80:
         return result.bits if address < 0x3000 else result.registers
     # try once more
-    result = readControllerDataNow(address, count)
+    result = readControllerDataNow(address, count, unit)
     if not isinstance(result, Exception) and result.function_code < 0x80:
         return result.bits if address < 0x3000 else result.registers
     # last try
-    result = readControllerDataNow(address, count)
+    result = readControllerDataNow(address, count, unit)
     if not isinstance(result, Exception) and result.function_code < 0x80:
         return result.bits if address < 0x3000 else result.registers
     else:
@@ -129,6 +129,7 @@ for data in chargeController["data"]:
 # lets get ready to build our queries
 addresses.sort()
 bulkAddresses = {}
+units = [1, 2];
 
 size = 1
 lastAddress = 0xFFFF
@@ -153,7 +154,8 @@ def log():
     # request data from charge controller
     if client.connect():
         for key in sorted(bulkAddresses.keys()):
-            bulkAddresses[key]["data"] = readControllerData(key, bulkAddresses[key]["size"])
+            for unit in units:
+                bulkAddresses[key]["data" + str(unit)] = readControllerData(key, bulkAddresses[key]["size"], unit)
         client.close()
 
     import pymysql
@@ -164,19 +166,25 @@ def log():
     c = conn.cursor()
 
     for data in chargeController["data"]:
-        if data == "controller_real_time_data" or data == "controller_real_time_status" or data == "controller_statistics" or data == "controller_settings":
-            sqlFields = []
-            sqlTags = []
-            sqlValues = []
-            for record in chargeController["data"][data]:
-                sqlFields.append(record["field"])
-                sqlTags.append("%s")
-                sqlValues.append(getValue(record))
-            sql = "INSERT INTO " + data + " (" + ", ".join(sqlFields) + ") VALUES (" + ", ".join(sqlTags) + ")"
-            #print(sql)
-            #print(sqlValues)
-            c.execute(sql, sqlValues)
-            conn.commit()
+        for unit in units:
+            if data == "controller_real_time_data" or data == "controller_real_time_status" or data == "controller_statistics" or data == "controller_settings":
+                sqlFields = []
+                sqlTags = []
+                sqlValues = []
+
+                sqlFields.append("unit");
+                sqlTags.append("%s");
+                sqlValues.append(unit);
+
+                for record in chargeController["data"][data]:
+                    sqlFields.append(record["field"])
+                    sqlTags.append("%s")
+                    sqlValues.append(getValue(record, unit))
+                sql = "INSERT INTO " + data + " (" + ", ".join(sqlFields) + ") VALUES (" + ", ".join(sqlTags) + ")"
+                #print(sql)
+                #print(sqlValues)
+                c.execute(sql, sqlValues)
+                conn.commit()
     c.close()
     #print("...logged")
 # we want to long every 10 seconds, for 1 minute
