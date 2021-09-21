@@ -67,7 +67,8 @@ try:
     FROM
         controller_statistics
     WHERE
-        create_date BETWEEN '{start} 00:00:00' AND '{end} 23:59:59'
+        unit = 1
+        AND create_date BETWEEN '{start} 00:00:00' AND '{end} 23:59:59'
     GROUP BY
         YEAR(create_date),
         MONTH(create_date),

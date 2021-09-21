@@ -1,4 +1,5 @@
 {
+  "unit_ids": [1, 2, 3],
   "types": {
     "default": {
       "multiplier": 0.01,

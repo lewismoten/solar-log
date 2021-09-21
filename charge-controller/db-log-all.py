@@ -128,7 +128,6 @@ for data in chargeController["data"]:
 # lets get ready to build our queries
 addresses.sort()
 bulkAddresses = {}
-units = [1, 2];
 
 size = 1
 lastAddress = 0xFFFF
@@ -152,7 +151,7 @@ def log():
     # request data from charge controller
     if client.connect():
         for key in sorted(bulkAddresses.keys()):
-            for unit in units:
+            for unit in chargeController["unit_ids"]:
                 bulkAddresses[key]["data" + str(unit)] = readControllerData(key, bulkAddresses[key]["size"], unit)
         client.close()
 
@@ -164,7 +163,7 @@ def log():
     c = conn.cursor()
 
     for data in chargeController["data"]:
-        for unit in units:
+        for unit in chargeController["unit_ids"]:
             sqlFields = []
             sqlTags = []
             sqlValues = []

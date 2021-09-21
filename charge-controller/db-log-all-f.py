@@ -121,7 +121,6 @@ bulkAddresses = {}
 size = 1
 lastAddress = 0xFFFF
 startAddress = 0xFFFF
-units = [1, 2]
 
 for address in addresses:
     if address == lastAddress + 1:
@@ -140,7 +139,7 @@ for address in addresses:
 client = getClient()
 if client.connect():
     for key in sorted(bulkAddresses.keys()):
-        for UNIT in units:
+        for UNIT in chargeController["unit_ids"]:
             bulkAddresses[key]["data" + str(UNIT)] = readControllerData(key, bulkAddresses[key]["size"], UNIT)
     client.close()
 
@@ -151,7 +150,7 @@ with open("db-config.json", "r") as f:
 conn = pymysql.connect(db=db["db"],user=db["user"],password=db["password"],host=db["host"])
 c = conn.cursor()
 
-for UNIT in units:
+for UNIT in chargeController["unit_ids"]:
     for data in chargeController["data"]:
         if data == "controller_real_time_data" or data == "controller_real_time_status":
             sqlFields = []

@@ -98,19 +98,16 @@ def readControllerDataNow(address, count=1, unit=CHARGE_CONTROLLER_UNIT):
         result = readHolding(address, count, unit)
     return result
 def readControllerData(address, count=1, unit=CHARGE_CONTROLLER_UNIT):
+    tryCount = 1
     result = readControllerDataNow(address, count, unit)
-    if not isinstance(result, Exception) and result.function_code < 0x80:
-        return result.bits if address < 0x3000 else result.registers
-    # try once more
-    result = readControllerDataNow(address, count, unit)
-    if not isinstance(result, Exception) and result.function_code < 0x80:
-        return result.bits if address < 0x3000 else result.registers
-    # last try
-    result = readControllerDataNow(address, count, unit)
-    if not isinstance(result, Exception) and result.function_code < 0x80:
-        return result.bits if address < 0x3000 else result.registers
-    else:
-        return [None] * count;
+    while isinstance(result, Exception) or result.function_code >= 0x80:
+        tryCount = tryCount + 1;
+        if(tryCount > 5):
+            print('error - giving up');
+            return [None] * count;
+        print('error - try #', tryCount)
+        result = readControllerDataNow(address, count, unit)
+    return result.bits if address < 0x3000 else result.registers
 
 addresses = [];
 
@@ -129,7 +126,6 @@ for data in chargeController["data"]:
 # lets get ready to build our queries
 addresses.sort()
 bulkAddresses = {}
-units = [1, 2];
 
 size = 1
 lastAddress = 0xFFFF
@@ -154,8 +150,11 @@ def log():
     # request data from charge controller
     if client.connect():
         for key in sorted(bulkAddresses.keys()):
-            for unit in units:
-                bulkAddresses[key]["data" + str(unit)] = readControllerData(key, bulkAddresses[key]["size"], unit)
+            print("-",key)
+            for unit in chargeController["unit_ids"]:
+                dataKey = "data"+str(unit)
+                print(dataKey)
+                bulkAddresses[key][dataKey] = readControllerData(key, bulkAddresses[key]["size"], unit)
         client.close()
 
     import pymysql
@@ -166,7 +165,9 @@ def log():
     c = conn.cursor()
 
     for data in chargeController["data"]:
-        for unit in units:
+        print("DATA", data);
+        for unit in chargeController["unit_ids"]:
+            print("UNIT", unit);
             if data == "controller_real_time_data" or data == "controller_real_time_status" or data == "controller_statistics" or data == "controller_settings":
                 sqlFields = []
                 sqlTags = []

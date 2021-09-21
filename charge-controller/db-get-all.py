@@ -24,7 +24,7 @@ try:
     result = {}
     for tableName in chargeController["data"]:
         rowResult = {}
-        sql = "SELECT * FROM %s ORDER BY create_date DESC LIMIT 1" % tableName
+        sql = "SELECT * FROM %s where unit = 1 ORDER BY create_date DESC LIMIT 1" % tableName
         c.execute(sql)
         row = c.fetchone()
         fields = []
