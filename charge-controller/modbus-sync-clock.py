@@ -9,7 +9,7 @@ from datetime import datetime
 # dmesg | grep ttyUSB
 
 
-units = [1, 2];
+units = [1, 2, 3];
 
 for UNIT in units:
 
@@ -19,7 +19,7 @@ for UNIT in units:
         method = "rtu",
         port = "/dev/ttyUSB0",
         baudrate = 115200,
-        timeout = 1
+        timeout = 1.5
     )
 
 
